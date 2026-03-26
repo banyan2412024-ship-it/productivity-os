@@ -8,7 +8,7 @@ import '../../stores/syncStore'
 
 export default function Layout() {
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-base)', position: 'relative', zIndex: 1 }}>
       <Sidebar />
       <main className="flex-1 overflow-auto pb-16 md:pb-0">
         <Outlet />

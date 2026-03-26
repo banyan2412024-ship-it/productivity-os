@@ -35,12 +35,33 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-16 hover:w-48 transition-all duration-200 bg-gray-900 text-white flex-col items-center py-4 group overflow-hidden shrink-0">
+      <aside
+        className="hidden md:flex w-16 hover:w-48 transition-all duration-200 flex-col items-center py-4 group overflow-hidden shrink-0"
+        style={{
+          background: 'var(--bg-surface)',
+          borderRight: '1px solid var(--border)',
+          color: 'var(--text)',
+        }}
+      >
         <div className="mb-8 flex items-center gap-3 px-3 w-full">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center text-white font-bold text-lg shrink-0">
+          <div
+            className="w-10 h-10 flex items-center justify-center font-bold text-lg shrink-0"
+            style={{
+              background: 'var(--neon-ghost)',
+              borderTop: '2px solid #1a6b1a',
+              borderLeft: '2px solid #1a6b1a',
+              borderRight: '2px solid #003300',
+              borderBottom: '2px solid #003300',
+              color: 'var(--neon)',
+              fontFamily: 'var(--font-mono)',
+            }}
+          >
             P
           </div>
-          <span className="text-sm font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+          <span
+            className="text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity"
+            style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--neon)' }}
+          >
             Productivity OS
           </span>
         </div>
@@ -52,15 +73,21 @@ export default function Sidebar() {
               to={to}
               end={to === '/'}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors whitespace-nowrap ${
-                  isActive
-                    ? 'bg-white/15 text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-white/10'
+                `flex items-center gap-3 px-3 py-2.5 whitespace-nowrap ${
+                  isActive ? '' : ''
                 }`
               }
+              style={({ isActive }) => ({
+                background: isActive ? 'var(--sel-bg)' : 'transparent',
+                borderLeft: isActive ? '3px solid var(--neon)' : '3px solid transparent',
+                color: isActive ? 'var(--neon)' : 'var(--text-dim)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '11px',
+                boxShadow: isActive ? '0 0 4px rgba(0,255,65,0.4)' : 'none',
+              })}
             >
-              <Icon size={20} className="shrink-0" />
-              <span className="text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+              <Icon size={16} className="shrink-0" style={{ imageRendering: 'pixelated' }} />
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity">
                 {label}
               </span>
             </NavLink>
@@ -69,20 +96,27 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile bottom bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 flex items-center justify-around px-1 py-1 safe-area-bottom">
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around px-1 py-1 safe-area-bottom"
+        style={{
+          background: 'var(--bg-surface)',
+          borderTop: '1px solid var(--border)',
+          boxShadow: '0 -1px 4px rgba(0,255,65,0.2)',
+        }}
+      >
         {mobileNav.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
             end={to === '/'}
-            className={({ isActive }) =>
-              `flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors min-w-0 ${
-                isActive ? 'text-indigo-600' : 'text-gray-400'
-              }`
-            }
+            className="flex flex-col items-center gap-0.5 px-2 py-1.5 min-w-0"
+            style={({ isActive }) => ({
+              color: isActive ? 'var(--neon)' : 'var(--text-ghost)',
+              fontFamily: 'var(--font-mono)',
+            })}
           >
-            <Icon size={20} />
-            <span className="text-[10px] font-medium truncate">{label}</span>
+            <Icon size={16} style={{ imageRendering: 'pixelated' }} />
+            <span style={{ fontSize: '9px' }} className="truncate">{label}</span>
           </NavLink>
         ))}
       </nav>
