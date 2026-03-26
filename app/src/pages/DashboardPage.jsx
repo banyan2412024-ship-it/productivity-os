@@ -343,51 +343,113 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ── Quick Entry Dropdowns ── */}
+      {/* ── Overlay: Weed ── */}
       {showWeedForm && (
-        <div style={{ ...panelStyle, marginBottom: '12px', padding: '10px' }}>
-          <div style={{ fontSize: '10px', color: 'var(--text-ghost)', marginBottom: '6px' }}>// QUICK_LOG: WEED</div>
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            {WEED_AMOUNTS.map((amt) => (
-              <button key={amt} onClick={() => handleLogWeed(amt)} style={btnSmall}>+{amt}g</button>
-            ))}
-            <button onClick={() => setShowWeedForm(false)} style={{ ...btnSmall, color: 'var(--danger)' }}>[ X ]</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setShowWeedForm(false)}>
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.7)' }} />
+          <div onClick={(e) => e.stopPropagation()} style={{ ...overlayBox, width: '320px' }}>
+            <div style={overlayTitleBar}>
+              <span>// WEED_LOG</span>
+              <button onClick={() => setShowWeedForm(false)} style={overlayClose}>✕</button>
+            </div>
+            <div style={{ padding: '16px' }}>
+              <div style={{ fontSize: '10px', color: 'var(--text-ghost)', marginBottom: '8px' }}>{'>'} select amount to log</div>
+              <div style={{ fontSize: '24px', color: 'var(--neon)', textAlign: 'center', marginBottom: '12px', textShadow: '0 0 10px rgba(0,255,65,0.5)' }}>
+                {weedToday.toFixed(1)}g today
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                {WEED_AMOUNTS.map((amt) => (
+                  <button key={amt} onClick={() => handleLogWeed(amt)} style={{ ...btnSmall, padding: '10px', fontSize: '13px', textAlign: 'center', width: '100%' }}>+{amt}g</button>
+                ))}
+              </div>
+              <div style={{ borderTop: '1px solid var(--border)', marginTop: '12px', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: 'var(--text-ghost)' }}>
+                <span>click amount to log</span>
+                <button onClick={() => navigate('/smoking')} style={{ ...btnSmall, fontSize: '9px', padding: '2px 6px' }}>[ FULL LOG ]</button>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
+      {/* ── Overlay: Money ── */}
       {showMoneyForm && (
-        <form onSubmit={handleAddMoney} style={{ ...panelStyle, marginBottom: '12px', padding: '10px' }}>
-          <div style={{ fontSize: '10px', color: 'var(--text-ghost)', marginBottom: '6px' }}>// QUICK_LOG: MONEY</div>
-          <div style={{ display: 'flex', gap: '4px', marginBottom: '6px' }}>
-            {['expense', 'income'].map((t) => (
-              <button key={t} type="button" onClick={() => { setMoneyType(t); setMoneyCat('Other') }}
-                style={{ ...btnSmall, color: moneyType === t ? (t === 'expense' ? 'var(--danger)' : 'var(--neon)') : 'var(--text-ghost)' }}>
-                [{t}]
-              </button>
-            ))}
+        <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setShowMoneyForm(false)}>
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.7)' }} />
+          <div onClick={(e) => e.stopPropagation()} style={{ ...overlayBox, width: '380px' }}>
+            <div style={overlayTitleBar}>
+              <span>// MONEY_LOG</span>
+              <button onClick={() => setShowMoneyForm(false)} style={overlayClose}>✕</button>
+            </div>
+            <form onSubmit={handleAddMoney} style={{ padding: '16px' }}>
+              <div style={{ fontSize: '10px', color: 'var(--text-ghost)', marginBottom: '10px' }}>{'>'} log a transaction</div>
+
+              {/* Type toggle */}
+              <div style={{ display: 'flex', gap: '4px', marginBottom: '12px' }}>
+                {['expense', 'income'].map((t) => (
+                  <button key={t} type="button" onClick={() => { setMoneyType(t); setMoneyCat('Other') }}
+                    style={{
+                      ...btnSmall,
+                      flex: 1,
+                      textAlign: 'center',
+                      padding: '8px',
+                      fontSize: '12px',
+                      color: moneyType === t ? (t === 'expense' ? 'var(--danger)' : 'var(--neon)') : 'var(--text-ghost)',
+                      boxShadow: moneyType === t ? (t === 'expense' ? '0 0 6px #ff0033' : '0 0 6px #00ff41') : 'none',
+                    }}>
+                    [ {t.toUpperCase()} ]
+                  </button>
+                ))}
+              </div>
+
+              {/* Amount */}
+              <div style={{ marginBottom: '8px' }}>
+                <label style={{ fontSize: '9px', color: 'var(--text-ghost)', display: 'block', marginBottom: '2px' }}>AMOUNT</label>
+                <input type="number" step="0.01" value={moneyAmt} onChange={(e) => setMoneyAmt(e.target.value)} placeholder="0.00" style={{ width: '100%', padding: '8px', fontSize: '16px' }} autoFocus />
+              </div>
+
+              {/* Description */}
+              <div style={{ marginBottom: '8px' }}>
+                <label style={{ fontSize: '9px', color: 'var(--text-ghost)', display: 'block', marginBottom: '2px' }}>DESCRIPTION</label>
+                <input value={moneyDesc} onChange={(e) => setMoneyDesc(e.target.value)} placeholder="what was it for..." style={{ width: '100%', padding: '6px' }} />
+              </div>
+
+              {/* Category */}
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ fontSize: '9px', color: 'var(--text-ghost)', display: 'block', marginBottom: '2px' }}>CATEGORY</label>
+                <select value={moneyCat} onChange={(e) => setMoneyCat(e.target.value)} style={{ width: '100%', padding: '6px' }}>
+                  {(moneyType === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', borderTop: '1px solid var(--border)', paddingTop: '10px' }}>
+                <button type="button" onClick={() => setShowMoneyForm(false)} style={{ ...btnSmall, color: 'var(--text-ghost)' }}>[ CANCEL ]</button>
+                <button type="submit" style={{ ...btnSmall, boxShadow: '0 0 4px rgba(0,255,65,0.4)' }}>[ ADD ]</button>
+              </div>
+            </form>
           </div>
-          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-            <input type="number" step="0.01" value={moneyAmt} onChange={(e) => setMoneyAmt(e.target.value)} placeholder="0.00" style={{ width: '70px' }} autoFocus />
-            <input value={moneyDesc} onChange={(e) => setMoneyDesc(e.target.value)} placeholder="desc" style={{ flex: 1, minWidth: '80px' }} />
-            <select value={moneyCat} onChange={(e) => setMoneyCat(e.target.value)}>
-              {(moneyType === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <button type="submit" style={btnSmall}>[ ADD ]</button>
-            <button type="button" onClick={() => setShowMoneyForm(false)} style={{ ...btnSmall, color: 'var(--danger)' }}>[ X ]</button>
-          </div>
-        </form>
+        </div>
       )}
 
+      {/* ── Overlay: Idea ── */}
       {showIdeaForm && (
-        <form onSubmit={handleAddIdea} style={{ ...panelStyle, marginBottom: '12px', padding: '10px' }}>
-          <div style={{ fontSize: '10px', color: 'var(--text-ghost)', marginBottom: '6px' }}>// QUICK_LOG: IDEA</div>
-          <div style={{ display: 'flex', gap: '4px' }}>
-            <input value={ideaTitle} onChange={(e) => setIdeaTitle(e.target.value)} placeholder="capture idea..." style={{ flex: 1 }} autoFocus />
-            <button type="submit" style={btnSmall}>[ SAVE ]</button>
-            <button type="button" onClick={() => setShowIdeaForm(false)} style={{ ...btnSmall, color: 'var(--danger)' }}>[ X ]</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setShowIdeaForm(false)}>
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.7)' }} />
+          <div onClick={(e) => e.stopPropagation()} style={{ ...overlayBox, width: '380px' }}>
+            <div style={overlayTitleBar}>
+              <span>// IDEA_CAPTURE</span>
+              <button onClick={() => setShowIdeaForm(false)} style={overlayClose}>✕</button>
+            </div>
+            <form onSubmit={handleAddIdea} style={{ padding: '16px' }}>
+              <div style={{ fontSize: '10px', color: 'var(--text-ghost)', marginBottom: '10px' }}>{'>'} capture an idea before it escapes</div>
+              <input value={ideaTitle} onChange={(e) => setIdeaTitle(e.target.value)} placeholder="type your idea..." style={{ width: '100%', padding: '10px', fontSize: '13px', marginBottom: '12px' }} autoFocus />
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', borderTop: '1px solid var(--border)', paddingTop: '10px' }}>
+                <button type="button" onClick={() => setShowIdeaForm(false)} style={{ ...btnSmall, color: 'var(--text-ghost)' }}>[ CANCEL ]</button>
+                <button type="submit" style={{ ...btnSmall, boxShadow: '0 0 4px rgba(0,255,65,0.4)' }}>[ SAVE ]</button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       )}
 
       {/* ── ROW 1: Schedule Strip + Calendar Window ── */}
@@ -763,6 +825,39 @@ const btnIcon = {
   display: 'flex',
   alignItems: 'center',
   gap: '2px',
+}
+
+const overlayBox = {
+  position: 'relative',
+  background: 'var(--bg-surface)',
+  borderTop: '2px solid #1a6b1a',
+  borderLeft: '2px solid #1a6b1a',
+  borderRight: '2px solid #003300',
+  borderBottom: '2px solid #003300',
+  boxShadow: '0 0 20px rgba(0,255,65,0.3)',
+  fontFamily: 'var(--font-mono)',
+}
+
+const overlayTitleBar = {
+  background: 'linear-gradient(90deg, #003d00, #001a00)',
+  borderBottom: '1px solid var(--neon)',
+  padding: '6px 10px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  fontSize: '11px',
+  color: 'var(--neon)',
+}
+
+const overlayClose = {
+  background: 'none',
+  border: 'none',
+  color: 'var(--danger)',
+  cursor: 'pointer',
+  padding: '2px',
+  minWidth: 0,
+  fontSize: '11px',
+  fontFamily: 'var(--font-mono)',
 }
 
 function getGreeting() {

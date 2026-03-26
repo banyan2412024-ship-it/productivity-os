@@ -13,7 +13,7 @@ export default function Layout() {
       <main className="flex-1 overflow-auto pb-16 md:pb-0">
         <Outlet />
       </main>
-      <div className="fixed top-3 right-3 z-30">
+      <div className="fixed bottom-3 right-3 z-30 hidden md:block">
         <SyncStatus />
       </div>
       <QuickCapture />

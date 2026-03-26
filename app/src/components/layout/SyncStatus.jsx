@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSyncStore } from '../../stores/syncStore'
-import { Cloud, CloudOff, RefreshCw, Check, Loader2 } from 'lucide-react'
+import { Cloud, CloudOff, RefreshCw, Check } from 'lucide-react'
 
 export default function SyncStatus() {
   const connected = useSyncStore((s) => s.connected)
@@ -12,7 +12,6 @@ export default function SyncStatus() {
   const syncAllFn = useSyncStore((s) => s.syncAll)
   const [showMenu, setShowMenu] = useState(false)
 
-  // Check connection on mount and every 30s
   useEffect(() => {
     checkConnection()
     const interval = setInterval(checkConnection, 30000)
@@ -22,88 +21,130 @@ export default function SyncStatus() {
   const isBusy = syncing || pendingOps > 0
 
   return (
-    <div className="relative">
+    <div style={{ position: 'relative', fontFamily: 'var(--font-mono)' }}>
       <button
         onClick={() => setShowMenu(!showMenu)}
-        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-          connected
-            ? isBusy
-              ? 'bg-blue-50 text-blue-600'
-              : 'bg-green-50 text-green-600'
-            : 'bg-gray-100 text-gray-400'
-        }`}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+          padding: '3px 8px',
+          fontSize: '9px',
+          background: 'var(--bg-surface)',
+          borderTop: '2px solid #1a6b1a',
+          borderLeft: '2px solid #1a6b1a',
+          borderRight: '2px solid #003300',
+          borderBottom: '2px solid #003300',
+          color: connected ? (isBusy ? 'var(--neon-dim)' : 'var(--neon)') : 'var(--text-ghost)',
+          minWidth: 0,
+          cursor: 'pointer',
+          fontFamily: 'var(--font-mono)',
+        }}
       >
         {connected ? (
-          isBusy ? (
-            <Loader2 size={13} className="animate-spin" />
-          ) : (
-            <Cloud size={13} />
-          )
+          isBusy ? <span className="loader-hourglass" /> : <Cloud size={12} />
         ) : (
-          <CloudOff size={13} />
+          <CloudOff size={12} />
         )}
-        <span className="hidden sm:inline">
+        <span>
           {connected
             ? isBusy
-              ? `Syncing${pendingOps > 0 ? ` (${pendingOps})` : ''}...`
-              : 'Notion'
-            : 'Offline'}
+              ? `SYNC${pendingOps > 0 ? `(${pendingOps})` : ''}...`
+              : 'NOTION'
+            : 'OFFLINE'}
         </span>
       </button>
 
       {showMenu && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
-          <div className="absolute right-0 top-full mt-1 z-50 w-64 bg-white rounded-xl border border-gray-200 shadow-lg p-3 space-y-2.5">
+          <div
+            style={{
+              position: 'absolute',
+              right: 0,
+              bottom: '100%',
+              marginBottom: '4px',
+              zIndex: 50,
+              width: '240px',
+              background: 'var(--bg-surface)',
+              borderTop: '2px solid #1a6b1a',
+              borderLeft: '2px solid #1a6b1a',
+              borderRight: '2px solid #003300',
+              borderBottom: '2px solid #003300',
+              boxShadow: '0 0 12px rgba(0,255,65,0.3)',
+              padding: '10px',
+            }}
+          >
             {/* Status */}
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-gray-300'}`} />
-              <span className="text-sm font-medium text-gray-700">
-                {connected ? 'Connected to Notion' : 'Not connected'}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+              <div style={{ width: '6px', height: '6px', background: connected ? 'var(--neon)' : 'var(--text-ghost)', boxShadow: connected ? '0 0 4px var(--neon)' : 'none' }} />
+              <span style={{ fontSize: '11px', color: 'var(--text)' }}>
+                {connected ? '> connected to Notion' : '> not connected'}
               </span>
             </div>
 
             {error && (
-              <p className="text-xs text-red-500 bg-red-50 p-2 rounded-lg">{error}</p>
+              <p style={{ fontSize: '10px', color: 'var(--danger)', padding: '4px', background: 'rgba(255,0,51,0.1)', marginBottom: '6px', border: '1px solid rgba(255,0,51,0.3)' }}>{error}</p>
             )}
 
             {lastSync && (
-              <p className="text-xs text-gray-400">
-                Last full sync: {new Date(lastSync).toLocaleTimeString()}
+              <p style={{ fontSize: '9px', color: 'var(--text-ghost)', marginBottom: '6px' }}>
+                last sync: {new Date(lastSync).toLocaleTimeString()}
               </p>
             )}
 
             {pendingOps > 0 && (
-              <p className="text-xs text-blue-500">{pendingOps} operations in flight...</p>
+              <p style={{ fontSize: '9px', color: 'var(--neon-dim)', marginBottom: '6px' }}>{pendingOps} ops in flight...</p>
             )}
 
             {/* Actions */}
-            <div className="border-t pt-2 space-y-1">
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '6px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <button
-                onClick={async () => {
-                  await syncAllFn()
-                  setShowMenu(false)
-                }}
+                onClick={async () => { await syncAllFn(); setShowMenu(false) }}
                 disabled={!connected || syncing}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed text-gray-700"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '4px 6px',
+                  fontSize: '10px',
+                  background: 'transparent',
+                  border: '1px solid var(--border)',
+                  color: connected ? 'var(--neon)' : 'var(--text-ghost)',
+                  cursor: connected ? 'pointer' : 'not-allowed',
+                  opacity: connected && !syncing ? 1 : 0.4,
+                  minWidth: 0,
+                  fontFamily: 'var(--font-mono)',
+                  width: '100%',
+                }}
               >
-                <RefreshCw size={14} className={syncing ? 'animate-spin' : ''} />
-                {syncing ? 'Syncing...' : 'Full Sync Now'}
+                <RefreshCw size={11} />
+                {syncing ? '[ SYNCING... ]' : '[ FULL SYNC ]'}
               </button>
               <button
-                onClick={async () => {
-                  await checkConnection()
-                  setShowMenu(false)
+                onClick={async () => { await checkConnection(); setShowMenu(false) }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '4px 6px',
+                  fontSize: '10px',
+                  background: 'transparent',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-dim)',
+                  cursor: 'pointer',
+                  minWidth: 0,
+                  fontFamily: 'var(--font-mono)',
+                  width: '100%',
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-gray-50 text-gray-700"
               >
-                <Check size={14} />
-                Test Connection
+                <Check size={11} />
+                [ TEST CONNECTION ]
               </button>
             </div>
 
-            <p className="text-[10px] text-gray-400 pt-1 border-t">
-              Changes auto-push to Notion when connected. Use Full Sync to push all existing data.
+            <p style={{ fontSize: '8px', color: 'var(--text-ghost)', marginTop: '6px', borderTop: '1px solid var(--border)', paddingTop: '4px' }}>
+              auto-push on change. full sync pushes all data.
             </p>
           </div>
         </>
