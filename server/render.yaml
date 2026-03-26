@@ -31,3 +31,5 @@ services:
         sync: false
       - key: NOTION_HABITS_DS
         sync: false
+      - key: ALLOWED_ORIGIN
+        value: https://vite-omega-ruddy-33.vercel.app
