@@ -12,8 +12,8 @@ export default function PasswordGate({ children }) {
 
   const attempt = (e) => {
     e.preventDefault()
-    if (input === CORRECT) {
-      localStorage.setItem(KEY, CORRECT)
+    if (input.trim() === CORRECT.trim()) {
+      localStorage.setItem(KEY, CORRECT.trim())
       setAuthed(true)
     } else {
       setError(true)
