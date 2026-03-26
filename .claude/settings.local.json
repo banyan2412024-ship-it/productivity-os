@@ -3,7 +3,11 @@
     "allow": [
       "Bash(npx vite:*)",
       "Bash(node -e \":*)",
-      "Bash(node index.js)"
+      "Bash(node index.js)",
+      "mcp__claude_ai_Notion__notion-create-view",
+      "Bash(node -e \"require\\(''dotenv''\\).config\\(\\); const http = require\\(''http''\\); http.get\\(''http://localhost:3001/api/health'', r => console.log\\(''UP:'', r.statusCode\\)\\).on\\(''error'', e => console.log\\(''DOWN:'', e.message\\)\\)\")",
+      "mcp__claude_ai_Notion__notion-fetch",
+      "Bash(curl -s https://prodos-api.onrender.com/api/health)"
     ]
   }
 }
