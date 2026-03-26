@@ -1,163 +1,283 @@
-import { useState } from 'react'
+import { useState, useRef, useId } from 'react'
 import { useTaskStore, TASK_CATEGORIES } from '../../stores/taskStore'
 import { useToastStore } from '../../stores/toastStore'
-import { Plus, Zap, Calendar, Tag } from 'lucide-react'
+import { Plus, Zap, Calendar, X } from 'lucide-react'
 
 const priorities = ['medium', 'high', 'low']
 const priorityColors = {
-  high: 'bg-red-500 text-white',
-  medium: 'bg-yellow-500 text-white',
-  low: 'bg-gray-400 text-white',
+  high:   { bg: 'var(--danger)',         color: '#fff' },
+  medium: { bg: 'var(--amber)',           color: '#000' },
+  low:    { bg: 'var(--border-bright)',   color: 'var(--text)' },
 }
 const priorityLabels = { high: 'High', medium: 'Med', low: 'Low' }
 
+// Convert duration object → human label
+function durationLabel(d) {
+  if (!d) return ''
+  const parts = []
+  if (d.months) parts.push(`${d.months}mo`)
+  if (d.days)   parts.push(`${d.days}d`)
+  if (d.hours)  parts.push(`${d.hours}h`)
+  if (d.mins)   parts.push(`${d.mins}m`)
+  if (d.secs)   parts.push(`${d.secs}s`)
+  return parts.join(' ')
+}
+
+const EMPTY_DUR = { months: '', days: '', hours: '', mins: '', secs: '' }
+
 export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAdded }) {
-  const addTask = useTaskStore((s) => s.addTask)
+  const uid      = useId()
+  const dateRef  = useRef(null)
+  const addTask  = useTaskStore((s) => s.addTask)
   const deleteTask = useTaskStore((s) => s.deleteTask)
   const addToast = useToastStore((s) => s.addToast)
-  const [title, setTitle] = useState('')
-  const [priority, setPriority] = useState('medium')
+
+  const [open,       setOpen]       = useState(false)
+  const [title,      setTitle]      = useState('')
+  const [priority,   setPriority]   = useState('medium')
   const [isQuickWin, setIsQuickWin] = useState(false)
-  const [category, setCategory] = useState('Other')
-  const [dueDate, setDueDate] = useState('')
-  const [showOptions, setShowOptions] = useState(false)
+  const [isFrog,     setIsFrog]     = useState(false)
+  const [category,   setCategory]   = useState('Other')
+  const [dueDate,    setDueDate]    = useState('')
+  const [duration,   setDuration]   = useState(EMPTY_DUR)
+  const [showDur,    setShowDur]    = useState(false)
 
   const cyclePriority = () => {
     const idx = priorities.indexOf(priority)
     setPriority(priorities[(idx + 1) % priorities.length])
   }
 
+  const reset = () => {
+    setTitle('')
+    setPriority('medium')
+    setIsQuickWin(false)
+    setIsFrog(false)
+    setCategory('Other')
+    setDueDate('')
+    setDuration(EMPTY_DUR)
+    setShowDur(false)
+    setOpen(false)
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!title.trim()) return
 
+    const dur = durationLabel(duration)
     const taskData = {
       title: title.trim(),
       status: defaultStatus,
       priority,
       category,
       isQuickWin,
+      isFrog,
       ...(projectId && { projectId }),
-    }
-
-    if (dueDate) {
-      taskData.dueDate = new Date(dueDate).toISOString()
+      ...(dueDate && { dueDate: new Date(dueDate).toISOString() }),
+      ...(dur && { estimatedDuration: dur }),
     }
 
     const id = addTask(taskData)
-    const savedTitle = taskData.title
-    addToast(`Task "${savedTitle}" added`, { type: 'success', undoFn: () => { deleteTask(id); addToast('Task undone', { type: 'info' }) } })
-    setTitle('')
-    setPriority('medium')
-    setCategory('Other')
-    setIsQuickWin(false)
-    setDueDate('')
-    setShowOptions(false)
+    addToast(`Task "${taskData.title}" added`, {
+      type: 'success',
+      undoFn: () => { deleteTask(id); addToast('Task undone', { type: 'info' }) },
+    })
+    reset()
     onTaskAdded?.()
   }
 
+  const pColor = priorityColors[priority]
+  const durLabel = durationLabel(duration)
+
+  // ── Collapsed state: just a "+ Add task" button ──────────────────────────
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '6px',
+          width: '100%', padding: '6px 10px',
+          background: 'transparent',
+          border: '1px dashed var(--border-mid)',
+          color: 'var(--text-ghost)',
+          fontSize: '11px', cursor: 'pointer',
+          minWidth: 'unset',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.borderColor = 'var(--border-bright)'
+          e.currentTarget.style.color = 'var(--text-dim)'
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.borderColor = 'var(--border-mid)'
+          e.currentTarget.style.color = 'var(--text-ghost)'
+        }}
+      >
+        <Plus size={12} /> Add task
+      </button>
+    )
+  }
+
+  // ── Expanded state ────────────────────────────────────────────────────────
   return (
-    <form onSubmit={handleSubmit} className="group">
-      <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 transition-all focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100">
-        <Plus size={16} className="text-gray-400 shrink-0" />
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+
+      {/* Main row */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '6px',
+        background: 'var(--bg-base)',
+        border: '1px solid var(--border-bright)',
+        padding: '4px 8px',
+      }}>
+        <Plus size={14} style={{ color: 'var(--text-ghost)', flexShrink: 0 }} />
         <input
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onFocus={() => setShowOptions(true)}
-          placeholder="Add a task..."
-          className="flex-1 text-sm text-gray-800 outline-none placeholder:text-gray-400 bg-transparent"
+          onChange={e => setTitle(e.target.value)}
+          placeholder="Task title..."
+          autoFocus
+          style={{ flex: 1, background: 'transparent', border: 'none', color: 'var(--text)', fontSize: '12px', outline: 'none' }}
         />
-
-        {/* Quick option buttons (visible on focus or when options shown) */}
-        <div
-          className={`flex items-center gap-1.5 transition-opacity ${
-            showOptions || title ? 'opacity-100' : 'opacity-0 group-focus-within:opacity-100'
-          }`}
-        >
-          {/* Priority toggle */}
-          <button
-            type="button"
-            onClick={cyclePriority}
-            className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition-colors ${priorityColors[priority]}`}
-            title="Cycle priority"
-          >
-            {priorityLabels[priority]}
-          </button>
-
-          {/* Category */}
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 border-none outline-none cursor-pointer hover:bg-gray-200"
-          >
-            {TASK_CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-
-          {/* Quick win */}
-          <button
-            type="button"
-            onClick={() => setIsQuickWin(!isQuickWin)}
-            className={`p-1 rounded transition-colors ${
-              isQuickWin
-                ? 'text-blue-500 bg-blue-100'
-                : 'text-gray-400 hover:text-blue-400 hover:bg-blue-50'
-            }`}
-            title="Quick Win (under 2 min)"
-          >
-            <Zap size={14} />
-          </button>
-
-          {/* Date picker */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => {
-                const input = document.getElementById('task-input-date')
-                input?.showPicker?.()
-                input?.focus()
-              }}
-              className={`p-1 rounded transition-colors ${
-                dueDate
-                  ? 'text-purple-500 bg-purple-100'
-                  : 'text-gray-400 hover:text-purple-400 hover:bg-purple-50'
-              }`}
-              title="Set due date"
-            >
-              <Calendar size={14} />
-            </button>
-            <input
-              id="task-input-date"
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-              tabIndex={-1}
-            />
-          </div>
-        </div>
+        <button type="button" onClick={reset} style={{ background: 'transparent', border: 'none', color: 'var(--text-ghost)', padding: '2px', cursor: 'pointer', minWidth: 'unset' }}>
+          <X size={13} />
+        </button>
       </div>
 
-      {/* Active indicator bar */}
+      {/* Options row */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px', paddingLeft: '2px' }}>
+
+        {/* Priority */}
+        <button
+          type="button"
+          onClick={cyclePriority}
+          style={{
+            padding: '2px 8px', fontSize: '10px', fontFamily: 'var(--font-mono)',
+            background: pColor.bg, color: pColor.color,
+            border: 'none', cursor: 'pointer', minWidth: 'unset',
+          }}
+          title="Cycle priority"
+        >
+          {priorityLabels[priority]}
+        </button>
+
+        {/* Frog 🐸 */}
+        <button
+          type="button"
+          onClick={() => setIsFrog(!isFrog)}
+          title="Eat the Frog — hardest task first"
+          style={{
+            padding: '2px 8px', fontSize: '11px',
+            background: isFrog ? 'rgba(0,255,65,0.15)' : 'transparent',
+            border: isFrog ? '1px solid var(--text-bright)' : '1px solid var(--border-mid)',
+            color: isFrog ? 'var(--text-bright)' : 'var(--text-ghost)',
+            cursor: 'pointer', minWidth: 'unset',
+          }}
+        >
+          🐸 {isFrog ? 'Frog' : 'Frog?'}
+        </button>
+
+        {/* Quick win ⚡ */}
+        <button
+          type="button"
+          onClick={() => setIsQuickWin(!isQuickWin)}
+          title="Quick Win (under 2 min)"
+          style={{
+            padding: '2px 8px', fontSize: '10px',
+            background: isQuickWin ? 'rgba(0,229,204,0.15)' : 'transparent',
+            border: isQuickWin ? '1px solid var(--cyan)' : '1px solid var(--border-mid)',
+            color: isQuickWin ? 'var(--cyan)' : 'var(--text-ghost)',
+            cursor: 'pointer', minWidth: 'unset', display: 'flex', alignItems: 'center', gap: '3px',
+          }}
+        >
+          <Zap size={11} /> Quick
+        </button>
+
+        {/* Category */}
+        <select
+          value={category}
+          onChange={e => setCategory(e.target.value)}
+          style={{ fontSize: '10px', padding: '2px 20px 2px 6px', color: 'var(--text-dim)', background: 'var(--bg-surface)' }}
+        >
+          {TASK_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+
+        {/* Calendar */}
+        <div style={{ position: 'relative' }}>
+          <button
+            type="button"
+            onClick={() => dateRef.current?.showPicker?.()}
+            title="Set due date"
+            style={{
+              padding: '2px 8px', fontSize: '10px',
+              background: dueDate ? 'rgba(200,168,75,0.15)' : 'transparent',
+              border: dueDate ? '1px solid var(--amber)' : '1px solid var(--border-mid)',
+              color: dueDate ? 'var(--amber)' : 'var(--text-ghost)',
+              cursor: 'pointer', minWidth: 'unset', display: 'flex', alignItems: 'center', gap: '3px',
+            }}
+          >
+            <Calendar size={11} />
+            {dueDate
+              ? new Date(dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+              : 'Due'}
+          </button>
+          <input
+            ref={dateRef}
+            id={`${uid}-date`}
+            type="date"
+            value={dueDate}
+            onChange={e => setDueDate(e.target.value)}
+            style={{ position: 'absolute', inset: 0, opacity: 0, width: '100%', height: '100%', cursor: 'pointer' }}
+            tabIndex={-1}
+          />
+        </div>
+
+        {/* Duration */}
+        <button
+          type="button"
+          onClick={() => setShowDur(!showDur)}
+          title="Estimated duration"
+          style={{
+            padding: '2px 8px', fontSize: '10px',
+            background: durLabel ? 'rgba(0,229,204,0.1)' : 'transparent',
+            border: durLabel ? '1px solid var(--cyan-dim)' : '1px solid var(--border-mid)',
+            color: durLabel ? 'var(--cyan)' : 'var(--text-ghost)',
+            cursor: 'pointer', minWidth: 'unset',
+          }}
+        >
+          ⏱ {durLabel || 'Duration'}
+        </button>
+      </div>
+
+      {/* Duration fields */}
+      {showDur && (
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', paddingLeft: '2px' }}>
+          {[
+            { key: 'months', label: 'mo' },
+            { key: 'days',   label: 'd'  },
+            { key: 'hours',  label: 'h'  },
+            { key: 'mins',   label: 'm'  },
+            { key: 'secs',   label: 's'  },
+          ].map(({ key, label }) => (
+            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+              <input
+                type="number"
+                min="0"
+                value={duration[key]}
+                onChange={e => setDuration(d => ({ ...d, [key]: e.target.value }))}
+                placeholder="0"
+                style={{ width: '40px', fontSize: '11px', textAlign: 'center', padding: '2px 4px' }}
+              />
+              <span style={{ fontSize: '10px', color: 'var(--text-ghost)' }}>{label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Submit hint */}
       {title && (
-        <div className="flex items-center justify-between px-3 py-1.5 text-[11px] text-gray-400">
-          <span>
-            Press <kbd className="px-1 py-0.5 bg-gray-100 rounded text-[10px] font-mono">Enter</kbd> to add
-          </span>
-          <div className="flex items-center gap-2">
-            {isQuickWin && (
-              <span className="flex items-center gap-0.5 text-blue-500">
-                <Zap size={10} /> Quick win
-              </span>
-            )}
-            {dueDate && (
-              <span className="text-purple-500">
-                Due: {new Date(dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-              </span>
-            )}
-          </div>
+        <div style={{ fontSize: '10px', color: 'var(--text-ghost)', paddingLeft: '2px' }}>
+          Press <kbd style={{ padding: '1px 5px', background: 'var(--bg-elevated)', border: '1px solid var(--border-mid)', fontSize: '10px' }}>Enter</kbd> to add
+          {isFrog && <span style={{ color: 'var(--text-bright)', marginLeft: '8px' }}>🐸 Eat the frog</span>}
+          {durLabel && <span style={{ color: 'var(--cyan)', marginLeft: '8px' }}>⏱ {durLabel}</span>}
         </div>
       )}
     </form>
