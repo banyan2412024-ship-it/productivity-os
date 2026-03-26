@@ -32,4 +32,4 @@ services:
       - key: NOTION_HABITS_DS
         sync: false
       - key: ALLOWED_ORIGIN
-        value: https://vite-omega-ruddy-33.vercel.app
+        value: https://chrome24.store,https://www.chrome24.store,https://vite-omega-ruddy-33.vercel.app

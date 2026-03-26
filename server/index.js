@@ -4,8 +4,13 @@ const cors = require('cors')
 const { Client } = require('@notionhq/client')
 
 const app = express()
+const allowedOrigins = (process.env.ALLOWED_ORIGIN || '')
+  .split(',').map(s => s.trim()).filter(Boolean)
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGIN || true,
+  origin: allowedOrigins.length ? (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) cb(null, true)
+    else cb(new Error('CORS: ' + origin + ' not allowed'))
+  } : true,
 }))
 app.use(express.json())
 
