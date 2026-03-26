@@ -11,19 +11,16 @@ const priorityColors = {
 }
 const priorityLabels = { high: 'High', medium: 'Med', low: 'Low' }
 
-// Convert duration object → human label
-function durationLabel(d) {
-  if (!d) return ''
-  const parts = []
-  if (d.months) parts.push(`${d.months}mo`)
-  if (d.days)   parts.push(`${d.days}d`)
-  if (d.hours)  parts.push(`${d.hours}h`)
-  if (d.mins)   parts.push(`${d.mins}m`)
-  if (d.secs)   parts.push(`${d.secs}s`)
-  return parts.join(' ')
-}
-
-const EMPTY_DUR = { months: '', days: '', hours: '', mins: '', secs: '' }
+const DURATION_PRESETS = [
+  { label: '5m',  value: '5m'  },
+  { label: '15m', value: '15m' },
+  { label: '30m', value: '30m' },
+  { label: '1h',  value: '1h'  },
+  { label: '2h',  value: '2h'  },
+  { label: '4h',  value: '4h'  },
+  { label: '1d',  value: '1d'  },
+  { label: '1w',  value: '1w'  },
+]
 
 export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAdded }) {
   const uid      = useId()
@@ -39,7 +36,8 @@ export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAd
   const [isFrog,     setIsFrog]     = useState(false)
   const [category,   setCategory]   = useState('Other')
   const [dueDate,    setDueDate]    = useState('')
-  const [duration,   setDuration]   = useState(EMPTY_DUR)
+  const [duration,   setDuration]   = useState('')
+  const [customDur,  setCustomDur]  = useState('')
   const [showDur,    setShowDur]    = useState(false)
 
   const cyclePriority = () => {
@@ -54,7 +52,8 @@ export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAd
     setIsFrog(false)
     setCategory('Other')
     setDueDate('')
-    setDuration(EMPTY_DUR)
+    setDuration('')
+    setCustomDur('')
     setShowDur(false)
     setOpen(false)
   }
@@ -63,7 +62,6 @@ export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAd
     e.preventDefault()
     if (!title.trim()) return
 
-    const dur = durationLabel(duration)
     const taskData = {
       title: title.trim(),
       status: defaultStatus,
@@ -73,7 +71,7 @@ export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAd
       isFrog,
       ...(projectId && { projectId }),
       ...(dueDate && { dueDate: new Date(dueDate).toISOString() }),
-      ...(dur && { estimatedDuration: dur }),
+      ...(duration && { estimatedDuration: duration }),
     }
 
     const id = addTask(taskData)
@@ -86,7 +84,6 @@ export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAd
   }
 
   const pColor = priorityColors[priority]
-  const durLabel = durationLabel(duration)
 
   // ── Collapsed state: just a "+ Add task" button ──────────────────────────
   if (!open) {
@@ -230,54 +227,86 @@ export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAd
           />
         </div>
 
-        {/* Duration */}
+        {/* Duration toggle */}
         <button
           type="button"
           onClick={() => setShowDur(!showDur)}
           title="Estimated duration"
           style={{
             padding: '2px 8px', fontSize: '10px',
-            background: durLabel ? 'rgba(0,229,204,0.1)' : 'transparent',
-            border: durLabel ? '1px solid var(--cyan-dim)' : '1px solid var(--border-mid)',
-            color: durLabel ? 'var(--cyan)' : 'var(--text-ghost)',
+            background: duration ? 'rgba(0,229,204,0.1)' : 'transparent',
+            border: duration ? '1px solid var(--cyan-dim)' : '1px solid var(--border-mid)',
+            color: duration ? 'var(--cyan)' : 'var(--text-ghost)',
             cursor: 'pointer', minWidth: 'unset',
           }}
         >
-          ⏱ {durLabel || 'Duration'}
+          ⏱ {duration || 'Duration'}
         </button>
       </div>
 
-      {/* Duration fields */}
+      {/* Duration presets + custom */}
       {showDur && (
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', paddingLeft: '2px' }}>
-          {[
-            { key: 'months', label: 'mo' },
-            { key: 'days',   label: 'd'  },
-            { key: 'hours',  label: 'h'  },
-            { key: 'mins',   label: 'm'  },
-            { key: 'secs',   label: 's'  },
-          ].map(({ key, label }) => (
-            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-              <input
-                type="number"
-                min="0"
-                value={duration[key]}
-                onChange={e => setDuration(d => ({ ...d, [key]: e.target.value }))}
-                placeholder="0"
-                style={{ width: '40px', fontSize: '11px', textAlign: 'center', padding: '2px 4px' }}
-              />
-              <span style={{ fontSize: '10px', color: 'var(--text-ghost)' }}>{label}</span>
-            </div>
+        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center', paddingLeft: '2px' }}>
+          {DURATION_PRESETS.map(p => (
+            <button
+              key={p.value}
+              type="button"
+              onClick={() => { setDuration(p.value); setCustomDur(''); setShowDur(false) }}
+              style={{
+                padding: '2px 8px', fontSize: '10px', fontFamily: 'var(--font-mono)',
+                background: duration === p.value ? 'rgba(0,229,204,0.15)' : 'var(--bg-base)',
+                border: duration === p.value ? '1px solid var(--cyan)' : '1px solid var(--border-mid)',
+                color: duration === p.value ? 'var(--cyan)' : 'var(--text-dim)',
+                cursor: 'pointer', minWidth: 'unset',
+              }}
+            >
+              {p.label}
+            </button>
           ))}
+          <input
+            type="text"
+            value={customDur}
+            onChange={e => setCustomDur(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && customDur.trim()) {
+                e.preventDefault(); e.stopPropagation()
+                setDuration(customDur.trim())
+                setShowDur(false)
+              }
+            }}
+            placeholder="custom (3h30m)"
+            style={{ width: '100px', fontSize: '10px', padding: '2px 6px', background: 'var(--bg-base)', color: 'var(--text)' }}
+          />
+          {duration && (
+            <button
+              type="button"
+              onClick={() => { setDuration(''); setCustomDur('') }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--text-ghost)', fontSize: '10px', cursor: 'pointer', minWidth: 'unset', padding: '2px' }}
+            >
+              <X size={11} />
+            </button>
+          )}
         </div>
       )}
 
-      {/* Submit hint */}
+      {/* Submit row */}
       {title && (
-        <div style={{ fontSize: '10px', color: 'var(--text-ghost)', paddingLeft: '2px' }}>
-          Press <kbd style={{ padding: '1px 5px', background: 'var(--bg-elevated)', border: '1px solid var(--border-mid)', fontSize: '10px' }}>Enter</kbd> to add
-          {isFrog && <span style={{ color: 'var(--text-bright)', marginLeft: '8px' }}>🐸 Eat the frog</span>}
-          {durLabel && <span style={{ color: 'var(--cyan)', marginLeft: '8px' }}>⏱ {durLabel}</span>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '2px' }}>
+          <button
+            type="submit"
+            style={{
+              padding: '3px 14px', fontSize: '10px', fontFamily: 'var(--font-mono)',
+              background: 'var(--text-bright)', color: 'var(--bg-base)',
+              border: 'none', cursor: 'pointer', minWidth: 'unset', fontWeight: 700,
+            }}
+          >
+            + ADD
+          </button>
+          <span style={{ fontSize: '10px', color: 'var(--text-ghost)' }}>
+            or <kbd style={{ padding: '1px 5px', background: 'var(--bg-elevated)', border: '1px solid var(--border-mid)', fontSize: '10px' }}>Enter</kbd>
+          </span>
+          {isFrog && <span style={{ fontSize: '10px', color: 'var(--text-bright)' }}>🐸 Eat the frog</span>}
+          {duration && <span style={{ fontSize: '10px', color: 'var(--cyan)' }}>⏱ {duration}</span>}
         </div>
       )}
     </form>
