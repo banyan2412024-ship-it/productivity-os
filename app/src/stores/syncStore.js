@@ -75,28 +75,29 @@ export const useSyncStore = create((set, get) => ({
       cacheUpdates(data.habits)
       saveCache(pageIdCache)
 
-      // Replace local stores with Notion data
-      if (data.tasks) {
+      // Replace local stores with Notion data ONLY if Notion has records.
+      // If Notion returns empty, keep local data (avoids wiping on first setup).
+      if (data.tasks?.length > 0) {
         const clean = data.tasks.map(({ _notionPageId, ...rest }) => rest)
         useTaskStore.setState({ tasks: clean })
       }
-      if (data.ideas) {
+      if (data.ideas?.length > 0) {
         const clean = data.ideas.map(({ _notionPageId, ...rest }) => rest)
         useIdeaStore.setState({ ideas: clean })
       }
-      if (data.transactions) {
+      if (data.transactions?.length > 0) {
         const clean = data.transactions.map(({ _notionPageId, ...rest }) => rest)
         useMoneyStore.setState({ transactions: clean })
       }
-      if (data.weedLogs) {
+      if (data.weedLogs?.length > 0) {
         const clean = data.weedLogs.map(({ _notionPageId, ...rest }) => rest)
         useWeedStore.setState({ smokingLogs: clean })
       }
-      if (data.events) {
+      if (data.events?.length > 0) {
         const clean = data.events.map(({ _notionPageId, ...rest }) => rest)
         useCalendarStore.setState({ calendarEvents: clean })
       }
-      if (data.habits) {
+      if (data.habits?.length > 0) {
         // Merge: keep local completions for habits that exist in Notion
         const localHabits = useHabitStore.getState().habits
         const merged = data.habits.map(({ _notionPageId, ...h }) => {
@@ -200,22 +201,26 @@ export const useSyncStore = create((set, get) => ({
 // ─── Auto-pull on startup: fetch from Notion when connected ─────────────────
 
 async function initPull() {
-  const { checkConnection, pullFromNotion } = useSyncStore.getState()
+  const { checkConnection, pullFromNotion, syncAll: pushAll } = useSyncStore.getState()
   const connected = await checkConnection()
   if (connected) {
     try {
       await pullFromNotion()
       console.log('[Notion] Data loaded from Notion (source of truth)')
+      // After pull, push any local data that Notion didn't have (first-time setup)
+      await pushAll()
+      console.log('[Notion] Local data pushed to Notion')
     } catch (e) {
-      console.warn('[Notion] Pull failed, using local cache:', e.message)
+      console.warn('[Notion] Sync failed, using local cache:', e.message)
     }
   } else {
     console.log('[Notion] Offline — using local cache')
   }
 }
 
-// Delay init slightly to let stores hydrate from Dexie first
-setTimeout(initPull, 1000)
+// Delay init: let Dexie hydrate first, then pull from Notion,
+// then push any local data that Notion doesn't have yet.
+setTimeout(initPull, 1500)
 
 // ─── Auto-push: subscribe to each store and push changes ─────────────────
 
