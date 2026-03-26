@@ -175,7 +175,21 @@ export const useSyncStore = create((set, get) => ({
       const events = useCalendarStore.getState().calendarEvents
       const habits = useHabitStore.getState().habits
 
-      const results = await syncAll({ tasks, ideas, transactions, weedLogs, events, habits })
+      // Inject cached Notion page IDs so bulk sync updates existing pages
+      // instead of creating duplicates on every call
+      const withPageId = (items) => items.map((item) => ({
+        ...item,
+        notionPageId: pageIdCache[item.id] || null,
+      }))
+
+      const results = await syncAll({
+        tasks: withPageId(tasks),
+        ideas: withPageId(ideas),
+        transactions: withPageId(transactions),
+        weedLogs: withPageId(weedLogs),
+        events: withPageId(events),
+        habits: withPageId(habits),
+      })
 
       // Cache all returned Notion page IDs
       for (const table of Object.values(results)) {
