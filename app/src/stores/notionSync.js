@@ -3,7 +3,8 @@
  *
  * - Single-item CRUD: pushes each add/update/delete to Notion in real-time
  * - Bulk sync: pushes all local data at once
- * - Property mappers: local Zustand data → Notion database properties
+ * - PULL: fetches all data FROM Notion (source of truth)
+ * - Property mappers: local ↔ Notion (bidirectional)
  * - Calls the Express proxy server at /api/*
  */
 
@@ -73,11 +74,183 @@ export function habitToNotion(habit) {
     Name: { title: [{ text: { content: habit.name || '' } }] },
     Frequency: { select: { name: habit.frequency || 'daily' } },
     'Time of Day': { select: { name: habit.timeOfDay || 'anytime' } },
-    Color: { rich_text: [{ text: { content: habit.color || '#6366f1' } }] },
+    Color: { rich_text: [{ text: { content: habit.color || '#00ff41' } }] },
     'Current Streak': { number: habit.currentStreak || 0 },
     'Longest Streak': { number: habit.longestStreak || 0 },
     'Local ID': { rich_text: [{ text: { content: habit.id } }] },
   }
+}
+
+// ─── Reverse mappers: Notion → local ────────────────────────────────────────
+
+function getTitle(props, key = 'Name') {
+  return props[key]?.title?.[0]?.text?.content || ''
+}
+function getRichText(props, key) {
+  return props[key]?.rich_text?.[0]?.text?.content || ''
+}
+function getSelect(props, key) {
+  return props[key]?.select?.name || ''
+}
+function getCheckbox(props, key) {
+  return !!props[key]?.checkbox
+}
+function getNumber(props, key) {
+  return props[key]?.number || 0
+}
+function getDate(props, key) {
+  return props[key]?.date?.start || ''
+}
+
+export function notionToTask(page) {
+  const p = page.properties
+  return {
+    id: getRichText(p, 'Local ID') || page.id,
+    title: getTitle(p),
+    status: getSelect(p, 'Status') || 'inbox',
+    priority: getSelect(p, 'Priority') || 'medium',
+    category: getSelect(p, 'Category') || 'Other',
+    isMIT: getCheckbox(p, 'Is MIT'),
+    isFrog: getCheckbox(p, 'Is Frog'),
+    isQuickWin: getCheckbox(p, 'Quick Win'),
+    dueDate: getDate(p, 'Due Date') || null,
+    scheduledDate: null,
+    notes: getRichText(p, 'Notes'),
+    tags: [],
+    projectId: null,
+    createdAt: page.created_time || new Date().toISOString(),
+    completedAt: null,
+    _notionPageId: page.id,
+  }
+}
+
+export function notionToIdea(page) {
+  const p = page.properties
+  return {
+    id: getRichText(p, 'Local ID') || page.id,
+    title: getTitle(p),
+    category: getSelect(p, 'Category') || 'Other',
+    description: getRichText(p, 'Description'),
+    status: getSelect(p, 'Status') || 'active',
+    reminderDate: getDate(p, 'Reminder Date') || null,
+    createdAt: page.created_time || new Date().toISOString(),
+    _notionPageId: page.id,
+  }
+}
+
+export function notionToTransaction(page) {
+  const p = page.properties
+  return {
+    id: getRichText(p, 'Local ID') || page.id,
+    description: getTitle(p),
+    amount: getNumber(p, 'Amount'),
+    type: getSelect(p, 'Type') || 'expense',
+    category: getSelect(p, 'Category') || 'Other',
+    date: getDate(p, 'Date'),
+    createdAt: page.created_time || new Date().toISOString(),
+    _notionPageId: page.id,
+  }
+}
+
+export function notionToWeedLog(page) {
+  const p = page.properties
+  return {
+    id: getRichText(p, 'Local ID') || page.id,
+    grams: getNumber(p, 'Grams'),
+    date: getDate(p, 'Date'),
+    time: getRichText(p, 'Time'),
+    createdAt: page.created_time || new Date().toISOString(),
+    _notionPageId: page.id,
+  }
+}
+
+export function notionToEvent(page) {
+  const p = page.properties
+  return {
+    id: getRichText(p, 'Local ID') || page.id,
+    title: getTitle(p),
+    date: getDate(p, 'Date'),
+    startTime: getRichText(p, 'Start Time'),
+    endTime: getRichText(p, 'End Time'),
+    color: '#00ff41',
+    createdAt: page.created_time || new Date().toISOString(),
+    _notionPageId: page.id,
+  }
+}
+
+export function notionToHabit(page) {
+  const p = page.properties
+  return {
+    id: getRichText(p, 'Local ID') || page.id,
+    name: getTitle(p),
+    frequency: getSelect(p, 'Frequency') || 'daily',
+    timeOfDay: getSelect(p, 'Time of Day') || 'anytime',
+    color: getRichText(p, 'Color') || '#00ff41',
+    currentStreak: getNumber(p, 'Current Streak'),
+    longestStreak: getNumber(p, 'Longest Streak'),
+    completions: [],
+    customDays: [],
+    description: '',
+    stackedAfter: null,
+    intentionTime: null,
+    intentionLocation: null,
+    icon: '',
+    createdAt: page.created_time || new Date().toISOString(),
+    _notionPageId: page.id,
+  }
+}
+
+// ─── Fetch from Notion (PULL) ───────────────────────────────────────────────
+
+async function fetchTable(table) {
+  const res = await fetch(`${API}/${table}`)
+  if (!res.ok) throw new Error(`Fetch ${table} failed: ${res.statusText}`)
+  const data = await res.json()
+  return data.results || []
+}
+
+export async function fetchTasks() {
+  const pages = await fetchTable('tasks')
+  return pages.map(notionToTask)
+}
+
+export async function fetchIdeas() {
+  const pages = await fetchTable('ideas')
+  return pages.map(notionToIdea)
+}
+
+export async function fetchTransactions() {
+  const pages = await fetchTable('transactions')
+  return pages.map(notionToTransaction)
+}
+
+export async function fetchWeedLogs() {
+  const pages = await fetchTable('weed')
+  return pages.map(notionToWeedLog)
+}
+
+export async function fetchEvents() {
+  const pages = await fetchTable('events')
+  return pages.map(notionToEvent)
+}
+
+export async function fetchHabits() {
+  const pages = await fetchTable('habits')
+  return pages.map(notionToHabit)
+}
+
+export async function fetchAllFromNotion() {
+  const results = {}
+  const ops = [
+    fetchTasks().then((r) => { results.tasks = r }).catch(() => { results.tasks = null }),
+    fetchIdeas().then((r) => { results.ideas = r }).catch(() => { results.ideas = null }),
+    fetchTransactions().then((r) => { results.transactions = r }).catch(() => { results.transactions = null }),
+    fetchWeedLogs().then((r) => { results.weedLogs = r }).catch(() => { results.weedLogs = null }),
+    fetchEvents().then((r) => { results.events = r }).catch(() => { results.events = null }),
+    fetchHabits().then((r) => { results.habits = r }).catch(() => { results.habits = null }),
+  ]
+  await Promise.allSettled(ops)
+  return results
 }
 
 // ─── Single-item CRUD (real-time push) ──────────────────────────────────────
@@ -109,7 +282,7 @@ export async function notionDelete(table, notionPageId) {
   return res.json()
 }
 
-// ─── Bulk sync ──────────────────────────────────────────────────────────────
+// ─── Bulk sync (push) ───────────────────────────────────────────────────────
 
 async function syncTable(table, items, mapper) {
   const mapped = items.map((item) => ({

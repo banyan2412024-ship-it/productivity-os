@@ -4,6 +4,7 @@ import {
   notionCreate,
   notionUpdate,
   notionDelete,
+  fetchAllFromNotion,
   taskToNotion,
   ideaToNotion,
   transactionToNotion,
@@ -20,7 +21,6 @@ import { useCalendarStore } from './calendarStore'
 import { useHabitStore } from './habitStore'
 
 // Notion page ID cache: localId → notionPageId
-// Persisted in localStorage so undo → re-add can update instead of duplicate
 const CACHE_KEY = 'notion-page-ids'
 function loadCache() {
   try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}') } catch { return {} }
@@ -31,10 +31,15 @@ function saveCache(cache) {
 
 let pageIdCache = loadCache()
 
+// Flag to prevent auto-push while we're loading data from Notion
+let isPulling = false
+
 export const useSyncStore = create((set, get) => ({
   connected: false,
   syncing: false,
+  pulling: false,
   lastSync: null,
+  lastPull: null,
   pendingOps: 0,
   error: null,
 
@@ -45,10 +50,84 @@ export const useSyncStore = create((set, get) => ({
     return result.connected
   },
 
+  // ── PULL: fetch all data from Notion and replace local stores ──
+
+  pullFromNotion: async () => {
+    set({ pulling: true, error: null })
+    isPulling = true
+    try {
+      const data = await fetchAllFromNotion()
+
+      // Update pageIdCache with Notion page IDs
+      const cacheUpdates = (items) => {
+        if (!items) return
+        for (const item of items) {
+          if (item._notionPageId && item.id) {
+            pageIdCache[item.id] = item._notionPageId
+          }
+        }
+      }
+      cacheUpdates(data.tasks)
+      cacheUpdates(data.ideas)
+      cacheUpdates(data.transactions)
+      cacheUpdates(data.weedLogs)
+      cacheUpdates(data.events)
+      cacheUpdates(data.habits)
+      saveCache(pageIdCache)
+
+      // Replace local stores with Notion data
+      if (data.tasks) {
+        const clean = data.tasks.map(({ _notionPageId, ...rest }) => rest)
+        useTaskStore.setState({ tasks: clean })
+      }
+      if (data.ideas) {
+        const clean = data.ideas.map(({ _notionPageId, ...rest }) => rest)
+        useIdeaStore.setState({ ideas: clean })
+      }
+      if (data.transactions) {
+        const clean = data.transactions.map(({ _notionPageId, ...rest }) => rest)
+        useMoneyStore.setState({ transactions: clean })
+      }
+      if (data.weedLogs) {
+        const clean = data.weedLogs.map(({ _notionPageId, ...rest }) => rest)
+        useWeedStore.setState({ smokingLogs: clean })
+      }
+      if (data.events) {
+        const clean = data.events.map(({ _notionPageId, ...rest }) => rest)
+        useCalendarStore.setState({ calendarEvents: clean })
+      }
+      if (data.habits) {
+        // Merge: keep local completions for habits that exist in Notion
+        const localHabits = useHabitStore.getState().habits
+        const merged = data.habits.map(({ _notionPageId, ...h }) => {
+          const local = localHabits.find((lh) => lh.id === h.id)
+          return { ...h, completions: local?.completions || h.completions || [] }
+        })
+        useHabitStore.setState({ habits: merged })
+      }
+
+      // Update prev snapshots so auto-push doesn't re-push what we just pulled
+      prevTasks = useTaskStore.getState().tasks
+      prevIdeas = useIdeaStore.getState().ideas
+      prevTxs = useMoneyStore.getState().transactions
+      prevLogs = useWeedStore.getState().smokingLogs
+      prevEvents = useCalendarStore.getState().calendarEvents
+      prevHabits = useHabitStore.getState().habits
+
+      set({ pulling: false, lastPull: new Date().toISOString() })
+      return data
+    } catch (e) {
+      set({ pulling: false, error: e.message })
+      throw e
+    } finally {
+      isPulling = false
+    }
+  },
+
   // ── Real-time push helpers (fire-and-forget, non-blocking) ──
 
   pushCreate: (table, localId, mapper, item) => {
-    if (!get().connected) return
+    if (!get().connected || isPulling) return
     set((s) => ({ pendingOps: s.pendingOps + 1 }))
     notionCreate(table, mapper(item))
       .then((notionPageId) => {
@@ -60,9 +139,9 @@ export const useSyncStore = create((set, get) => ({
   },
 
   pushUpdate: (table, localId, mapper, item) => {
-    if (!get().connected) return
+    if (!get().connected || isPulling) return
     const notionPageId = pageIdCache[localId]
-    if (!notionPageId) return // never synced yet, skip
+    if (!notionPageId) return
     set((s) => ({ pendingOps: s.pendingOps + 1 }))
     notionUpdate(table, notionPageId, mapper(item))
       .catch((e) => console.warn(`Notion push update ${table} failed:`, e.message))
@@ -70,7 +149,7 @@ export const useSyncStore = create((set, get) => ({
   },
 
   pushDelete: (table, localId) => {
-    if (!get().connected) return
+    if (!get().connected || isPulling) return
     const notionPageId = pageIdCache[localId]
     if (!notionPageId) return
     set((s) => ({ pendingOps: s.pendingOps + 1 }))
@@ -118,38 +197,51 @@ export const useSyncStore = create((set, get) => ({
   },
 }))
 
+// ─── Auto-pull on startup: fetch from Notion when connected ─────────────────
+
+async function initPull() {
+  const { checkConnection, pullFromNotion } = useSyncStore.getState()
+  const connected = await checkConnection()
+  if (connected) {
+    try {
+      await pullFromNotion()
+      console.log('[Notion] Data loaded from Notion (source of truth)')
+    } catch (e) {
+      console.warn('[Notion] Pull failed, using local cache:', e.message)
+    }
+  } else {
+    console.log('[Notion] Offline — using local cache')
+  }
+}
+
+// Delay init slightly to let stores hydrate from Dexie first
+setTimeout(initPull, 1000)
+
 // ─── Auto-push: subscribe to each store and push changes ─────────────────
 
 let prevTasks = useTaskStore.getState().tasks
 useTaskStore.subscribe((state) => {
+  if (isPulling) { prevTasks = state.tasks; return }
   const { pushCreate, pushUpdate, pushDelete, connected } = useSyncStore.getState()
   if (!connected) { prevTasks = state.tasks; return }
 
   const curr = state.tasks
-  // New items
   for (const t of curr) {
-    if (!prevTasks.find((p) => p.id === t.id)) {
-      pushCreate('tasks', t.id, taskToNotion, t)
-    }
+    if (!prevTasks.find((p) => p.id === t.id)) pushCreate('tasks', t.id, taskToNotion, t)
   }
-  // Deleted items
   for (const p of prevTasks) {
-    if (!curr.find((t) => t.id === p.id)) {
-      pushDelete('tasks', p.id)
-    }
+    if (!curr.find((t) => t.id === p.id)) pushDelete('tasks', p.id)
   }
-  // Updated items
   for (const t of curr) {
     const prev = prevTasks.find((p) => p.id === t.id)
-    if (prev && prev !== t) {
-      pushUpdate('tasks', t.id, taskToNotion, t)
-    }
+    if (prev && prev !== t) pushUpdate('tasks', t.id, taskToNotion, t)
   }
   prevTasks = curr
 })
 
 let prevIdeas = useIdeaStore.getState().ideas
 useIdeaStore.subscribe((state) => {
+  if (isPulling) { prevIdeas = state.ideas; return }
   const { pushCreate, pushUpdate, pushDelete, connected } = useSyncStore.getState()
   if (!connected) { prevIdeas = state.ideas; return }
 
@@ -169,6 +261,7 @@ useIdeaStore.subscribe((state) => {
 
 let prevTxs = useMoneyStore.getState().transactions
 useMoneyStore.subscribe((state) => {
+  if (isPulling) { prevTxs = state.transactions; return }
   const { pushCreate, pushDelete, connected } = useSyncStore.getState()
   if (!connected) { prevTxs = state.transactions; return }
 
@@ -184,6 +277,7 @@ useMoneyStore.subscribe((state) => {
 
 let prevLogs = useWeedStore.getState().smokingLogs
 useWeedStore.subscribe((state) => {
+  if (isPulling) { prevLogs = state.smokingLogs; return }
   const { pushCreate, pushDelete, connected } = useSyncStore.getState()
   if (!connected) { prevLogs = state.smokingLogs; return }
 
@@ -199,6 +293,7 @@ useWeedStore.subscribe((state) => {
 
 let prevEvents = useCalendarStore.getState().calendarEvents
 useCalendarStore.subscribe((state) => {
+  if (isPulling) { prevEvents = state.calendarEvents; return }
   const { pushCreate, pushUpdate, pushDelete, connected } = useSyncStore.getState()
   if (!connected) { prevEvents = state.calendarEvents; return }
 
@@ -218,6 +313,7 @@ useCalendarStore.subscribe((state) => {
 
 let prevHabits = useHabitStore.getState().habits
 useHabitStore.subscribe((state) => {
+  if (isPulling) { prevHabits = state.habits; return }
   const { pushCreate, pushUpdate, pushDelete, connected } = useSyncStore.getState()
   if (!connected) { prevHabits = state.habits; return }
 

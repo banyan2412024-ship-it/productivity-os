@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useSyncStore } from '../../stores/syncStore'
-import { Cloud, CloudOff, RefreshCw, Check } from 'lucide-react'
+import { Cloud, CloudOff, RefreshCw, Check, Download } from 'lucide-react'
 
 export default function SyncStatus() {
   const connected = useSyncStore((s) => s.connected)
   const syncing = useSyncStore((s) => s.syncing)
+  const pulling = useSyncStore((s) => s.pulling)
   const pendingOps = useSyncStore((s) => s.pendingOps)
   const lastSync = useSyncStore((s) => s.lastSync)
+  const lastPull = useSyncStore((s) => s.lastPull)
   const error = useSyncStore((s) => s.error)
   const checkConnection = useSyncStore((s) => s.checkConnection)
   const syncAllFn = useSyncStore((s) => s.syncAll)
+  const pullFromNotion = useSyncStore((s) => s.pullFromNotion)
   const [showMenu, setShowMenu] = useState(false)
 
   useEffect(() => {
@@ -18,7 +21,7 @@ export default function SyncStatus() {
     return () => clearInterval(interval)
   }, [checkConnection])
 
-  const isBusy = syncing || pendingOps > 0
+  const isBusy = syncing || pulling || pendingOps > 0
 
   return (
     <div style={{ position: 'relative', fontFamily: 'var(--font-mono)' }}>
@@ -87,9 +90,14 @@ export default function SyncStatus() {
               <p style={{ fontSize: '10px', color: 'var(--danger)', padding: '4px', background: 'rgba(255,0,51,0.1)', marginBottom: '6px', border: '1px solid rgba(255,0,51,0.3)' }}>{error}</p>
             )}
 
+            {lastPull && (
+              <p style={{ fontSize: '9px', color: 'var(--text-ghost)', marginBottom: '2px' }}>
+                last pull: {new Date(lastPull).toLocaleTimeString()}
+              </p>
+            )}
             {lastSync && (
               <p style={{ fontSize: '9px', color: 'var(--text-ghost)', marginBottom: '6px' }}>
-                last sync: {new Date(lastSync).toLocaleTimeString()}
+                last push: {new Date(lastSync).toLocaleTimeString()}
               </p>
             )}
 
@@ -119,7 +127,29 @@ export default function SyncStatus() {
                 }}
               >
                 <RefreshCw size={11} />
-                {syncing ? '[ SYNCING... ]' : '[ FULL SYNC ]'}
+                {syncing ? '[ PUSHING... ]' : '[ PUSH ALL ]'}
+              </button>
+              <button
+                onClick={async () => { await pullFromNotion(); setShowMenu(false) }}
+                disabled={!connected || pulling}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '4px 6px',
+                  fontSize: '10px',
+                  background: 'transparent',
+                  border: '1px solid var(--border)',
+                  color: connected ? 'var(--neon)' : 'var(--text-ghost)',
+                  cursor: connected ? 'pointer' : 'not-allowed',
+                  opacity: connected && !pulling ? 1 : 0.4,
+                  minWidth: 0,
+                  fontFamily: 'var(--font-mono)',
+                  width: '100%',
+                }}
+              >
+                <Download size={11} />
+                {pulling ? '[ PULLING... ]' : '[ PULL FROM NOTION ]'}
               </button>
               <button
                 onClick={async () => { await checkConnection(); setShowMenu(false) }}
@@ -144,7 +174,7 @@ export default function SyncStatus() {
             </div>
 
             <p style={{ fontSize: '8px', color: 'var(--text-ghost)', marginTop: '6px', borderTop: '1px solid var(--border)', paddingTop: '4px' }}>
-              auto-push on change. full sync pushes all data.
+              notion is source of truth. data pulled on load.
             </p>
           </div>
         </>

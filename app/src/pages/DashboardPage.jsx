@@ -452,10 +452,8 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ── ROW 1: Schedule Strip + Calendar Window ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }} className="grid-cols-1! md:grid-cols-2!">
-
-        {/* 6-Day Schedule Strip */}
+      {/* ── ROW 1: Schedule Strip (full width) ── */}
+      <div style={{ marginBottom: '12px' }}>
         <div style={panelStyle}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
             <span style={headerStyle}>// SCHEDULE</span>
@@ -543,51 +541,6 @@ export default function DashboardPage() {
                 </div>
               ))
             )}
-          </div>
-        </div>
-
-        {/* Separate Calendar Window */}
-        <div style={panelStyle}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={headerStyle}>// CALENDAR</span>
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-              <button onClick={() => setCalMonth(subDays(startOfMonth(calMonth), 1))} style={btnIcon}><ChevronLeft size={14} /></button>
-              <span style={{ fontSize: '11px', color: 'var(--text)' }}>{format(calMonth, 'MMM yyyy')}</span>
-              <button onClick={() => setCalMonth(addDays(endOfMonth(calMonth), 1))} style={btnIcon}><ChevronRight size={14} /></button>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px' }}>
-            {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((d) => (
-              <div key={d} style={{ textAlign: 'center', fontSize: '9px', color: 'var(--text-ghost)', padding: '2px' }}>{d}</div>
-            ))}
-            {calendarGrid.map((day, i) => {
-              if (!day) return <div key={`empty-${i}`} />
-              const ds = format(day, 'yyyy-MM-dd')
-              const isToday = isSameDay(day, new Date())
-              const hasEvents = (eventsByDate[ds] || []).length > 0
-              const isSelected = isSameDay(day, selectedDate)
-              return (
-                <button
-                  key={ds}
-                  onClick={() => { setSelectedDate(day); setWeekStart(startOfDay(subDays(day, getDay(day)))) }}
-                  style={{
-                    padding: '3px',
-                    fontSize: '10px',
-                    textAlign: 'center',
-                    background: isSelected ? 'var(--sel-bg)' : 'transparent',
-                    color: isToday ? 'var(--neon)' : isSelected ? 'var(--neon)' : 'var(--text-dim)',
-                    border: isToday ? '1px solid var(--neon)' : '1px solid transparent',
-                    boxShadow: isToday ? '0 0 4px rgba(0,255,65,0.3)' : 'none',
-                    minWidth: 0,
-                    position: 'relative',
-                  }}
-                >
-                  {format(day, 'd')}
-                  {hasEvents && <div style={{ position: 'absolute', bottom: '1px', left: '50%', transform: 'translateX(-50%)', width: '3px', height: '3px', background: 'var(--neon)' }} />}
-                </button>
-              )
-            })}
           </div>
         </div>
       </div>
@@ -776,6 +729,59 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* ── ROW 6: Full Calendar (bottom) ── */}
+      <div style={{ ...panelStyle, marginBottom: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <span style={headerStyle}>// CALENDAR</span>
+          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+            <button onClick={() => setCalMonth(subDays(startOfMonth(calMonth), 1))} style={btnIcon}><ChevronLeft size={14} /></button>
+            <span style={{ fontSize: '11px', color: 'var(--text)' }}>{format(calMonth, 'MMM yyyy')}</span>
+            <button onClick={() => setCalMonth(addDays(endOfMonth(calMonth), 1))} style={btnIcon}><ChevronRight size={14} /></button>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
+            <div key={d} style={{ textAlign: 'center', fontSize: '9px', color: 'var(--text-ghost)', padding: '4px 2px', borderBottom: '1px solid var(--border)' }}>{d}</div>
+          ))}
+          {calendarGrid.map((day, i) => {
+            if (!day) return <div key={`empty-${i}`} style={{ padding: '6px', background: 'var(--bg-base)' }} />
+            const ds = format(day, 'yyyy-MM-dd')
+            const isToday = isSameDay(day, new Date())
+            const dayEvts = eventsByDate[ds] || []
+            const isSelected = isSameDay(day, selectedDate)
+            return (
+              <button
+                key={ds}
+                onClick={() => { setSelectedDate(day); setWeekStart(startOfDay(subDays(day, getDay(day)))) }}
+                style={{
+                  padding: '4px',
+                  fontSize: '11px',
+                  textAlign: 'left',
+                  verticalAlign: 'top',
+                  minHeight: '40px',
+                  background: isSelected ? 'var(--sel-bg)' : 'var(--bg-base)',
+                  color: isToday ? 'var(--neon)' : isSelected ? 'var(--neon)' : 'var(--text-dim)',
+                  border: isToday ? '1px solid var(--neon)' : isSelected ? '1px solid var(--border-bright)' : '1px solid var(--border)',
+                  boxShadow: isToday ? '0 0 4px rgba(0,255,65,0.3)' : 'none',
+                  minWidth: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <span style={{ fontWeight: isToday ? 'bold' : 'normal' }}>{format(day, 'd')}</span>
+                {dayEvts.slice(0, 2).map((e, j) => (
+                  <span key={j} style={{ fontSize: '7px', color: 'var(--neon-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: '1.2', marginTop: '1px' }}>
+                    {e.title?.slice(0, 10)}
+                  </span>
+                ))}
+                {dayEvts.length > 2 && <span style={{ fontSize: '7px', color: 'var(--text-ghost)' }}>+{dayEvts.length - 2}</span>}
+              </button>
+            )
+          })}
         </div>
       </div>
     </div>
