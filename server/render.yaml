@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: prodos-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: NOTION_API_KEY
+        sync: false
+      - key: NOTION_TASKS_DB
+        sync: false
+      - key: NOTION_IDEAS_DB
+        sync: false
+      - key: NOTION_MONEY_DB
+        sync: false
+      - key: NOTION_WEED_DB
+        sync: false
+      - key: NOTION_EVENTS_DB
+        sync: false
+      - key: NOTION_HABITS_DB
+        sync: false
+      - key: NOTION_TASKS_DS
+        sync: false
+      - key: NOTION_IDEAS_DS
+        sync: false
+      - key: NOTION_MONEY_DS
+        sync: false
+      - key: NOTION_WEED_DS
+        sync: false
+      - key: NOTION_EVENTS_DS
+        sync: false
+      - key: NOTION_HABITS_DS
+        sync: false
