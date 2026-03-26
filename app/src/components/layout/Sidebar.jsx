@@ -11,24 +11,24 @@ import {
 } from 'lucide-react'
 
 const navItems = [
-  { to: '/', icon: CalendarDays, label: '> Terminal' },
-  { to: '/tasks', icon: CheckSquare, label: 'Tasks' },
-  { to: '/ideas', icon: Lightbulb, label: 'Ideas' },
-  { to: '/notes', icon: FileText, label: 'Notes' },
-  { to: '/habits', icon: Repeat, label: 'Habits' },
-  { to: '/pomodoro', icon: Timer, label: 'Pomodoro' },
-  { to: '/money', icon: DollarSign, label: 'Money' },
-  { to: '/smoking', icon: Leaf, label: 'Weed' },
+  { to: '/app', icon: CalendarDays, label: '> Terminal' },
+  { to: '/app/tasks', icon: CheckSquare, label: 'Tasks' },
+  { to: '/app/ideas', icon: Lightbulb, label: 'Ideas' },
+  { to: '/app/notes', icon: FileText, label: 'Notes' },
+  { to: '/app/habits', icon: Repeat, label: 'Habits' },
+  { to: '/app/pomodoro', icon: Timer, label: 'Pomodoro' },
+  { to: '/app/money', icon: DollarSign, label: 'Money' },
+  { to: '/app/smoking', icon: Leaf, label: 'Weed' },
 ]
 
 // Subset for mobile bottom bar (most used)
 const mobileNav = [
-  { to: '/', icon: CalendarDays, label: 'Terminal' },
-  { to: '/tasks', icon: CheckSquare, label: 'Tasks' },
-  { to: '/ideas', icon: Lightbulb, label: 'Ideas' },
-  { to: '/habits', icon: Repeat, label: 'Habits' },
-  { to: '/money', icon: DollarSign, label: 'Money' },
-  { to: '/smoking', icon: Leaf, label: 'Weed' },
+  { to: '/app', icon: CalendarDays, label: 'Terminal' },
+  { to: '/app/tasks', icon: CheckSquare, label: 'Tasks' },
+  { to: '/app/ideas', icon: Lightbulb, label: 'Ideas' },
+  { to: '/app/habits', icon: Repeat, label: 'Habits' },
+  { to: '/app/money', icon: DollarSign, label: 'Money' },
+  { to: '/app/smoking', icon: Leaf, label: 'Weed' },
 ]
 
 export default function Sidebar() {
@@ -71,7 +71,7 @@ export default function Sidebar() {
             <NavLink
               key={to}
               to={to}
-              end={to === '/'}
+              end={to === '/app'}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 whitespace-nowrap ${
                   isActive ? '' : ''
@@ -108,7 +108,7 @@ export default function Sidebar() {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
+            end={to === '/app'}
             className="flex flex-col items-center gap-0.5 px-2 py-1.5 min-w-0"
             style={({ isActive }) => ({
               color: isActive ? 'var(--neon)' : 'var(--text-ghost)',
