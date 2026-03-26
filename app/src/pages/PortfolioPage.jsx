@@ -124,12 +124,11 @@ export default function PortfolioPage() {
             &gt; PORTFOLIO_v1.0 — SYSTEM READY
           </div>
           <h1 style={{
-            fontSize: 'clamp(28px, 6vw, 48px)',
+            fontSize: 'clamp(16px, 3vw, 22px)',
             margin: '0 0 6px',
-            color: 'var(--text-bright)',
-            letterSpacing: '4px',
-            fontWeight: 700,
-            textShadow: '0 0 20px rgba(0,255,65,0.3)',
+            color: 'var(--text-dim)',
+            letterSpacing: '3px',
+            fontWeight: 400,
           }}>
             {ME.name}
           </h1>
