@@ -10,9 +10,7 @@ import {
   Flame,
   DollarSign,
   Leaf,
-  ArrowRight,
   X,
-  Undo2,
 } from 'lucide-react'
 import { useTaskStore, TASK_CATEGORIES } from '../stores/taskStore'
 import { useCalendarStore } from '../stores/calendarStore'
@@ -21,12 +19,16 @@ import { useHabitStore } from '../stores/habitStore'
 import { useMoneyStore, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../stores/moneyStore'
 import { useWeedStore, WEED_AMOUNTS } from '../stores/smokingStore'
 import { useToastStore } from '../stores/toastStore'
+import MoodAgent from '../components/dashboard/MoodAgent'
 import {
   format,
   addDays,
   subDays,
   isSameDay,
   startOfDay,
+  startOfMonth,
+  endOfMonth,
+  getDay,
 } from 'date-fns'
 
 export default function DashboardPage() {
@@ -34,7 +36,7 @@ export default function DashboardPage() {
   const [weekStart, setWeekStart] = useState(startOfDay(new Date()))
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [showEventForm, setShowEventForm] = useState(false)
-  const [newEvent, setNewEvent] = useState({ title: '', startTime: '09:00', endTime: '10:00', color: '#6366f1' })
+  const [newEvent, setNewEvent] = useState({ title: '', startTime: '09:00', endTime: '10:00', color: '#00ff41' })
   const [taskTitle, setTaskTitle] = useState('')
   const [taskCategory, setTaskCategory] = useState('Other')
   const [showMoneyForm, setShowMoneyForm] = useState(false)
@@ -42,7 +44,10 @@ export default function DashboardPage() {
   const [moneyType, setMoneyType] = useState('expense')
   const [moneyCat, setMoneyCat] = useState('Other')
   const [moneyDesc, setMoneyDesc] = useState('')
+  const [showIdeaForm, setShowIdeaForm] = useState(false)
   const [ideaTitle, setIdeaTitle] = useState('')
+  const [showWeedForm, setShowWeedForm] = useState(false)
+  const [calMonth, setCalMonth] = useState(new Date())
 
   // Stores
   const tasks = useTaskStore((s) => s.tasks)
@@ -83,7 +88,7 @@ export default function DashboardPage() {
     })
     ideas.filter((i) => i.reminderDate && i.status === 'active').forEach((i) => {
       if (!map[i.reminderDate]) map[i.reminderDate] = []
-      map[i.reminderDate].push({ id: i.id, title: i.title, type: 'idea-reminder', color: '#eab308' })
+      map[i.reminderDate].push({ id: i.id, title: i.title, type: 'idea-reminder', color: '#00b300' })
     })
     return map
   }, [calendarEvents, ideas])
@@ -97,16 +102,6 @@ export default function DashboardPage() {
     () => ideas.filter((i) => i.reminderDate === selectedStr && i.status === 'active'),
     [ideas, selectedStr]
   )
-
-  const upcomingEvents = useMemo(() => {
-    const now = new Date()
-    const todayDate = format(now, 'yyyy-MM-dd')
-    const nowTime = format(now, 'HH:mm')
-    return calendarEvents
-      .filter((e) => e.date > todayDate || (e.date === todayDate && e.startTime >= nowTime))
-      .sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime))
-      .slice(0, 2)
-  }, [calendarEvents])
 
   const top3 = useMemo(() => {
     const active = tasks.filter((t) => t.status !== 'done' && t.status !== 'cancelled')
@@ -141,6 +136,11 @@ export default function DashboardPage() {
     [todayHabits, habits, todayStr]
   )
 
+  const completedTasksToday = useMemo(
+    () => tasks.filter((t) => t.status === 'done' && t.completedAt && t.completedAt.startsWith(todayStr)).length,
+    [tasks, todayStr]
+  )
+
   const weedToday = useMemo(
     () => smokingLogs.filter((l) => l.date === todayStr).reduce((s, l) => s + (l.grams || 0), 0),
     [smokingLogs, todayStr]
@@ -150,7 +150,64 @@ export default function DashboardPage() {
     return transactions.filter((t) => t.date === todayStr && t.type === 'expense').reduce((s, t) => s + t.amount, 0)
   }, [transactions, todayStr])
 
-  // ── Handlers with undo + toast ──
+  // 7-day weed chart data
+  const weedWeek = useMemo(() => {
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = subDays(new Date(), 6 - i)
+      const ds = format(d, 'yyyy-MM-dd')
+      const grams = smokingLogs.filter((l) => l.date === ds).reduce((s, l) => s + (l.grams || 0), 0)
+      return { day: format(d, 'EEE'), grams, date: ds }
+    })
+  }, [smokingLogs])
+
+  // 7-day spending chart data
+  const spendWeek = useMemo(() => {
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = subDays(new Date(), 6 - i)
+      const ds = format(d, 'yyyy-MM-dd')
+      const spent = transactions.filter((t) => t.date === ds && t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+      return { day: format(d, 'EEE'), spent, date: ds }
+    })
+  }, [transactions])
+
+  // 7-day task completion data
+  const taskWeek = useMemo(() => {
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = subDays(new Date(), 6 - i)
+      const ds = format(d, 'yyyy-MM-dd')
+      const count = tasks.filter((t) => t.status === 'done' && t.completedAt && t.completedAt.startsWith(ds)).length
+      return { day: format(d, 'EEE'), count, date: ds }
+    })
+  }, [tasks])
+
+  // 7-day habit completion rate
+  const habitWeek = useMemo(() => {
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = subDays(new Date(), 6 - i)
+      const ds = format(d, 'yyyy-MM-dd')
+      const total = habits.length || 1
+      const done = habits.filter((h) => isCompletedOnDate(h.id, ds)).length
+      return { day: format(d, 'EEE'), rate: Math.round((done / total) * 100), date: ds }
+    })
+  }, [habits])
+
+  // Calendar grid for the month view
+  const calendarGrid = useMemo(() => {
+    const monthStart = startOfMonth(calMonth)
+    const monthEnd = endOfMonth(calMonth)
+    const startDay = getDay(monthStart)
+    const days = []
+    // pad start
+    for (let i = 0; i < startDay; i++) days.push(null)
+    let current = monthStart
+    while (current <= monthEnd) {
+      days.push(new Date(current))
+      current = addDays(current, 1)
+    }
+    return days
+  }, [calMonth])
+
+  // ── Handlers ──
 
   function handleAddEvent(e) {
     e.preventDefault()
@@ -160,7 +217,7 @@ export default function DashboardPage() {
       type: 'success',
       undoFn: () => { deleteEvent(id); addToast('Event undone', { type: 'info' }) },
     })
-    setNewEvent({ title: '', startTime: '09:00', endTime: '10:00', color: '#6366f1' })
+    setNewEvent({ title: '', startTime: '09:00', endTime: '10:00', color: '#00ff41' })
     setShowEventForm(false)
   }
 
@@ -211,6 +268,7 @@ export default function DashboardPage() {
       undoFn: () => { deleteIdea(id); addToast('Idea undone', { type: 'info' }) },
     })
     setIdeaTitle('')
+    setShowIdeaForm(false)
   }
 
   function handleLogWeed(amt) {
@@ -219,6 +277,7 @@ export default function DashboardPage() {
       type: 'success',
       undoFn: () => { deleteWeedLog(id); addToast('Weed log undone', { type: 'info' }) },
     })
+    setShowWeedForm(false)
   }
 
   function handleToggleHabit(habit) {
@@ -230,308 +289,485 @@ export default function DashboardPage() {
     })
   }
 
+  const maxWeed = Math.max(...weedWeek.map((d) => d.grams), 0.1)
+  const maxSpend = Math.max(...spendWeek.map((d) => d.spent), 1)
+  const maxTasks = Math.max(...taskWeek.map((d) => d.count), 1)
+
   return (
-    <div className="p-4 md:p-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+    <div className="p-3 md:p-5 max-w-7xl mx-auto" style={{ fontFamily: 'var(--font-mono)' }}>
+
+      {/* ── HEADER: Greeting + Quick Entry Icons ── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">{getGreeting()}</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{format(new Date(), 'EEEE, MMMM d, yyyy')}</p>
+          <h1
+            className="glitch-hover"
+            style={{ fontSize: '18px', color: 'var(--neon)', textShadow: '0 0 10px rgba(0,255,65,0.6)', margin: 0 }}
+          >
+            {getGreeting()}
+          </h1>
+          <p style={{ fontSize: '11px', color: 'var(--text-dim)', margin: '2px 0 0' }}>
+            // {format(new Date(), 'EEEE, MMMM d, yyyy')}
+          </p>
         </div>
-        <span className="hidden md:block text-xs text-gray-400">Ctrl+K to quick capture</span>
+
+        {/* Quick Entry Icons */}
+        <div style={{ display: 'flex', gap: '6px' }}>
+          {[
+            { icon: Leaf, label: 'Weed', action: () => setShowWeedForm(!showWeedForm), color: '#00ff41' },
+            { icon: DollarSign, label: 'Money', action: () => setShowMoneyForm(!showMoneyForm), color: '#00ff41' },
+            { icon: Lightbulb, label: 'Idea', action: () => setShowIdeaForm(!showIdeaForm), color: '#00ff41' },
+          ].map(({ icon: Icon, label, action, color }) => (
+            <button
+              key={label}
+              onClick={action}
+              title={label}
+              style={{
+                width: '36px',
+                height: '36px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'var(--bg-surface)',
+                borderTop: '2px solid #1a6b1a',
+                borderLeft: '2px solid #1a6b1a',
+                borderRight: '2px solid #003300',
+                borderBottom: '2px solid #003300',
+                color,
+                padding: 0,
+                minWidth: 0,
+              }}
+            >
+              <Icon size={16} />
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* ── 6-Day Calendar Strip + Upcoming ── */}
-      <section className="bg-white rounded-2xl border border-gray-200 p-4 md:p-5 mb-5">
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-5">
-          {/* 6-day strip */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm md:text-base font-semibold text-gray-900">Schedule</h2>
-              <div className="flex items-center gap-1">
-                <button onClick={() => setWeekStart(subDays(weekStart, 6))} className="p-1 rounded hover:bg-gray-100"><ChevronLeft size={16} /></button>
-                <button onClick={() => { setWeekStart(startOfDay(new Date())); setSelectedDate(new Date()) }} className="px-2 py-0.5 text-xs rounded hover:bg-gray-100 text-indigo-600 font-medium">Today</button>
-                <button onClick={() => setWeekStart(addDays(weekStart, 6))} className="p-1 rounded hover:bg-gray-100"><ChevronRight size={16} /></button>
-              </div>
-            </div>
-            <div className="grid grid-cols-6 gap-1.5 md:gap-2">
-              {sixDays.map((day) => {
-                const dayStr = format(day, 'yyyy-MM-dd')
-                const isSelected = isSameDay(day, selectedDate)
-                const isToday = isSameDay(day, new Date())
-                const dayEvents = eventsByDate[dayStr] || []
-                return (
-                  <button
-                    key={dayStr}
-                    onClick={() => setSelectedDate(day)}
-                    className={`flex flex-col items-center py-2.5 md:py-3 px-1 md:px-2 rounded-xl transition-all ${
-                      isSelected ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-gray-50'
-                    } ${isToday && !isSelected ? 'ring-2 ring-indigo-300' : ''}`}
-                  >
-                    <span className={`text-[10px] md:text-xs font-medium ${isSelected ? 'text-indigo-200' : 'text-gray-400'}`}>{format(day, 'EEE')}</span>
-                    <span className={`text-base md:text-lg font-bold mt-0.5 ${isSelected ? 'text-white' : 'text-gray-800'}`}>{format(day, 'd')}</span>
-                    {dayEvents.length > 0 && (
-                      <div className="flex gap-0.5 mt-1">
-                        {dayEvents.slice(0, 3).map((e, i) => (
-                          <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isSelected ? 'rgba(255,255,255,0.7)' : (e.color || '#6366f1') }} />
-                        ))}
-                      </div>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-
-            {/* Selected day */}
-            <div className="mt-3 border-t pt-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">
-                  {isSameDay(selectedDate, new Date()) ? 'Today' : format(selectedDate, 'EEE, MMM d')}
-                </span>
-                <button onClick={() => setShowEventForm(!showEventForm)} className="text-xs text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
-                  <Plus size={12} /> Event
-                </button>
-              </div>
-
-              {showEventForm && (
-                <form onSubmit={handleAddEvent} className="mb-3 p-3 bg-gray-50 rounded-xl space-y-2">
-                  <input value={newEvent.title} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} placeholder="Event title" className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none" autoFocus />
-                  <div className="flex gap-2">
-                    <input type="time" value={newEvent.startTime} onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })} className="flex-1 px-2 py-1 text-sm border border-gray-200 rounded-lg" />
-                    <input type="time" value={newEvent.endTime} onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })} className="flex-1 px-2 py-1 text-sm border border-gray-200 rounded-lg" />
-                    <input type="color" value={newEvent.color} onChange={(e) => setNewEvent({ ...newEvent, color: e.target.value })} className="w-8 h-8 rounded border border-gray-200 cursor-pointer" />
-                    <button type="submit" className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Save</button>
-                  </div>
-                </form>
-              )}
-
-              {ideaReminders.map((idea) => (
-                <div key={idea.id} className="flex items-center gap-2 p-2 mb-1 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <Lightbulb size={14} className="text-yellow-500 shrink-0" />
-                  <span className="text-sm text-gray-800 truncate flex-1">{idea.title}</span>
-                  <span className="text-xs text-yellow-600">idea</span>
-                </div>
-              ))}
-
-              {selectedEvents.length === 0 && ideaReminders.length === 0 ? (
-                <p className="text-xs text-gray-400 text-center py-2">No events</p>
-              ) : (
-                <div className="space-y-1">
-                  {selectedEvents.map((event) => (
-                    <div key={event.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 group">
-                      <div className="w-1 h-8 rounded-full shrink-0" style={{ backgroundColor: event.color }} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-800 truncate">{event.title}</p>
-                        <p className="text-xs text-gray-400">{event.startTime} – {event.endTime}</p>
-                      </div>
-                      <button onClick={() => {
-                        const ev = { ...event }
-                        deleteEvent(event.id)
-                        addToast(`"${ev.title}" removed`, {
-                          type: 'info',
-                          undoFn: () => { addEvent({ ...ev, date: ev.date }); addToast('Event restored', { type: 'success' }) },
-                        })
-                      }} className="text-gray-300 hover:text-red-400 opacity-0 group-hover:opacity-100 md:opacity-0"><X size={14} /></button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Upcoming events bar */}
-          <div className="hidden lg:block w-48 border-l pl-4 shrink-0">
-            <h3 className="text-xs font-semibold text-gray-900 mb-3 uppercase tracking-wide">Upcoming</h3>
-            {upcomingEvents.length === 0 ? (
-              <p className="text-xs text-gray-400">Nothing scheduled</p>
-            ) : (
-              <div className="space-y-3">
-                {upcomingEvents.map((event) => (
-                  <div key={event.id} className="p-2.5 rounded-xl border border-gray-100">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: event.color }} />
-                      <span className="text-[10px] text-gray-500">{format(new Date(event.date), 'EEE, MMM d')}</span>
-                    </div>
-                    <p className="text-xs font-medium text-gray-800 truncate">{event.title}</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">{event.startTime} – {event.endTime}</p>
-                  </div>
-                ))}
-              </div>
-            )}
+      {/* ── Quick Entry Dropdowns ── */}
+      {showWeedForm && (
+        <div style={{ ...panelStyle, marginBottom: '12px', padding: '10px' }}>
+          <div style={{ fontSize: '10px', color: 'var(--text-ghost)', marginBottom: '6px' }}>// QUICK_LOG: WEED</div>
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            {WEED_AMOUNTS.map((amt) => (
+              <button key={amt} onClick={() => handleLogWeed(amt)} style={btnSmall}>+{amt}g</button>
+            ))}
+            <button onClick={() => setShowWeedForm(false)} style={{ ...btnSmall, color: 'var(--danger)' }}>[ X ]</button>
           </div>
         </div>
-      </section>
+      )}
 
-      {/* ── Main grid ── */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-        {/* Left column */}
-        <div className="md:col-span-7 space-y-5">
-          {/* Top 3 Tasks */}
-          <section className="bg-white rounded-2xl border border-gray-200 p-4 md:p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Star size={16} className="text-amber-500" />
-                <h2 className="text-sm font-semibold text-gray-900">Top 3 Tasks</h2>
-              </div>
-              <button onClick={() => navigate('/tasks')} className="text-xs text-indigo-600 hover:text-indigo-700 flex items-center gap-1">All <ArrowRight size={12} /></button>
+      {showMoneyForm && (
+        <form onSubmit={handleAddMoney} style={{ ...panelStyle, marginBottom: '12px', padding: '10px' }}>
+          <div style={{ fontSize: '10px', color: 'var(--text-ghost)', marginBottom: '6px' }}>// QUICK_LOG: MONEY</div>
+          <div style={{ display: 'flex', gap: '4px', marginBottom: '6px' }}>
+            {['expense', 'income'].map((t) => (
+              <button key={t} type="button" onClick={() => { setMoneyType(t); setMoneyCat('Other') }}
+                style={{ ...btnSmall, color: moneyType === t ? (t === 'expense' ? 'var(--danger)' : 'var(--neon)') : 'var(--text-ghost)' }}>
+                [{t}]
+              </button>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+            <input type="number" step="0.01" value={moneyAmt} onChange={(e) => setMoneyAmt(e.target.value)} placeholder="0.00" style={{ width: '70px' }} autoFocus />
+            <input value={moneyDesc} onChange={(e) => setMoneyDesc(e.target.value)} placeholder="desc" style={{ flex: 1, minWidth: '80px' }} />
+            <select value={moneyCat} onChange={(e) => setMoneyCat(e.target.value)}>
+              {(moneyType === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <button type="submit" style={btnSmall}>[ ADD ]</button>
+            <button type="button" onClick={() => setShowMoneyForm(false)} style={{ ...btnSmall, color: 'var(--danger)' }}>[ X ]</button>
+          </div>
+        </form>
+      )}
+
+      {showIdeaForm && (
+        <form onSubmit={handleAddIdea} style={{ ...panelStyle, marginBottom: '12px', padding: '10px' }}>
+          <div style={{ fontSize: '10px', color: 'var(--text-ghost)', marginBottom: '6px' }}>// QUICK_LOG: IDEA</div>
+          <div style={{ display: 'flex', gap: '4px' }}>
+            <input value={ideaTitle} onChange={(e) => setIdeaTitle(e.target.value)} placeholder="capture idea..." style={{ flex: 1 }} autoFocus />
+            <button type="submit" style={btnSmall}>[ SAVE ]</button>
+            <button type="button" onClick={() => setShowIdeaForm(false)} style={{ ...btnSmall, color: 'var(--danger)' }}>[ X ]</button>
+          </div>
+        </form>
+      )}
+
+      {/* ── ROW 1: Schedule Strip + Calendar Window ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }} className="grid-cols-1! md:grid-cols-2!">
+
+        {/* 6-Day Schedule Strip */}
+        <div style={panelStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={headerStyle}>// SCHEDULE</span>
+            <div style={{ display: 'flex', gap: '4px' }}>
+              <button onClick={() => setWeekStart(subDays(weekStart, 6))} style={btnIcon}><ChevronLeft size={14} /></button>
+              <button onClick={() => { setWeekStart(startOfDay(new Date())); setSelectedDate(new Date()) }} style={btnIcon}>NOW</button>
+              <button onClick={() => setWeekStart(addDays(weekStart, 6))} style={btnIcon}><ChevronRight size={14} /></button>
             </div>
-            {top3.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-3">No active tasks</p>
-            ) : (
-              <div className="space-y-1.5 mb-3">
-                {top3.map((task, i) => (
-                  <div key={task.id} className="flex items-center gap-2.5 p-2.5 rounded-xl border border-gray-100 hover:bg-gray-50">
-                    <button onClick={() => handleCompleteTask(task)} className="shrink-0">
-                      <CheckCircle2 size={18} className={task.isFrog ? 'text-green-400' : task.isMIT ? 'text-amber-400' : 'text-gray-300'} />
-                    </button>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-800 truncate">{task.title}</p>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        {task.category !== 'Other' && <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">{task.category}</span>}
-                        {task.priority === 'high' && <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded">High</span>}
-                      </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '4px' }}>
+            {sixDays.map((day) => {
+              const dayStr = format(day, 'yyyy-MM-dd')
+              const isSelected = isSameDay(day, selectedDate)
+              const isToday = isSameDay(day, new Date())
+              const dayEvents = eventsByDate[dayStr] || []
+              return (
+                <button
+                  key={dayStr}
+                  onClick={() => setSelectedDate(day)}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    padding: '6px 2px',
+                    background: isSelected ? 'var(--sel-bg)' : 'transparent',
+                    border: isSelected ? '1px solid var(--neon)' : isToday ? '1px solid var(--border-bright)' : '1px solid transparent',
+                    boxShadow: isSelected ? '0 0 6px rgba(0,255,65,0.4)' : 'none',
+                    color: isSelected ? 'var(--neon)' : 'var(--text-dim)',
+                    minWidth: 0,
+                  }}
+                >
+                  <span style={{ fontSize: '9px' }}>{format(day, 'EEE')}</span>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{format(day, 'd')}</span>
+                  {dayEvents.length > 0 && (
+                    <div style={{ display: 'flex', gap: '2px', marginTop: '2px' }}>
+                      {dayEvents.slice(0, 3).map((e, i) => (
+                        <div key={i} style={{ width: '4px', height: '4px', background: isSelected ? 'var(--neon)' : (e.color || 'var(--neon-dim)') }} />
+                      ))}
                     </div>
-                    <span className="text-xs text-gray-300 font-mono">#{i + 1}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            <form onSubmit={handleAddTask} className="flex items-center gap-2">
-              <input value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} placeholder="Quick add task..." className="flex-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-200" />
-              <select value={taskCategory} onChange={(e) => setTaskCategory(e.target.value)} className="hidden md:block text-xs px-2 py-1.5 border border-gray-200 rounded-lg outline-none text-gray-600">
-                {TASK_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-              <button type="submit" className="p-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"><Plus size={16} /></button>
-            </form>
-          </section>
+                  )}
+                </button>
+              )
+            })}
+          </div>
 
-          {/* Quick Idea */}
-          <section className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl border border-yellow-200 p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Lightbulb size={16} className="text-yellow-500" />
-              <h2 className="text-sm font-semibold text-gray-900">Quick Idea</h2>
-              <button onClick={() => navigate('/ideas')} className="ml-auto text-xs text-yellow-600 hover:text-yellow-700">Bank</button>
+          {/* Selected day events */}
+          <div style={{ borderTop: '1px solid var(--border)', marginTop: '8px', paddingTop: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-dim)' }}>
+                {isSameDay(selectedDate, new Date()) ? '> today' : `> ${format(selectedDate, 'EEE, MMM d')}`}
+              </span>
+              <button onClick={() => setShowEventForm(!showEventForm)} style={btnIcon}><Plus size={12} /> EVT</button>
             </div>
-            <form onSubmit={handleAddIdea} className="flex gap-2">
-              <input value={ideaTitle} onChange={(e) => setIdeaTitle(e.target.value)} placeholder="Capture an idea..." className="flex-1 px-3 py-1.5 text-sm bg-white border border-yellow-200 rounded-lg outline-none focus:ring-2 focus:ring-yellow-300" />
-              <button type="submit" className="px-3 py-1.5 bg-yellow-500 text-white text-sm rounded-lg hover:bg-yellow-600"><Plus size={16} /></button>
-            </form>
-          </section>
 
-          {/* Money */}
-          <section className="bg-white rounded-2xl border border-gray-200 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <DollarSign size={16} className="text-emerald-500" />
-                <h2 className="text-sm font-semibold text-gray-900">Money</h2>
-                <span className="text-xs text-gray-400">${moneyToday.toFixed(2)} today</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button onClick={() => navigate('/money')} className="text-xs text-indigo-600 hover:text-indigo-700">Details</button>
-                <button onClick={() => setShowMoneyForm(!showMoneyForm)} className="text-xs text-emerald-600 hover:text-emerald-700 flex items-center gap-1"><Plus size={12} /> Add</button>
-              </div>
-            </div>
-            {showMoneyForm && (
-              <form onSubmit={handleAddMoney} className="p-3 bg-gray-50 rounded-xl space-y-2">
-                <div className="flex bg-gray-100 rounded-lg p-0.5 w-fit">
-                  {['expense', 'income'].map((t) => (
-                    <button key={t} type="button" onClick={() => { setMoneyType(t); setMoneyCat('Other') }} className={`px-3 py-1 text-xs rounded-md transition-colors capitalize ${moneyType === t ? (t === 'expense' ? 'bg-red-500 text-white' : 'bg-emerald-500 text-white') : 'text-gray-500'}`}>{t}</button>
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <input type="number" step="0.01" value={moneyAmt} onChange={(e) => setMoneyAmt(e.target.value)} placeholder="0.00" className="w-24 px-2 py-1.5 text-sm font-semibold border border-gray-200 rounded-lg outline-none" autoFocus />
-                  <input value={moneyDesc} onChange={(e) => setMoneyDesc(e.target.value)} placeholder="Description" className="flex-1 min-w-[120px] px-2 py-1.5 text-sm border border-gray-200 rounded-lg outline-none" />
-                  <select value={moneyCat} onChange={(e) => setMoneyCat(e.target.value)} className="text-xs px-2 py-1.5 border border-gray-200 rounded-lg outline-none">
-                    {(moneyType === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                  <button type="submit" className={`px-3 py-1.5 text-sm text-white rounded-lg ${moneyType === 'expense' ? 'bg-red-500 hover:bg-red-600' : 'bg-emerald-600 hover:bg-emerald-700'}`}>Add</button>
+            {showEventForm && (
+              <form onSubmit={handleAddEvent} style={{ marginBottom: '8px', padding: '8px', background: 'var(--bg-elevated)' }}>
+                <input value={newEvent.title} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} placeholder="event title" style={{ width: '100%', marginBottom: '4px' }} autoFocus />
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <input type="time" value={newEvent.startTime} onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })} style={{ flex: 1 }} />
+                  <input type="time" value={newEvent.endTime} onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })} style={{ flex: 1 }} />
+                  <button type="submit" style={btnSmall}>[ OK ]</button>
                 </div>
               </form>
             )}
-          </section>
+
+            {ideaReminders.map((idea) => (
+              <div key={idea.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px', borderBottom: '1px solid var(--border)' }}>
+                <Lightbulb size={12} style={{ color: 'var(--neon-dim)', flexShrink: 0 }} />
+                <span style={{ fontSize: '11px', color: 'var(--text)' }}>{idea.title}</span>
+              </div>
+            ))}
+
+            {selectedEvents.length === 0 && ideaReminders.length === 0 ? (
+              <p style={{ fontSize: '10px', color: 'var(--text-ghost)', textAlign: 'center', padding: '8px 0' }}>no events scheduled</p>
+            ) : (
+              selectedEvents.map((event) => (
+                <div key={event.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px', borderBottom: '1px solid var(--border)' }} className="group">
+                  <div style={{ width: '3px', height: '20px', background: event.color || 'var(--neon)', flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: '11px', color: 'var(--text)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.title}</p>
+                    <p style={{ fontSize: '9px', color: 'var(--text-ghost)', margin: 0 }}>{event.startTime} – {event.endTime}</p>
+                  </div>
+                  <button onClick={() => { deleteEvent(event.id); addToast(`"${event.title}" removed`, { type: 'info' }) }} style={{ color: 'var(--text-ghost)', background: 'none', border: 'none', padding: '2px', minWidth: 0, cursor: 'pointer' }} className="opacity-0 group-hover:opacity-100"><X size={12} /></button>
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
-        {/* Right column */}
-        <div className="md:col-span-5 space-y-5">
-          {/* Habits */}
-          <section className="bg-white rounded-2xl border border-gray-200 p-4 md:p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Flame size={16} className="text-orange-500" />
-                <h2 className="text-sm font-semibold text-gray-900">Habits</h2>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500">{completedHabitsCount}/{todayHabits.length}</span>
-                <button onClick={() => navigate('/habits')} className="text-xs text-indigo-600 hover:text-indigo-700">More</button>
-              </div>
+        {/* Separate Calendar Window */}
+        <div style={panelStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={headerStyle}>// CALENDAR</span>
+            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+              <button onClick={() => setCalMonth(subDays(startOfMonth(calMonth), 1))} style={btnIcon}><ChevronLeft size={14} /></button>
+              <span style={{ fontSize: '11px', color: 'var(--text)' }}>{format(calMonth, 'MMM yyyy')}</span>
+              <button onClick={() => setCalMonth(addDays(endOfMonth(calMonth), 1))} style={btnIcon}><ChevronRight size={14} /></button>
             </div>
-            {todayHabits.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-3">
-                <button onClick={() => navigate('/habits')} className="text-indigo-600">Create habits</button>
-              </p>
-            ) : (
-              <>
-                <div className="w-full bg-gray-100 rounded-full h-1.5 mb-3">
-                  <div className="bg-indigo-500 h-1.5 rounded-full transition-all" style={{ width: `${todayHabits.length ? (completedHabitsCount / todayHabits.length) * 100 : 0}%` }} />
-                </div>
-                <div className="space-y-1">
-                  {todayHabits.map((habit) => {
-                    const done = isCompletedOnDate(habit.id, todayStr)
-                    return (
-                      <div key={habit.id} className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-gray-50 cursor-pointer" onClick={() => handleToggleHabit(habit)}>
-                        <div className="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all shrink-0" style={{ borderColor: done ? habit.color : '#d1d5db', backgroundColor: done ? habit.color : 'transparent' }}>
-                          {done && <svg width="10" height="10" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" /></svg>}
-                        </div>
-                        <span className={`text-sm ${done ? 'text-gray-400 line-through' : 'text-gray-700'}`}>{habit.name}</span>
-                        {habit.currentStreak >= 3 && <span className="text-xs text-orange-500 ml-auto flex items-center gap-0.5"><Flame size={10} />{habit.currentStreak}</span>}
-                      </div>
-                    )
-                  })}
-                </div>
-              </>
-            )}
-          </section>
+          </div>
 
-          {/* Weed */}
-          <section className="bg-white rounded-2xl border border-gray-200 p-4 md:p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Leaf size={16} className="text-green-500" />
-                <h2 className="text-sm font-semibold text-gray-900">Weed</h2>
-                <span className="text-lg font-bold text-green-500 ml-1">{weedToday.toFixed(1)}g</span>
-              </div>
-              <button onClick={() => navigate('/smoking')} className="text-xs text-indigo-600 hover:text-indigo-700">Details</button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {WEED_AMOUNTS.map((amt) => (
-                <button key={amt} onClick={() => handleLogWeed(amt)} className="px-3 py-2 rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm font-semibold shadow-sm hover:shadow transition-all">
-                  +{amt}g
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px' }}>
+            {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((d) => (
+              <div key={d} style={{ textAlign: 'center', fontSize: '9px', color: 'var(--text-ghost)', padding: '2px' }}>{d}</div>
+            ))}
+            {calendarGrid.map((day, i) => {
+              if (!day) return <div key={`empty-${i}`} />
+              const ds = format(day, 'yyyy-MM-dd')
+              const isToday = isSameDay(day, new Date())
+              const hasEvents = (eventsByDate[ds] || []).length > 0
+              const isSelected = isSameDay(day, selectedDate)
+              return (
+                <button
+                  key={ds}
+                  onClick={() => { setSelectedDate(day); setWeekStart(startOfDay(subDays(day, getDay(day)))) }}
+                  style={{
+                    padding: '3px',
+                    fontSize: '10px',
+                    textAlign: 'center',
+                    background: isSelected ? 'var(--sel-bg)' : 'transparent',
+                    color: isToday ? 'var(--neon)' : isSelected ? 'var(--neon)' : 'var(--text-dim)',
+                    border: isToday ? '1px solid var(--neon)' : '1px solid transparent',
+                    boxShadow: isToday ? '0 0 4px rgba(0,255,65,0.3)' : 'none',
+                    minWidth: 0,
+                    position: 'relative',
+                  }}
+                >
+                  {format(day, 'd')}
+                  {hasEvents && <div style={{ position: 'absolute', bottom: '1px', left: '50%', transform: 'translateX(-50%)', width: '3px', height: '3px', background: 'var(--neon)' }} />}
                 </button>
-              ))}
-            </div>
-          </section>
+              )
+            })}
+          </div>
+        </div>
+      </div>
 
-          {/* Money summary */}
-          <section className="bg-white rounded-2xl border border-gray-200 p-4 md:p-5">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <DollarSign size={16} className="text-emerald-500" />
-                <h2 className="text-sm font-semibold text-gray-900">Spent Today</h2>
-              </div>
-              <button onClick={() => navigate('/money')} className="text-xs text-indigo-600 hover:text-indigo-700">Full tracker</button>
+      {/* ── ROW 2: Mood Agent + Habits + Top Tasks ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }} className="grid-cols-1! md:grid-cols-2!">
+
+        {/* Mood Agent */}
+        <MoodAgent
+          tasksCompleted={completedTasksToday}
+          totalTasks={top3.length || tasks.filter((t) => t.status !== 'done' && t.status !== 'cancelled').length}
+          habitsCompleted={completedHabitsCount}
+          totalHabits={todayHabits.length}
+          weedGrams={weedToday}
+        />
+
+        {/* Habits */}
+        <div style={panelStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+            <span style={headerStyle}>// HABITS</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--neon)' }}>{completedHabitsCount}/{todayHabits.length}</span>
+              <button onClick={() => navigate('/habits')} style={btnIcon}>MORE</button>
             </div>
-            <p className="text-2xl font-bold text-red-500">${moneyToday.toFixed(2)}</p>
-            <p className="text-xs text-gray-400 mt-1">{transactions.filter((t) => t.date === todayStr).length} transactions</p>
-          </section>
+          </div>
+
+          {/* Habit progress bar */}
+          <div className="progress-bar" style={{ marginBottom: '8px', height: '12px' }}>
+            {Array.from({ length: 10 }, (_, i) => {
+              const pct = todayHabits.length ? (completedHabitsCount / todayHabits.length) * 100 : 0
+              const filled = i < Math.round(pct / 10)
+              return <div key={i} className={`progress-block ${filled ? 'filled' : 'empty'}`} />
+            })}
+          </div>
+
+          {todayHabits.length === 0 ? (
+            <p style={{ fontSize: '10px', color: 'var(--text-ghost)', textAlign: 'center', padding: '8px 0' }}>
+              no habits configured. <button onClick={() => navigate('/habits')} style={{ color: 'var(--neon)', background: 'none', border: 'none', cursor: 'pointer', minWidth: 0, padding: 0, fontSize: '10px' }}>[create]</button>
+            </p>
+          ) : (
+            todayHabits.slice(0, 5).map((habit) => {
+              const done = isCompletedOnDate(habit.id, todayStr)
+              return (
+                <div key={habit.id} onClick={() => handleToggleHabit(habit)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '3px 4px', borderBottom: '1px solid #001a00', cursor: 'pointer' }}>
+                  <input type="checkbox" checked={done} readOnly style={{ flexShrink: 0 }} />
+                  <span style={{ fontSize: '11px', color: done ? 'var(--text-ghost)' : 'var(--text)', textDecoration: done ? 'line-through' : 'none' }}>{habit.name}</span>
+                  {habit.currentStreak >= 3 && <span style={{ fontSize: '9px', color: 'var(--neon-dim)', marginLeft: 'auto' }}>{habit.currentStreak}d</span>}
+                </div>
+              )
+            })
+          )}
+        </div>
+      </div>
+
+      {/* ── ROW 3: Top Tasks + Quick Stats ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }} className="grid-cols-1! md:grid-cols-2!">
+
+        {/* Top 3 Tasks */}
+        <div style={panelStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+            <span style={headerStyle}>// TOP_TASKS</span>
+            <button onClick={() => navigate('/tasks')} style={btnIcon}>ALL</button>
+          </div>
+
+          {top3.length === 0 ? (
+            <p style={{ fontSize: '10px', color: 'var(--text-ghost)', textAlign: 'center', padding: '8px 0' }}>no active tasks</p>
+          ) : (
+            top3.map((task, i) => (
+              <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px', borderBottom: '1px solid #001a00' }}>
+                <button onClick={() => handleCompleteTask(task)} style={{ background: 'none', border: 'none', padding: 0, minWidth: 0, cursor: 'pointer', color: task.isFrog ? 'var(--neon)' : task.isMIT ? 'var(--neon-dim)' : 'var(--text-ghost)' }}>
+                  <CheckCircle2 size={14} />
+                </button>
+                <span style={{ flex: 1, fontSize: '11px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{task.title}</span>
+                <span style={{ fontSize: '9px', color: 'var(--text-ghost)' }}>#{i + 1}</span>
+              </div>
+            ))
+          )}
+
+          <form onSubmit={handleAddTask} style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
+            <input value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} placeholder="quick add task..." style={{ flex: 1 }} />
+            <button type="submit" style={btnSmall}>[ + ]</button>
+          </form>
+        </div>
+
+        {/* Quick Stats */}
+        <div style={panelStyle}>
+          <span style={{ ...headerStyle, display: 'block', marginBottom: '8px' }}>// STATUS_REPORT</span>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            {[
+              { label: 'TASKS DONE', value: completedTasksToday, color: 'var(--neon)' },
+              { label: 'HABITS', value: `${completedHabitsCount}/${todayHabits.length}`, color: 'var(--neon)' },
+              { label: 'WEED', value: `${weedToday.toFixed(1)}g`, color: weedToday > 0.5 ? 'var(--danger)' : 'var(--neon)' },
+              { label: 'SPENT', value: `$${moneyToday.toFixed(0)}`, color: moneyToday > 50 ? 'var(--danger)' : 'var(--neon)' },
+            ].map(({ label, value, color }) => (
+              <div key={label} style={{ padding: '8px', background: 'var(--bg-base)', borderTop: '2px solid #003300', borderLeft: '2px solid #003300', borderRight: '2px solid #1a6b1a', borderBottom: '2px solid #1a6b1a' }}>
+                <div style={{ fontSize: '9px', color: 'var(--text-ghost)', marginBottom: '2px' }}>{label}</div>
+                <div style={{ fontSize: '18px', fontWeight: 'bold', color, textShadow: `0 0 8px ${color}` }}>{value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── ROW 4: Weed + Money buttons ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }} className="grid-cols-1! md:grid-cols-2!">
+
+        {/* Weed Quick Log */}
+        <div style={panelStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+            <span style={headerStyle}>// WEED_LOG</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '14px', fontWeight: 'bold', color: weedToday > 0.5 ? 'var(--danger)' : 'var(--neon)', textShadow: `0 0 6px ${weedToday > 0.5 ? '#ff0033' : '#00ff41'}` }}>{weedToday.toFixed(1)}g</span>
+              <button onClick={() => navigate('/smoking')} style={btnIcon}>LOG</button>
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+            {WEED_AMOUNTS.map((amt) => (
+              <button key={amt} onClick={() => handleLogWeed(amt)} style={btnSmall}>+{amt}g</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Money Quick Log */}
+        <div style={panelStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+            <span style={headerStyle}>// MONEY</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '14px', fontWeight: 'bold', color: moneyToday > 50 ? 'var(--danger)' : 'var(--neon)' }}>${moneyToday.toFixed(2)}</span>
+              <button onClick={() => navigate('/money')} style={btnIcon}>LOG</button>
+            </div>
+          </div>
+          <button onClick={() => setShowMoneyForm(!showMoneyForm)} style={btnSmall}>[ + ADD TRANSACTION ]</button>
+        </div>
+      </div>
+
+      {/* ── ROW 5: CHARTS ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }} className="grid-cols-1! md:grid-cols-2!">
+
+        {/* Task Completion Chart */}
+        <div style={panelStyle}>
+          <span style={{ ...headerStyle, display: 'block', marginBottom: '8px' }}>// TASKS_COMPLETED [7d]</span>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', height: '60px' }}>
+            {taskWeek.map((d) => (
+              <div key={d.date} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
+                <div style={{ width: '100%', background: d.count > 0 ? 'var(--neon)' : 'var(--neon-ghost)', height: `${Math.max((d.count / maxTasks) * 100, 4)}%`, boxShadow: d.count > 0 ? '0 0 4px rgba(0,255,65,0.4)' : 'none' }} />
+                <span style={{ fontSize: '8px', color: 'var(--text-ghost)', marginTop: '2px' }}>{d.day}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Habit Completion Chart */}
+        <div style={panelStyle}>
+          <span style={{ ...headerStyle, display: 'block', marginBottom: '8px' }}>// HABIT_RATE [7d]</span>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', height: '60px' }}>
+            {habitWeek.map((d) => (
+              <div key={d.date} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
+                <div style={{ width: '100%', background: d.rate > 0 ? 'var(--neon-dim)' : 'var(--neon-ghost)', height: `${Math.max(d.rate, 4)}%`, boxShadow: d.rate > 50 ? '0 0 4px rgba(0,255,65,0.3)' : 'none' }} />
+                <span style={{ fontSize: '8px', color: 'var(--text-ghost)', marginTop: '2px' }}>{d.day}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Weed Chart */}
+        <div style={panelStyle}>
+          <span style={{ ...headerStyle, display: 'block', marginBottom: '8px' }}>// WEED_INTAKE [7d]</span>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', height: '60px' }}>
+            {weedWeek.map((d) => (
+              <div key={d.date} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
+                <div style={{ width: '100%', background: d.grams > 0.5 ? 'var(--danger)' : d.grams > 0 ? 'var(--neon-dim)' : 'var(--neon-ghost)', height: `${Math.max((d.grams / maxWeed) * 100, 4)}%` }} />
+                <span style={{ fontSize: '8px', color: 'var(--text-ghost)', marginTop: '2px' }}>{d.day}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Spending Chart */}
+        <div style={panelStyle}>
+          <span style={{ ...headerStyle, display: 'block', marginBottom: '8px' }}>// SPENDING [7d]</span>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', height: '60px' }}>
+            {spendWeek.map((d) => (
+              <div key={d.date} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
+                <div style={{ width: '100%', background: d.spent > 50 ? 'var(--danger)' : d.spent > 0 ? 'var(--neon-dim)' : 'var(--neon-ghost)', height: `${Math.max((d.spent / maxSpend) * 100, 4)}%` }} />
+                <span style={{ fontSize: '8px', color: 'var(--text-ghost)', marginTop: '2px' }}>{d.day}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
+// ── Shared styles ──
+
+const panelStyle = {
+  background: 'var(--bg-surface)',
+  borderTop: '2px solid #1a6b1a',
+  borderLeft: '2px solid #1a6b1a',
+  borderRight: '2px solid #003300',
+  borderBottom: '2px solid #003300',
+  padding: '12px',
+}
+
+const headerStyle = {
+  fontSize: '11px',
+  color: 'var(--text-dim)',
+  letterSpacing: '0.5px',
+}
+
+const btnSmall = {
+  fontSize: '10px',
+  padding: '3px 8px',
+  minWidth: 0,
+  color: 'var(--neon)',
+  background: 'var(--bg-surface)',
+  borderTop: '2px solid #1a6b1a',
+  borderLeft: '2px solid #1a6b1a',
+  borderRight: '2px solid #003300',
+  borderBottom: '2px solid #003300',
+  cursor: 'pointer',
+  fontFamily: 'var(--font-mono)',
+}
+
+const btnIcon = {
+  fontSize: '9px',
+  padding: '2px 6px',
+  minWidth: 0,
+  color: 'var(--text-dim)',
+  background: 'transparent',
+  border: '1px solid var(--border)',
+  cursor: 'pointer',
+  fontFamily: 'var(--font-mono)',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '2px',
+}
+
 function getGreeting() {
   const h = new Date().getHours()
-  if (h < 12) return 'Good morning'
-  if (h < 17) return 'Good afternoon'
-  return 'Good evening'
+  if (h < 12) return '> GOOD_MORNING'
+  if (h < 17) return '> GOOD_AFTERNOON'
+  return '> GOOD_EVENING'
 }

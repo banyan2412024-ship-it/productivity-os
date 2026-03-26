@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 
 const navItems = [
-  { to: '/', icon: CalendarDays, label: 'Today' },
+  { to: '/', icon: CalendarDays, label: '> Terminal' },
   { to: '/tasks', icon: CheckSquare, label: 'Tasks' },
   { to: '/ideas', icon: Lightbulb, label: 'Ideas' },
   { to: '/notes', icon: FileText, label: 'Notes' },
@@ -23,7 +23,7 @@ const navItems = [
 
 // Subset for mobile bottom bar (most used)
 const mobileNav = [
-  { to: '/', icon: CalendarDays, label: 'Today' },
+  { to: '/', icon: CalendarDays, label: 'Terminal' },
   { to: '/tasks', icon: CheckSquare, label: 'Tasks' },
   { to: '/ideas', icon: Lightbulb, label: 'Ideas' },
   { to: '/habits', icon: Repeat, label: 'Habits' },

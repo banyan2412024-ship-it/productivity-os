@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { X, BookOpen } from 'lucide-react'
 import { useNoteStore } from '../../stores/noteStore'
 import { format } from 'date-fns'
 
@@ -34,58 +33,80 @@ export default function WeeklyReview({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.7)' }} />
       <div
-        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-auto animate-fade-in"
         onClick={(e) => e.stopPropagation()}
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: '600px',
+          maxHeight: '80vh',
+          overflow: 'auto',
+          background: 'var(--bg-surface)',
+          borderTop: '2px solid #1a6b1a',
+          borderLeft: '2px solid #1a6b1a',
+          borderRight: '2px solid #003300',
+          borderBottom: '2px solid #003300',
+          boxShadow: '0 0 20px rgba(0,255,65,0.3)',
+          fontFamily: 'var(--font-mono)',
+        }}
       >
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
-              <BookOpen size={20} className="text-indigo-600" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">Weekly Review</h2>
-              <p className="text-sm text-gray-500">Reflect on your week and plan ahead</p>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
-            <X size={20} />
-          </button>
+        {/* Title bar */}
+        <div style={{
+          background: 'linear-gradient(90deg, #003d00, #001a00)',
+          borderBottom: '1px solid var(--neon)',
+          padding: '6px 10px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontSize: '11px',
+          color: 'var(--neon)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 1,
+        }}>
+          <span>// WEEKLY_REVIEW</span>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: '2px', minWidth: 0, fontSize: '11px' }}>✕</button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div style={{ padding: '16px' }}>
+          <p style={{ fontSize: '10px', color: 'var(--text-ghost)', marginBottom: '16px' }}>// reflect on your week and plan ahead</p>
+
           {PROMPTS.map((prompt) => (
-            <div key={prompt.key}>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {prompt.label}
+            <div key={prompt.key} style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-dim)', marginBottom: '4px' }}>
+                {'>'} {prompt.label}
               </label>
               <textarea
                 value={answers[prompt.key]}
-                onChange={(e) =>
-                  setAnswers((a) => ({ ...a, [prompt.key]: e.target.value }))
-                }
+                onChange={(e) => setAnswers((a) => ({ ...a, [prompt.key]: e.target.value }))}
                 rows={3}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-                placeholder="Write your thoughts..."
+                placeholder="write your thoughts..."
+                style={{
+                  width: '100%',
+                  resize: 'none',
+                  background: 'var(--bg-base)',
+                  borderTop: '2px solid #003300',
+                  borderLeft: '2px solid #003300',
+                  borderRight: '2px solid #1a6b1a',
+                  borderBottom: '2px solid #1a6b1a',
+                  color: 'var(--neon)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '11px',
+                  padding: '8px',
+                }}
               />
             </div>
           ))}
-        </div>
 
-        <div className="flex justify-end gap-3 p-6 border-t border-gray-100">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg"
-          >
-            Skip
-          </button>
-          <button
-            onClick={handleSave}
-            className="px-6 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            Save Review as Note
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', borderTop: '1px solid var(--border)', paddingTop: '12px' }}>
+            <button onClick={onClose} style={{ fontSize: '11px', padding: '4px 12px', color: 'var(--text-ghost)', background: 'var(--bg-surface)', borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a', borderRight: '2px solid #003300', borderBottom: '2px solid #003300', cursor: 'pointer', fontFamily: 'var(--font-mono)', minWidth: 0 }}>
+              [ SKIP ]
+            </button>
+            <button onClick={handleSave} style={{ fontSize: '11px', padding: '4px 12px', color: 'var(--neon)', background: 'var(--bg-surface)', borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a', borderRight: '2px solid #003300', borderBottom: '2px solid #003300', cursor: 'pointer', fontFamily: 'var(--font-mono)', minWidth: 0, boxShadow: '0 0 4px rgba(0,255,65,0.3)' }}>
+              [ SAVE ]
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ import { useIdeaStore } from '../../stores/ideaStore'
 
 export default function QuickCapture() {
   const [open, setOpen] = useState(false)
-  const [mode, setMode] = useState('task') // task | note | habit
+  const [mode, setMode] = useState('task')
   const [value, setValue] = useState('')
   const navigate = useNavigate()
   const createNote = useNoteStore((s) => s.createNote)
@@ -52,62 +52,102 @@ export default function QuickCapture() {
 
   if (!open) return null
 
+  const modes = [
+    { key: 'task', icon: CheckSquare, label: 'Task' },
+    { key: 'idea', icon: Lightbulb, label: 'Idea' },
+    { key: 'note', icon: FileText, label: 'Note' },
+    { key: 'habit', icon: Repeat, label: 'Habit' },
+  ]
+
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]" onClick={() => setOpen(false)}>
-      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.7)' }} />
       <div
-        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in"
         onClick={(e) => e.stopPropagation()}
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: '480px',
+          background: 'var(--bg-surface)',
+          borderTop: '2px solid #1a6b1a',
+          borderLeft: '2px solid #1a6b1a',
+          borderRight: '2px solid #003300',
+          borderBottom: '2px solid #003300',
+          boxShadow: '0 0 20px rgba(0,255,65,0.3)',
+          fontFamily: 'var(--font-mono)',
+        }}
       >
-        <div className="flex items-center gap-2 p-2 border-b border-gray-100">
-          {[
-            { key: 'task', icon: CheckSquare, label: 'Task' },
-            { key: 'idea', icon: Lightbulb, label: 'Idea' },
-            { key: 'note', icon: FileText, label: 'Note' },
-            { key: 'habit', icon: Repeat, label: 'Habit' },
-          ].map(({ key, icon: Icon, label }) => (
+        {/* Title bar */}
+        <div style={{
+          background: 'linear-gradient(90deg, #003d00, #001a00)',
+          borderBottom: '1px solid var(--neon)',
+          padding: '4px 8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontSize: '11px',
+          color: 'var(--neon)',
+        }}>
+          <span>// QUICK_CAPTURE</span>
+          <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: '2px', minWidth: 0, fontSize: '11px' }}>✕</button>
+        </div>
+
+        {/* Mode tabs */}
+        <div style={{ display: 'flex', gap: '2px', padding: '6px 8px', borderBottom: '1px solid var(--border)' }}>
+          {modes.map(({ key, icon: Icon, label }) => (
             <button
               key={key}
               onClick={() => setMode(key)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                mode === key
-                  ? 'bg-indigo-50 text-indigo-600 font-medium'
-                  : 'text-gray-500 hover:bg-gray-100'
-              }`}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '3px 8px',
+                fontSize: '10px',
+                minWidth: 0,
+                background: mode === key ? 'var(--sel-bg)' : 'transparent',
+                border: mode === key ? '1px solid var(--neon)' : '1px solid transparent',
+                color: mode === key ? 'var(--neon)' : 'var(--text-ghost)',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-mono)',
+              }}
             >
-              <Icon size={14} />
+              <Icon size={12} />
               {label}
             </button>
           ))}
-          <button
-            onClick={() => setOpen(false)}
-            className="ml-auto p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
-          >
-            <X size={16} />
-          </button>
         </div>
 
+        {/* Input */}
         <form onSubmit={handleSubmit}>
           <input
             autoFocus
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder={
-              mode === 'task'
-                ? 'Add a task to inbox...'
-                : mode === 'idea'
-                  ? 'Capture an idea...'
-                  : mode === 'note'
-                    ? 'New note title...'
-                    : 'New habit name...'
+              mode === 'task' ? '> add task to inbox...'
+                : mode === 'idea' ? '> capture idea...'
+                : mode === 'note' ? '> new note title...'
+                : '> new habit name...'
             }
-            className="w-full px-4 py-4 text-lg outline-none bg-transparent placeholder:text-gray-400"
+            style={{
+              width: '100%',
+              padding: '12px',
+              background: 'var(--bg-base)',
+              border: 'none',
+              borderBottom: '1px solid var(--border)',
+              color: 'var(--neon)',
+              fontSize: '13px',
+              fontFamily: 'var(--font-mono)',
+              outline: 'none',
+            }}
           />
         </form>
 
-        <div className="px-4 pb-3 flex items-center justify-between text-xs text-gray-400">
-          <span>Press Enter to create</span>
-          <span>Ctrl+K to toggle</span>
+        {/* Footer */}
+        <div style={{ padding: '6px 12px', display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: 'var(--text-ghost)' }}>
+          <span>ENTER to create</span>
+          <span>CTRL+K to toggle</span>
         </div>
       </div>
     </div>
