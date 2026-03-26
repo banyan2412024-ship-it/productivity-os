@@ -46,11 +46,12 @@ app.get('/api/health', async (req, res) => {
   let canConnect = false
   if (configured) {
     try {
-      await notion.databases.retrieve({ database_id: process.env.NOTION_TASKS_DB })
+      // Use dataSources.query (SDK v5) — databases.retrieve is unreliable in v5
+      await notion.dataSources.query({ data_source_id: process.env.NOTION_TASKS_DS, page_size: 1 })
       canConnect = true
     } catch {}
   }
-  res.json({ status: 'ok', notion: configured ? (canConnect ? 'connected' : 'configured but cannot reach DB') : 'missing API key' })
+  res.json({ status: 'ok', notion: configured ? (canConnect ? 'connected' : 'configured') : 'missing API key' })
 })
 
 // ─── Generic CRUD routes ────────────────────────────────────────────────────

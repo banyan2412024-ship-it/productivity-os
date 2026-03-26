@@ -1,22 +1,51 @@
 @import "tailwindcss";
 
-/* ─── Matrix OS — CSS Variables ─────────────────────────────────────────────── */
+/* ─── Forest OS — CSS Variables ─────────────────────────────────────────────── */
 
 :root {
-  --bg-base:        #000000;
-  --bg-surface:     #050f05;
-  --bg-elevated:    #0a1a0a;
-  --border:         #0f3d0f;
-  --border-bright:  #1a6b1a;
+  /* Backgrounds — layered forest depth */
+  --bg-base:        #0a130a;
+  --bg-surface:     #0f1f0f;
+  --bg-elevated:    #152415;
+  --bg-hover:       #1a2e1a;
+
+  /* Borders */
+  --border:         #1a3d1a;   /* mid — panels, dividers */
+  --border-dark:    #0d1f0d;
+  --border-mid:     #1a3d1a;
+  --border-bright:  #2a5e2a;
+
+  /* Text — phosphor family */
+  --text:           #a8d5a2;   /* sage — main body text */
+  --text-dim:       #5a8a55;   /* muted — labels, captions */
+  --text-ghost:     #2d4d2a;   /* barely visible — metadata */
+  --text-primary:   #a8d5a2;
+  --text-secondary: #5a8a55;
+  --text-bright:    #00ff41;   /* neon — ONLY active / hover / selected */
+
+  /* Compat aliases */
   --neon:           #00ff41;
-  --neon-dim:       #00b300;
-  --neon-ghost:     #003300;
-  --text:           #00ff41;
-  --text-dim:       #00b300;
-  --text-ghost:     #015701;
-  --sel-bg:         #001a00;
+  --neon-dim:       #5a8a55;
+  --neon-ghost:     #2d4d2a;
+
+  /* Accents */
+  --cyan:           #00e5cc;   /* stats, data values, links */
+  --cyan-dim:       #007a6e;
+  --amber:          #c8a84b;   /* trends up, warnings */
+
+  /* Danger */
+  --danger:         #b03030;   /* muted red — errors, delete */
+  --danger-bright:  #ff0033;   /* only on critical confirms */
+
+  /* Selection */
+  --sel-bg:         #0f1f0f;
   --sel-text:       #00ff41;
-  --danger:         #ff0033;
+
+  /* Glows — only on interaction */
+  --glow-green:     0 0 8px rgba(0,255,65,0.6), 0 0 16px rgba(0,255,65,0.25);
+  --glow-cyan:      0 0 8px rgba(0,229,204,0.6), 0 0 16px rgba(0,229,204,0.2);
+  --glow-red:       0 0 8px rgba(176,48,48,0.7);
+
   --font-mono:      'Share Tech Mono', 'Courier New', monospace;
 }
 
@@ -32,7 +61,7 @@ body {
   font-family: var(--font-mono);
   font-size: 12px;
   background: var(--bg-base);
-  color: var(--text);
+  color: var(--text);           /* #a8d5a2 sage — default text */
   -webkit-font-smoothing: none;
 }
 
@@ -67,52 +96,57 @@ body {
 
 /* ─── Scrollbars ────────────────────────────────────────────────────────────── */
 
-::-webkit-scrollbar { width: 10px; background: #000; }
-::-webkit-scrollbar-thumb { background: #0f3d0f; border: 1px solid #00ff41; }
-::-webkit-scrollbar-thumb:hover { background: #1a6b1a; }
-::-webkit-scrollbar-button { background: #050f05; border: 1px solid #003300; }
+::-webkit-scrollbar { width: 10px; background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: #1a3d1a; border: 1px solid #2a5e2a; }
+::-webkit-scrollbar-thumb:hover { background: #2a5e2a; }
+::-webkit-scrollbar-button { background: var(--bg-surface); border: 1px solid #0d1f0d; }
 
 /* ─── Bevel System ──────────────────────────────────────────────────────────── */
 
 .bevel-raised {
-  border-top:    2px solid #1a6b1a;
-  border-left:   2px solid #1a6b1a;
-  border-right:  2px solid #003300;
-  border-bottom: 2px solid #003300;
-  background: #050f05;
+  border-top:    2px solid #2a5e2a;
+  border-left:   2px solid #2a5e2a;
+  border-right:  2px solid #0d1f0d;
+  border-bottom: 2px solid #0d1f0d;
+  background: var(--bg-surface);
 }
 
 .bevel-raised:active {
-  border-top:    2px solid #003300;
-  border-left:   2px solid #003300;
-  border-right:  2px solid #1a6b1a;
-  border-bottom: 2px solid #1a6b1a;
+  border-top:    2px solid #0d1f0d;
+  border-left:   2px solid #0d1f0d;
+  border-right:  2px solid #2a5e2a;
+  border-bottom: 2px solid #2a5e2a;
 }
 
 .bevel-inset {
-  border-top:    2px solid #003300;
-  border-left:   2px solid #003300;
-  border-right:  2px solid #1a6b1a;
-  border-bottom: 2px solid #1a6b1a;
-  background: #000000;
+  border-top:    2px solid #0d1f0d;
+  border-left:   2px solid #0d1f0d;
+  border-right:  2px solid #2a5e2a;
+  border-bottom: 2px solid #2a5e2a;
+  background: var(--bg-base);
 }
 
-/* ─── Neon Glow ─────────────────────────────────────────────────────────────── */
+/* ─── Glow — strictly interaction-only ──────────────────────────────────────── */
+/* Rule: no glow in default state. Hover triggers it. Active/selected holds it. */
 
 .glow {
-  box-shadow: 0 0 6px #00ff41, 0 0 12px rgba(0,255,65,0.3);
+  box-shadow: var(--glow-green);
 }
 
 .glow-intense {
-  box-shadow: 0 0 10px #00ff41, 0 0 20px rgba(0,255,65,0.5);
+  box-shadow: 0 0 10px rgba(0,255,65,0.8), 0 0 24px rgba(0,255,65,0.4);
 }
 
 .glow-subtle {
-  box-shadow: 0 0 4px rgba(0,255,65,0.4);
+  box-shadow: 0 0 6px rgba(0,255,65,0.3);
+}
+
+.glow-cyan {
+  box-shadow: var(--glow-cyan);
 }
 
 .glow-danger {
-  box-shadow: 0 0 6px #ff0033, 0 0 12px rgba(255,0,51,0.3);
+  box-shadow: var(--glow-red);
 }
 
 /* ─── Buttons ───────────────────────────────────────────────────────────────── */
@@ -120,40 +154,46 @@ body {
 button, .btn {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--neon);
+  color: var(--text);           /* sage by default */
   padding: 4px 14px;
   min-width: 70px;
   cursor: pointer;
-  border-top:    2px solid #1a6b1a;
-  border-left:   2px solid #1a6b1a;
-  border-right:  2px solid #003300;
-  border-bottom: 2px solid #003300;
-  background: #050f05;
+  border-top:    2px solid #2a5e2a;
+  border-left:   2px solid #2a5e2a;
+  border-right:  2px solid #0d1f0d;
+  border-bottom: 2px solid #0d1f0d;
+  background: var(--bg-surface);
   transition: none;
 }
 
 button:active, .btn:active {
-  border-top:    2px solid #003300;
-  border-left:   2px solid #003300;
-  border-right:  2px solid #1a6b1a;
-  border-bottom: 2px solid #1a6b1a;
+  border-top:    2px solid #0d1f0d;
+  border-left:   2px solid #0d1f0d;
+  border-right:  2px solid #2a5e2a;
+  border-bottom: 2px solid #2a5e2a;
 }
 
-button:hover, .btn:hover {
-  box-shadow: 0 0 4px rgba(0,255,65,0.4);
+button:hover:not(:disabled), .btn:hover:not(:disabled) {
+  color: var(--neon);           /* neon only on hover */
+  box-shadow: var(--glow-green);
 }
 
 button:focus-visible, .btn:focus-visible {
-  outline: 1px dotted #00ff41;
+  outline: 1px dotted #2a5e2a;
   outline-offset: -4px;
 }
 
 button.danger, .btn-danger {
   color: var(--danger);
-  border-top-color: #6b0000;
-  border-left-color: #6b0000;
-  border-right-color: #330000;
-  border-bottom-color: #330000;
+  border-top-color: #5e1a1a;
+  border-left-color: #5e1a1a;
+  border-right-color: #1f0d0d;
+  border-bottom-color: #1f0d0d;
+}
+
+button.danger:hover:not(:disabled) {
+  color: var(--danger-bright);
+  box-shadow: var(--glow-red);
 }
 
 /* ─── Text Inputs & Textareas ───────────────────────────────────────────────── */
@@ -171,12 +211,12 @@ textarea,
 select {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--neon);
-  background: #000000;
-  border-top:    2px solid #003300;
-  border-left:   2px solid #003300;
-  border-right:  2px solid #1a6b1a;
-  border-bottom: 2px solid #1a6b1a;
+  color: var(--text);           /* sage */
+  background: var(--bg-base);
+  border-top:    2px solid #0d1f0d;
+  border-left:   2px solid #0d1f0d;
+  border-right:  2px solid #2a5e2a;
+  border-bottom: 2px solid #2a5e2a;
   padding: 4px 8px;
   outline: none;
   caret-color: var(--neon);
@@ -185,9 +225,10 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  border-top-color: #00ff41;
-  border-left-color: #00ff41;
-  box-shadow: 0 0 6px #00ff41, 0 0 12px rgba(0,255,65,0.3);
+  color: var(--neon);           /* neon text when active */
+  border-top-color: #2a5e2a;
+  border-left-color: #2a5e2a;
+  box-shadow: var(--glow-green);
 }
 
 input::placeholder,
@@ -202,19 +243,23 @@ input[type="checkbox"] {
   -webkit-appearance: none;
   width: 13px;
   height: 13px;
-  border-top:    2px solid #003300;
-  border-left:   2px solid #003300;
-  border-right:  2px solid #1a6b1a;
-  border-bottom: 2px solid #1a6b1a;
-  background: #000000;
+  border-top:    2px solid #0d1f0d;
+  border-left:   2px solid #0d1f0d;
+  border-right:  2px solid #2a5e2a;
+  border-bottom: 2px solid #2a5e2a;
+  background: var(--bg-base);
   cursor: pointer;
   position: relative;
   vertical-align: middle;
 }
 
+input[type="checkbox"]:checked {
+  box-shadow: var(--glow-green);
+}
+
 input[type="checkbox"]:checked::after {
   content: '✓';
-  color: #00ff41;
+  color: var(--neon);
   font-size: 10px;
   position: absolute;
   top: -1px;
@@ -227,18 +272,22 @@ input[type="checkbox"]:checked::after {
 select {
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M0 2 L4 6 L8 2' fill='none' stroke='%2300ff41' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M0 2 L4 6 L8 2' fill='none' stroke='%235a8a55' stroke-width='1.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 6px center;
   padding-right: 22px;
+}
+
+select:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M0 2 L4 6 L8 2' fill='none' stroke='%2300ff41' stroke-width='1.5'/%3E%3C/svg%3E");
 }
 
 /* ─── Dividers ──────────────────────────────────────────────────────────────── */
 
 hr, .divider {
   border: none;
-  border-top: 1px solid #003300;
-  border-bottom: 1px solid #0f3d0f;
+  border-top: 1px solid #0d1f0d;
+  border-bottom: 1px solid #1a3d1a;
   height: 0;
   margin: 8px 0;
 }
@@ -246,28 +295,29 @@ hr, .divider {
 /* ─── List / Selection rows ─────────────────────────────────────────────────── */
 
 .list-row {
-  border-bottom: 1px solid #001a00;
+  border-bottom: 1px solid #0d1f0d;
 }
 
 .list-row:hover {
-  outline: 1px dotted #00ff41;
+  background: var(--bg-hover);
+  outline: 1px dotted #2a5e2a;
   outline-offset: -1px;
 }
 
 .list-row.selected {
-  background: #001a00;
-  border-left: 3px solid #00ff41;
-  box-shadow: 0 0 4px rgba(0,255,65,0.4);
+  background: var(--bg-elevated);
+  border-left: 3px solid var(--neon);
+  box-shadow: var(--glow-green);
 }
 
 /* ─── Progress Bar ──────────────────────────────────────────────────────────── */
 
 .progress-bar {
-  border-top:    2px solid #003300;
-  border-left:   2px solid #003300;
-  border-right:  2px solid #1a6b1a;
-  border-bottom: 2px solid #1a6b1a;
-  background: #000000;
+  border-top:    2px solid #0d1f0d;
+  border-left:   2px solid #0d1f0d;
+  border-right:  2px solid #2a5e2a;
+  border-bottom: 2px solid #2a5e2a;
+  background: var(--bg-base);
   height: 20px;
   display: flex;
   align-items: center;
@@ -282,21 +332,20 @@ hr, .divider {
 }
 
 .progress-block.filled {
-  background: #00ff41;
+  background: var(--neon);
 }
 
 .progress-block.empty {
-  background: #003300;
+  background: #1a3d1a;
 }
 
 /* ─── Title Bar Chrome ──────────────────────────────────────────────────────── */
 
 .title-bar {
-  background: linear-gradient(90deg, #003d00, #001a00);
-  border-bottom: 1px solid #00ff41;
-  box-shadow: 0 1px 4px rgba(0,255,65,0.3);
+  background: linear-gradient(90deg, #152415, #0a130a);
+  border-bottom: 1px solid #2a5e2a;
   font-size: 11px;
-  color: var(--neon);
+  color: var(--text-dim);       /* sage label — neon only on active */
   padding: 4px 8px;
   display: flex;
   align-items: center;
@@ -350,9 +399,9 @@ hr, .divider {
 
 /* Glitch on hover — for headings */
 @keyframes glitch {
-  0%   { text-shadow: 3px 0 #ff0033, -3px 0 #00ffff; transform: translateX(-3px); }
-  33%  { text-shadow: -3px 0 #ff0033, 3px 0 #00ffff; transform: translateX(3px); }
-  66%  { text-shadow: 1px 0 #ff0033, -1px 0 #00ffff; transform: translateX(-1px); }
+  0%   { text-shadow: 3px 0 var(--danger), -3px 0 var(--cyan); transform: translateX(-3px); }
+  33%  { text-shadow: -3px 0 var(--danger), 3px 0 var(--cyan); transform: translateX(3px); }
+  66%  { text-shadow: 1px 0 var(--danger), -1px 0 var(--cyan); transform: translateX(-1px); }
   100% { text-shadow: none; transform: translateX(0); }
 }
 
@@ -397,7 +446,7 @@ hr, .divider {
   padding: 0.5rem 0;
   font-family: var(--font-mono);
   font-size: 12px;
-  color: var(--neon);
+  color: var(--text);           /* sage */
 }
 
 .tiptap p {
@@ -408,21 +457,21 @@ hr, .divider {
   font-size: 18px;
   font-weight: 700;
   margin: 1rem 0 0.5rem;
-  color: var(--neon);
+  color: var(--text-bright);
 }
 
 .tiptap h2 {
   font-size: 16px;
   font-weight: 600;
   margin: 0.75rem 0 0.5rem;
-  color: var(--neon);
+  color: var(--text-bright);
 }
 
 .tiptap h3 {
   font-size: 14px;
   font-weight: 600;
   margin: 0.5rem 0 0.25rem;
-  color: var(--neon);
+  color: var(--text-dim);
 }
 
 .tiptap ul {
@@ -480,25 +529,25 @@ hr, .divider {
 /* ─── Tailwind theme overrides ──────────────────────────────────────────────── */
 
 @theme {
-  --color-bg: #000000;
-  --color-bg-secondary: #050f05;
-  --color-bg-tertiary: #0a1a0a;
-  --color-border: #0f3d0f;
-  --color-border-light: #003300;
-  --color-text: #00ff41;
-  --color-text-secondary: #00b300;
-  --color-text-tertiary: #015701;
-  --color-accent: #00ff41;
-  --color-accent-light: #001a00;
-  --color-accent-hover: #00b300;
-  --color-success: #00ff41;
-  --color-success-light: #001a00;
-  --color-warning: #00b300;
-  --color-warning-light: #001a00;
-  --color-danger: #ff0033;
-  --color-danger-light: #1a0000;
-  --color-frog: #00ff41;
-  --color-mit: #00b300;
+  --color-bg:            #0a130a;
+  --color-bg-secondary:  #0f1f0f;
+  --color-bg-tertiary:   #152415;
+  --color-border:        #1a3d1a;
+  --color-border-light:  #0d1f0d;
+  --color-text:          #a8d5a2;
+  --color-text-secondary:#5a8a55;
+  --color-text-tertiary: #2d4d2a;
+  --color-accent:        #00ff41;
+  --color-accent-light:  #152415;
+  --color-accent-hover:  #00ff41;
+  --color-success:       #00ff41;
+  --color-success-light: #0f1f0f;
+  --color-warning:       #c8a84b;
+  --color-warning-light: #1f1a0d;
+  --color-danger:        #b03030;
+  --color-danger-light:  #1f0d0d;
+  --color-frog:          #00ff41;
+  --color-mit:           #00e5cc;
   --font-sans: 'Share Tech Mono', 'Courier New', monospace;
   --font-mono: 'Share Tech Mono', 'Courier New', monospace;
 }
