@@ -11,7 +11,7 @@ const priorityColors = {
 }
 const priorityLabels = { high: 'High', medium: 'Med', low: 'Low' }
 
-export default function TaskInput({ defaultStatus = 'inbox', onTaskAdded }) {
+export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAdded }) {
   const addTask = useTaskStore((s) => s.addTask)
   const deleteTask = useTaskStore((s) => s.deleteTask)
   const addToast = useToastStore((s) => s.addToast)
@@ -37,6 +37,7 @@ export default function TaskInput({ defaultStatus = 'inbox', onTaskAdded }) {
       priority,
       category,
       isQuickWin,
+      ...(projectId && { projectId }),
     }
 
     if (dueDate) {

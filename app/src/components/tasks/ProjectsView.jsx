@@ -156,9 +156,7 @@ function ProjectCard({ project }) {
           {/* Add task to this project */}
           <TaskInput
             defaultStatus="inbox"
-            onTaskAdded={() => {
-              // The task will be added to inbox. The user can then assign it via TaskItem expand.
-            }}
+            projectId={project.id}
           />
         </div>
       )}
