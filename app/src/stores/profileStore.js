@@ -40,12 +40,17 @@ export const useProfileStore = create((set, get) => ({
       is_admin: false,
       status: 'pending',
     }
-    const { data } = await supabase.from('profiles').insert(row).select().single()
-    if (data) {
-      set({ profile: data, profileLoading: false })
-      applyTheme(data.theme)
+    const { error } = await supabase.from('profiles').insert(row)
+    if (error) {
+      // Profile already exists (duplicate key) — load it instead
+      if (error.code === '23505') return get().loadProfile(userId)
+      console.warn('[profileStore] createProfile error:', error.message)
+      return null
     }
-    return data ?? null
+    const profile = { ...row, created_at: new Date().toISOString() }
+    set({ profile, profileLoading: false })
+    applyTheme(profile.theme)
+    return profile
   },
 
   setTheme: async (themeKey) => {
