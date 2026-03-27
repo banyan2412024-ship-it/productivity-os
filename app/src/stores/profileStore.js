@@ -42,8 +42,12 @@ export const useProfileStore = create((set, get) => ({
     }
     const { error } = await supabase.from('profiles').insert(row)
     if (error) {
-      // Profile already exists (duplicate key) — load it instead
-      if (error.code === '23505') return get().loadProfile(userId)
+      if (error.code === '23505') {
+        // Username already taken by another user
+        if (error.message?.includes('username')) throw new Error('USERNAME ALREADY TAKEN')
+        // Profile already exists for this user — load it
+        return get().loadProfile(userId)
+      }
       console.warn('[profileStore] createProfile error:', error.message)
       return null
     }
