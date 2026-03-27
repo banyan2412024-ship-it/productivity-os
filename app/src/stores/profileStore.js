@@ -8,19 +8,26 @@ export const useProfileStore = create((set, get) => ({
   profileLoading: true,
 
   loadProfile: async (userId) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle()
 
-    if (data) {
-      set({ profile: data, profileLoading: false })
-      applyTheme(data.theme, data.custom_theme)
-    } else {
+      if (error) console.warn('[profileStore] loadProfile error:', error.message)
+      if (data) {
+        set({ profile: data, profileLoading: false })
+        applyTheme(data.theme, data.custom_theme)
+      } else {
+        set({ profile: null, profileLoading: false })
+      }
+      return data ?? null
+    } catch (e) {
+      console.warn('[profileStore] loadProfile threw:', e.message)
       set({ profile: null, profileLoading: false })
+      return null
     }
-    return data ?? null
   },
 
   createProfile: async (userId, username) => {

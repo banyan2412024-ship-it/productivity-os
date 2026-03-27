@@ -44,8 +44,8 @@ export default function AuthGate({ children }) {
     setTimeout(() => setError(''), ms)
   }
 
-  // ── Loading ──────────────────────────────────────────────────────────────────
-  if (loading || (user && profileLoading)) {
+  // ── Loading — only block on auth, not profile (profile loads lazily) ─────────
+  if (loading) {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', color: 'var(--neon-dim)', fontSize: '11px' }}>
         &gt; INITIALIZING...
