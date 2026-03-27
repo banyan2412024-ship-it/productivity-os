@@ -9,7 +9,7 @@ export default function AuthGate({ children }) {
   const loading = useAuthStore((s) => s.loading)
 
   const [input, setInput] = useState('')
-  const [error, setError] = useState(false)
+  const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
   if (loading) {
@@ -25,17 +25,16 @@ export default function AuthGate({ children }) {
   const attempt = async (e) => {
     e.preventDefault()
     if (input.trim() !== CORRECT.trim()) {
-      setError(true)
+      setError('ACCESS DENIED — incorrect password')
       setInput('')
-      setTimeout(() => setError(false), 1200)
+      setTimeout(() => setError(''), 1200)
       return
     }
     setBusy(true)
     const { error: err } = await supabase.auth.signInAnonymously()
     if (err) {
-      console.error('Anon sign-in failed:', err.message)
-      setError(true)
-      setTimeout(() => setError(false), 1200)
+      setError(`Supabase error: ${err.message}`)
+      setTimeout(() => setError(''), 4000)
     }
     setBusy(false)
   }
@@ -68,6 +67,7 @@ export default function AuthGate({ children }) {
               autoFocus
               style={{ width: '100%', letterSpacing: '4px', textAlign: 'center' }}
               className={error ? 'shake' : ''}
+
             />
             <button type="submit" disabled={busy} style={{ width: '100%', marginTop: '4px', opacity: busy ? 0.5 : 1 }}>
               {busy ? '[ CONNECTING... ]' : '[ AUTHENTICATE ]'}
@@ -75,7 +75,7 @@ export default function AuthGate({ children }) {
           </form>
           {error && (
             <p style={{ color: 'var(--danger)', fontSize: '11px', margin: 0 }}>
-              &gt; ACCESS DENIED — incorrect password
+              &gt; {error}
             </p>
           )}
         </div>
