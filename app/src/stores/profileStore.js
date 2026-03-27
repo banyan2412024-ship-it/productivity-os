@@ -1,0 +1,102 @@
+import { create } from 'zustand'
+import { supabase } from '../lib/supabase'
+import { applyTheme } from '../lib/applyTheme'
+import { DEFAULT_THEME } from '../themes'
+
+export const useProfileStore = create((set, get) => ({
+  profile: null,
+  profileLoading: true,
+
+  loadProfile: async (userId) => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+
+    if (data) {
+      set({ profile: data, profileLoading: false })
+      applyTheme(data.theme, data.custom_theme)
+    } else {
+      set({ profile: null, profileLoading: false })
+    }
+    return data ?? null
+  },
+
+  createProfile: async (userId, username) => {
+    const row = {
+      id: userId,
+      username,
+      theme: DEFAULT_THEME,
+      custom_theme: null,
+      enabled_modules: ['tasks', 'notes', 'ideas', 'habits', 'pomodoro', 'money', 'smoking'],
+      is_admin: false,
+      status: 'pending',
+    }
+    const { data } = await supabase.from('profiles').insert(row).select().single()
+    if (data) {
+      set({ profile: data, profileLoading: false })
+      applyTheme(data.theme)
+    }
+    return data ?? null
+  },
+
+  setTheme: async (themeKey) => {
+    const { profile } = get()
+    if (!profile) return
+    applyTheme(themeKey, profile.custom_theme)
+    set({ profile: { ...profile, theme: themeKey } })
+    await supabase.from('profiles').update({ theme: themeKey }).eq('id', profile.id)
+  },
+
+  setCustomTheme: async (customTheme) => {
+    const { profile } = get()
+    if (!profile) return
+    applyTheme(profile.theme, customTheme)
+    set({ profile: { ...profile, custom_theme: customTheme } })
+    await supabase.from('profiles').update({ custom_theme: customTheme }).eq('id', profile.id)
+  },
+
+  setModules: async (modules) => {
+    const { profile } = get()
+    if (!profile) return
+    set({ profile: { ...profile, enabled_modules: modules } })
+    await supabase.from('profiles').update({ enabled_modules: modules }).eq('id', profile.id)
+  },
+
+  clearProfile: () => {
+    set({ profile: null, profileLoading: false })
+    applyTheme(DEFAULT_THEME)
+  },
+
+  // Admin only
+  getAllProfiles: async () => {
+    const { data } = await supabase.from('profiles').select('*').order('created_at')
+    return data ?? []
+  },
+
+  adminUpdateProfile: async (userId, updates) => {
+    const { error } = await supabase.from('profiles').update(updates).eq('id', userId)
+    return !error
+  },
+}))
+
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+    if (session?.user) {
+      const profile = await useProfileStore.getState().loadProfile(session.user.id)
+      // New registration: username was stored in sessionStorage before signUp
+      if (!profile && event === 'SIGNED_IN') {
+        const pending = sessionStorage.getItem('pending_username')
+        if (pending) {
+          sessionStorage.removeItem('pending_username')
+          await useProfileStore.getState().createProfile(session.user.id, pending)
+        }
+      }
+    } else {
+      useProfileStore.setState({ profileLoading: false })
+    }
+  } else if (event === 'SIGNED_OUT') {
+    useProfileStore.getState().clearProfile()
+  }
+})

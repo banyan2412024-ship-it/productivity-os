@@ -1,16 +1,28 @@
 import { useEffect, useRef } from 'react'
+import { useProfileStore } from '../stores/profileStore'
+import { getEffectiveTheme } from '../lib/applyTheme'
+import { DEFAULT_THEME } from '../themes'
 
-const CHARS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdef'
 const COL_W = 16
-const SPEED = 50
 
 export default function MatrixRain() {
   const canvasRef = useRef(null)
+  const profile = useProfileStore((s) => s.profile)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
+
+    const theme = getEffectiveTheme(
+      profile?.theme ?? DEFAULT_THEME,
+      profile?.custom_theme ?? null
+    )
+    const CHARS = theme.matrixChars ?? 'アイウエオカキクケコABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    const SPEED = theme.matrixSpeed ?? 50
+    const C1 = theme.matrixColor1 ?? '#00ff41'
+    const C2 = theme.matrixColor2 ?? '#00b300'
+    const C3 = theme.matrixColor3 ?? '#003300'
 
     let cols, drops
 
@@ -34,30 +46,20 @@ export default function MatrixRain() {
         const x = i * COL_W
         const y = drops[i] * COL_W
 
-        // Head character — bright neon
-        ctx.fillStyle = '#00ff41'
+        ctx.fillStyle = C1
         ctx.fillText(char, x, y)
 
-        // Trail — dimmer
         if (drops[i] > 1) {
-          const trailChar = CHARS[Math.floor(Math.random() * CHARS.length)]
-          ctx.fillStyle = '#00b300'
-          ctx.fillText(trailChar, x, y - COL_W)
+          ctx.fillStyle = C2
+          ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], x, y - COL_W)
         }
-
-        // Fading tail
         if (drops[i] > 3) {
-          const tailChar = CHARS[Math.floor(Math.random() * CHARS.length)]
-          ctx.fillStyle = '#003300'
-          ctx.fillText(tailChar, x, y - COL_W * 3)
+          ctx.fillStyle = C3
+          ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], x, y - COL_W * 3)
         }
 
         drops[i]++
-
-        // Reset at random points after passing bottom
-        if (y > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0
-        }
+        if (y > canvas.height && Math.random() > 0.975) drops[i] = 0
       }
     }, SPEED)
 
@@ -65,18 +67,12 @@ export default function MatrixRain() {
       clearInterval(interval)
       window.removeEventListener('resize', resize)
     }
-  }, [])
+  }, [profile?.theme, profile?.custom_theme])
 
   return (
     <canvas
       ref={canvasRef}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 0,
-        opacity: 0.18,
-        pointerEvents: 'none',
-      }}
+      style={{ position: 'fixed', inset: 0, zIndex: 0, opacity: 0.18, pointerEvents: 'none' }}
     />
   )
 }
