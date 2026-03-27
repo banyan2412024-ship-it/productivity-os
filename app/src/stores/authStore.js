@@ -7,11 +7,15 @@ export const useAuthStore = create((set) => ({
   loading: true,
 
   init: async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    const user = session?.user ?? null
-    set({ user, loading: false })
-
-    if (user) setTimeout(() => autoMigrateIfEmpty(user.id), 1500)
+    try {
+      const { data } = await supabase.auth.getSession()
+      const user = data?.session?.user ?? null
+      set({ user, loading: false })
+      if (user) setTimeout(() => autoMigrateIfEmpty(user.id), 1500)
+    } catch (e) {
+      console.warn('[authStore] init error:', e.message)
+      set({ loading: false })
+    }
 
     supabase.auth.onAuthStateChange((event, session) => {
       const u = session?.user ?? null

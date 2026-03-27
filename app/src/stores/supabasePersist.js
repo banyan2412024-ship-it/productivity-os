@@ -180,13 +180,9 @@ const _onSignIn = new Set()
 const _onSignOut = new Set()
 
 supabase.auth.onAuthStateChange((event, session) => {
-  console.log('[supabasePersist] auth event:', event, 'user:', session?.user?.id ?? null)
   if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
     _userId = session?.user?.id ?? null
-    if (_userId) {
-      console.log('[supabasePersist] hydrating', _onSignIn.size, 'stores for user', _userId)
-      _onSignIn.forEach((fn) => fn(_userId))
-    }
+    if (_userId) _onSignIn.forEach((fn) => fn(_userId))
   } else if (event === 'SIGNED_OUT') {
     _userId = null
     _onSignOut.forEach((fn) => fn())
@@ -280,7 +276,6 @@ export function supabasePersist(creator, config) {
     }
 
     async function hydrate(uid) {
-      console.log('[supabasePersist] hydrate start, tables:', Object.keys(tables))
       try {
         const patch = {}
 
@@ -292,7 +287,6 @@ export function supabasePersist(creator, config) {
             .from(mapper.table)
             .select('*')
             .eq('user_id', uid)
-          console.log(`[supabasePersist] ${mapper.table}: ${data?.length ?? 0} rows`, error ? `ERROR: ${error.message}` : '')
           if (!error && data) {
             patch[stateKey] = data.map(mapper.fromRow)
             prev[stateKey] = patch[stateKey]
@@ -336,10 +330,7 @@ export function supabasePersist(creator, config) {
     _onSignOut.add(clearState)
 
     // Hydrate immediately if already signed in
-    if (_userId) {
-      console.log('[supabasePersist] already signed in, hydrating immediately for', _userId)
-      hydrate(_userId)
-    }
+    if (_userId) hydrate(_userId)
 
     return store
   }
