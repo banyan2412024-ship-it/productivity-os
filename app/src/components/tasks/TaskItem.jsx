@@ -187,8 +187,9 @@ export default function TaskItem({ task, showGTDPrompts = false }) {
           ) : (
             <span
               onClick={() => !isDone && setEditingTitle(true)}
+              style={isDone ? {} : { color: 'var(--neon)' }}
               className={`text-sm font-medium cursor-text truncate block ${
-                isDone ? 'line-through text-gray-400' : 'text-gray-800'
+                isDone ? 'line-through text-gray-400' : ''
               }`}
             >
               {task.title}
