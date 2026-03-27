@@ -1,16 +1,12 @@
 import { useState } from 'react'
 import { useAuthStore } from '../../stores/authStore'
-import { User, LogOut, Database } from 'lucide-react'
+import { Database, Cloud } from 'lucide-react'
 
 export default function SyncStatus() {
   const user = useAuthStore((s) => s.user)
-  const signOut = useAuthStore((s) => s.signOut)
   const [showMenu, setShowMenu] = useState(false)
 
   if (!user) return null
-
-  const email = user.email ?? ''
-  const short = email.split('@')[0].toUpperCase().slice(0, 10)
 
   return (
     <div style={{ position: 'relative', fontFamily: 'var(--font-mono)' }}>
@@ -33,8 +29,8 @@ export default function SyncStatus() {
           fontFamily: 'var(--font-mono)',
         }}
       >
-        <User size={12} />
-        <span>{short}</span>
+        <Cloud size={12} />
+        <span>SYNCED</span>
       </button>
 
       {showMenu && (
@@ -59,10 +55,10 @@ export default function SyncStatus() {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
               <div style={{ width: '6px', height: '6px', background: 'var(--neon)', boxShadow: '0 0 4px var(--neon)' }} />
-              <span style={{ fontSize: '11px', color: 'var(--text)' }}>&gt; {email}</span>
+              <span style={{ fontSize: '11px', color: 'var(--text)' }}>&gt; connected to supabase</span>
             </div>
 
-            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '6px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '6px' }}>
               <a
                 href="/app/migrate"
                 onClick={() => setShowMenu(false)}
@@ -77,23 +73,10 @@ export default function SyncStatus() {
                 <Database size={11} />
                 [ MIGRATE DATA ]
               </a>
-              <button
-                onClick={async () => { await signOut(); setShowMenu(false) }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '4px',
-                  padding: '4px 6px', fontSize: '10px',
-                  background: 'transparent', border: '1px solid var(--border)',
-                  color: 'var(--danger)', cursor: 'pointer',
-                  fontFamily: 'var(--font-mono)', width: '100%',
-                }}
-              >
-                <LogOut size={11} />
-                [ SIGN OUT ]
-              </button>
             </div>
 
             <p style={{ fontSize: '8px', color: 'var(--text-ghost)', marginTop: '6px', borderTop: '1px solid var(--border)', paddingTop: '4px' }}>
-              supabase — data synced per user
+              device remembered — data persists per device
             </p>
           </div>
         </>
