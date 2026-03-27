@@ -81,9 +81,9 @@ export const useProfileStore = create((set, get) => ({
     applyTheme(DEFAULT_THEME)
   },
 
-  // Admin only
+  // Admin only — uses security definer RPC to bypass RLS
   getAllProfiles: async () => {
-    const { data } = await supabase.from('profiles').select('*').order('created_at')
+    const { data } = await supabase.rpc('get_all_profiles')
     return data ?? []
   },
 
