@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { dexiePersist } from './dexiePersist'
+import { supabasePersist as dexiePersist } from './supabasePersist'
 import { v4 as uuid } from 'uuid'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, subMonths } from 'date-fns'
 

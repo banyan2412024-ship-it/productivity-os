@@ -1,27 +1,16 @@
-import { useEffect, useState } from 'react'
-import { useSyncStore } from '../../stores/syncStore'
-import { Cloud, CloudOff, RefreshCw, Check, Download } from 'lucide-react'
+import { useState } from 'react'
+import { useAuthStore } from '../../stores/authStore'
+import { User, LogOut, Database } from 'lucide-react'
 
 export default function SyncStatus() {
-  const connected = useSyncStore((s) => s.connected)
-  const syncing = useSyncStore((s) => s.syncing)
-  const pulling = useSyncStore((s) => s.pulling)
-  const pendingOps = useSyncStore((s) => s.pendingOps)
-  const lastSync = useSyncStore((s) => s.lastSync)
-  const lastPull = useSyncStore((s) => s.lastPull)
-  const error = useSyncStore((s) => s.error)
-  const checkConnection = useSyncStore((s) => s.checkConnection)
-  const syncAllFn = useSyncStore((s) => s.syncAll)
-  const pullFromNotion = useSyncStore((s) => s.pullFromNotion)
+  const user = useAuthStore((s) => s.user)
+  const signOut = useAuthStore((s) => s.signOut)
   const [showMenu, setShowMenu] = useState(false)
 
-  useEffect(() => {
-    checkConnection()
-    const interval = setInterval(checkConnection, 30000)
-    return () => clearInterval(interval)
-  }, [checkConnection])
+  if (!user) return null
 
-  const isBusy = syncing || pulling || pendingOps > 0
+  const email = user.email ?? ''
+  const short = email.split('@')[0].toUpperCase().slice(0, 10)
 
   return (
     <div style={{ position: 'relative', fontFamily: 'var(--font-mono)' }}>
@@ -38,24 +27,14 @@ export default function SyncStatus() {
           borderLeft: '2px solid #1a6b1a',
           borderRight: '2px solid #003300',
           borderBottom: '2px solid #003300',
-          color: connected ? (isBusy ? 'var(--neon-dim)' : 'var(--neon)') : 'var(--text-ghost)',
+          color: 'var(--neon)',
           minWidth: 0,
           cursor: 'pointer',
           fontFamily: 'var(--font-mono)',
         }}
       >
-        {connected ? (
-          isBusy ? <span className="loader-hourglass" /> : <Cloud size={12} />
-        ) : (
-          <CloudOff size={12} />
-        )}
-        <span>
-          {connected
-            ? isBusy
-              ? `SYNC${pendingOps > 0 ? `(${pendingOps})` : ''}...`
-              : 'NOTION'
-            : 'OFFLINE'}
-        </span>
+        <User size={12} />
+        <span>{short}</span>
       </button>
 
       {showMenu && (
@@ -78,103 +57,43 @@ export default function SyncStatus() {
               padding: '10px',
             }}
           >
-            {/* Status */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-              <div style={{ width: '6px', height: '6px', background: connected ? 'var(--neon)' : 'var(--text-ghost)', boxShadow: connected ? '0 0 4px var(--neon)' : 'none' }} />
-              <span style={{ fontSize: '11px', color: 'var(--text)' }}>
-                {connected ? '> connected to Notion' : '> not connected'}
-              </span>
+              <div style={{ width: '6px', height: '6px', background: 'var(--neon)', boxShadow: '0 0 4px var(--neon)' }} />
+              <span style={{ fontSize: '11px', color: 'var(--text)' }}>&gt; {email}</span>
             </div>
 
-            {error && (
-              <p style={{ fontSize: '10px', color: 'var(--danger)', padding: '4px', background: 'rgba(255,0,51,0.1)', marginBottom: '6px', border: '1px solid rgba(255,0,51,0.3)' }}>{error}</p>
-            )}
-
-            {lastPull && (
-              <p style={{ fontSize: '9px', color: 'var(--text-ghost)', marginBottom: '2px' }}>
-                last pull: {new Date(lastPull).toLocaleTimeString()}
-              </p>
-            )}
-            {lastSync && (
-              <p style={{ fontSize: '9px', color: 'var(--text-ghost)', marginBottom: '6px' }}>
-                last push: {new Date(lastSync).toLocaleTimeString()}
-              </p>
-            )}
-
-            {pendingOps > 0 && (
-              <p style={{ fontSize: '9px', color: 'var(--neon-dim)', marginBottom: '6px' }}>{pendingOps} ops in flight...</p>
-            )}
-
-            {/* Actions */}
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: '6px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <button
-                onClick={async () => { await syncAllFn(); setShowMenu(false) }}
-                disabled={!connected || syncing}
+              <a
+                href="/app/migrate"
+                onClick={() => setShowMenu(false)}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  padding: '4px 6px',
-                  fontSize: '10px',
-                  background: 'transparent',
-                  border: '1px solid var(--border)',
-                  color: connected ? 'var(--neon)' : 'var(--text-ghost)',
-                  cursor: connected ? 'pointer' : 'not-allowed',
-                  opacity: connected && !syncing ? 1 : 0.4,
-                  minWidth: 0,
-                  fontFamily: 'var(--font-mono)',
-                  width: '100%',
+                  display: 'flex', alignItems: 'center', gap: '4px',
+                  padding: '4px 6px', fontSize: '10px',
+                  background: 'transparent', border: '1px solid var(--border)',
+                  color: 'var(--neon-dim)', cursor: 'pointer',
+                  textDecoration: 'none', fontFamily: 'var(--font-mono)',
                 }}
               >
-                <RefreshCw size={11} />
-                {syncing ? '[ PUSHING... ]' : '[ PUSH ALL ]'}
-              </button>
+                <Database size={11} />
+                [ MIGRATE DATA ]
+              </a>
               <button
-                onClick={async () => { await pullFromNotion(); setShowMenu(false) }}
-                disabled={!connected || pulling}
+                onClick={async () => { await signOut(); setShowMenu(false) }}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  padding: '4px 6px',
-                  fontSize: '10px',
-                  background: 'transparent',
-                  border: '1px solid var(--border)',
-                  color: connected ? 'var(--neon)' : 'var(--text-ghost)',
-                  cursor: connected ? 'pointer' : 'not-allowed',
-                  opacity: connected && !pulling ? 1 : 0.4,
-                  minWidth: 0,
-                  fontFamily: 'var(--font-mono)',
-                  width: '100%',
+                  display: 'flex', alignItems: 'center', gap: '4px',
+                  padding: '4px 6px', fontSize: '10px',
+                  background: 'transparent', border: '1px solid var(--border)',
+                  color: 'var(--danger)', cursor: 'pointer',
+                  fontFamily: 'var(--font-mono)', width: '100%',
                 }}
               >
-                <Download size={11} />
-                {pulling ? '[ PULLING... ]' : '[ PULL FROM NOTION ]'}
-              </button>
-              <button
-                onClick={async () => { await checkConnection(); setShowMenu(false) }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  padding: '4px 6px',
-                  fontSize: '10px',
-                  background: 'transparent',
-                  border: '1px solid var(--border)',
-                  color: 'var(--text-dim)',
-                  cursor: 'pointer',
-                  minWidth: 0,
-                  fontFamily: 'var(--font-mono)',
-                  width: '100%',
-                }}
-              >
-                <Check size={11} />
-                [ TEST CONNECTION ]
+                <LogOut size={11} />
+                [ SIGN OUT ]
               </button>
             </div>
 
             <p style={{ fontSize: '8px', color: 'var(--text-ghost)', marginTop: '6px', borderTop: '1px solid var(--border)', paddingTop: '4px' }}>
-              notion is source of truth. data pulled on load.
+              supabase — data synced per user
             </p>
           </div>
         </>

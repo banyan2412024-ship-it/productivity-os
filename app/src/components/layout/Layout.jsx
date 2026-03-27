@@ -3,8 +3,6 @@ import Sidebar from './Sidebar'
 import QuickCapture from '../dashboard/QuickCapture'
 import ToastContainer from './ToastContainer'
 import SyncStatus from './SyncStatus'
-// Import syncStore to activate auto-push subscriptions
-import '../../stores/syncStore'
 
 export default function Layout() {
   return (

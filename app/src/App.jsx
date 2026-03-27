@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/layout/Layout'
 import MatrixRain from './components/MatrixRain'
-import PasswordGate from './components/PasswordGate'
+import AuthGate from './components/AuthGate'
+import { useAuthStore } from './stores/authStore'
 import PortfolioPage from './pages/PortfolioPage'
 import DashboardPage from './pages/DashboardPage'
 import NotesPage from './pages/NotesPage'
@@ -12,11 +13,14 @@ import PomodoroPage from './pages/PomodoroPage'
 import IdeaBankPage from './pages/IdeaBankPage'
 import MoneyPage from './pages/MoneyPage'
 import SmokingPage from './pages/SmokingPage'
+import MigratePage from './pages/MigratePage'
 
 export default function App() {
   const [showFlicker, setShowFlicker] = useState(true)
+  const init = useAuthStore((s) => s.init)
 
   useEffect(() => {
+    init()
     const timer = setTimeout(() => setShowFlicker(false), 32)
     return () => clearTimeout(timer)
   }, [])
@@ -31,13 +35,13 @@ export default function App() {
         <Route
           path="/app"
           element={
-            <PasswordGate>
+            <AuthGate>
               <>
                 {showFlicker && <div className="crt-flash" />}
                 <MatrixRain />
                 <Layout />
               </>
-            </PasswordGate>
+            </AuthGate>
           }
         >
           <Route index element={<DashboardPage />} />
@@ -49,6 +53,7 @@ export default function App() {
           <Route path="ideas" element={<IdeaBankPage />} />
           <Route path="money" element={<MoneyPage />} />
           <Route path="smoking" element={<SmokingPage />} />
+          <Route path="migrate" element={<MigratePage />} />
         </Route>
 
         {/* Catch-all */}
