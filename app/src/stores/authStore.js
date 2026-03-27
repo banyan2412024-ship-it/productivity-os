@@ -7,7 +7,9 @@ export const useAuthStore = create((set) => ({
   loading: true,
 
   init: () => {
+    const fallback = setTimeout(() => set({ loading: false }), 3000)
     supabase.auth.onAuthStateChange((event, session) => {
+      clearTimeout(fallback)
       const u = session?.user ?? null
       set({ user: u, loading: false })
       if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && u) {
