@@ -311,106 +311,144 @@ export default function DashboardPage() {
   return (
     <div className="p-3 md:p-5 max-w-7xl mx-auto" style={{ fontFamily: 'var(--font-mono)' }}>
 
-      {/* ── HEADER: Greeting + Quick Entry Icons ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <div>
-          <h1
-            className="glitch-hover"
-            style={{ fontSize: '18px', color: 'var(--neon)', textShadow: '0 0 10px rgba(0,255,65,0.6)', margin: 0 }}
+      {/* ── HEADER: Greeting ── */}
+      <div style={{ marginBottom: '10px' }}>
+        <h1
+          className="glitch-hover"
+          style={{ fontSize: '18px', color: 'var(--neon)', textShadow: '0 0 10px rgba(0,255,65,0.6)', margin: 0 }}
+        >
+          {getGreeting()}
+        </h1>
+        <p style={{ fontSize: '11px', color: 'var(--text-dim)', margin: '2px 0 0' }}>
+          // {format(new Date(), 'EEEE, MMMM d, yyyy')}
+        </p>
+      </div>
+
+      {/* ── STATUS BAR: Weed | Money | Habits ── */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '16px',
+      }}>
+
+        {/* WEED */}
+        {(() => {
+          const avg = weedWeek.slice(0, 6).reduce((s, d) => s + d.grams, 0) / 6
+          const today7 = weedWeek[6]?.grams ?? 0
+          const trending = today7 > avg
+          return (
+            <div style={{
+              background: 'var(--bg-surface)',
+              borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
+              borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
+              display: 'flex', alignItems: 'stretch', overflow: 'hidden',
+            }}>
+              <button
+                onClick={() => setShowWeedForm(!showWeedForm)}
+                title="Log weed"
+                style={{
+                  width: '40px', flexShrink: 0,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px',
+                  background: showWeedForm ? 'rgba(0,255,65,0.1)' : 'var(--bg-elevated)',
+                  borderRight: '1px solid var(--border)',
+                  color: 'var(--neon)', padding: 0, minWidth: 0, cursor: 'pointer',
+                }}
+              >
+                <Leaf size={14} />
+                <span style={{ fontSize: '7px', letterSpacing: '1px', color: 'var(--text-ghost)' }}>LOG</span>
+              </button>
+              <div style={{ flex: 1, padding: '6px 10px' }}>
+                <div style={{ fontSize: '8px', color: 'var(--text-ghost)', letterSpacing: '1px', marginBottom: '3px' }}>WEED // TODAY</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                  <span style={{ fontSize: '20px', color: 'var(--neon)', fontWeight: 'bold', lineHeight: 1 }}>{weedToday.toFixed(1)}g</span>
+                  <span style={{ fontSize: '10px', color: trending ? 'var(--danger)' : 'var(--neon)', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                    {trending ? '▲' : '▼'} {avg.toFixed(1)}g/d avg
+                  </span>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* MONEY */}
+        <div style={{
+          background: 'var(--bg-surface)',
+          borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
+          borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
+          display: 'flex', alignItems: 'stretch', overflow: 'hidden',
+        }}>
+          <button
+            onClick={() => setShowMoneyForm(!showMoneyForm)}
+            title="Log money"
+            style={{
+              width: '40px', flexShrink: 0,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px',
+              background: showMoneyForm ? 'rgba(0,229,204,0.1)' : 'var(--bg-elevated)',
+              borderRight: '1px solid var(--border)',
+              color: 'var(--cyan)', padding: 0, minWidth: 0, cursor: 'pointer',
+            }}
           >
-            {getGreeting()}
-          </h1>
-          <p style={{ fontSize: '11px', color: 'var(--text-dim)', margin: '2px 0 0' }}>
-            // {format(new Date(), 'EEEE, MMMM d, yyyy')}
-          </p>
+            <DollarSign size={14} />
+            <span style={{ fontSize: '7px', letterSpacing: '1px', color: 'var(--text-ghost)' }}>LOG</span>
+          </button>
+          <div style={{ flex: 1, padding: '6px 10px' }}>
+            <div style={{ fontSize: '8px', color: 'var(--text-ghost)', letterSpacing: '1px', marginBottom: '3px' }}>MONEY // MONTH NET</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+              <span style={{ fontSize: '20px', color: monthNet >= 0 ? 'var(--neon)' : 'var(--danger)', fontWeight: 'bold', lineHeight: 1 }}>
+                {monthNet >= 0 ? '+' : ''}${Math.abs(monthNet).toFixed(0)}
+              </span>
+              {moneyToday > 0 && (
+                <span style={{ fontSize: '10px', color: 'var(--text-ghost)' }}>-${moneyToday.toFixed(0)} today</span>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Quick Entry + Stats */}
-        <div className="dashboard-stats-row" style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
-
-          {/* Weed button + trend */}
-          <div style={{ display: 'flex', gap: '0', border: '2px solid var(--border-bright)' }}>
-            <button
-              onClick={() => setShowWeedForm(!showWeedForm)}
-              title="Log weed"
-              style={{
-                width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: showWeedForm ? 'var(--bg-elevated)' : 'var(--bg-surface)',
-                borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
-                borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
-                color: '#00ff41', padding: 0, minWidth: 0,
-              }}
-            ><Leaf size={16} /></button>
-            <div style={{ padding: '2px 8px', background: 'var(--bg-base)', display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: '60px' }}>
-              {(() => {
-                const avg = weedWeek.slice(0, 6).reduce((s, d) => s + d.grams, 0) / 6
-                const today7 = weedWeek[6]?.grams ?? 0
-                const trending = today7 > avg
-                return (
-                  <>
-                    <div style={{ fontSize: '9px', color: 'var(--text-ghost)', letterSpacing: '1px' }}>7D TREND</div>
-                    <div style={{ fontSize: '11px', color: trending ? 'var(--danger)' : 'var(--neon)', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                      {trending ? '▲' : '▼'} {avg.toFixed(1)}g/d
-                    </div>
-                  </>
-                )
-              })()}
+        {/* HABITS */}
+        <div style={{
+          background: 'var(--bg-surface)',
+          borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
+          borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
+          display: 'flex', alignItems: 'stretch', overflow: 'hidden',
+        }}>
+          <button
+            onClick={() => setShowIdeaForm(!showIdeaForm)}
+            title="Log idea"
+            style={{
+              width: '40px', flexShrink: 0,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px',
+              background: showIdeaForm ? 'rgba(204,68,255,0.1)' : 'var(--bg-elevated)',
+              borderRight: '1px solid var(--border)',
+              color: 'var(--orange)', padding: 0, minWidth: 0, cursor: 'pointer',
+            }}
+          >
+            <Repeat size={14} />
+            <span style={{ fontSize: '7px', letterSpacing: '1px', color: 'var(--text-ghost)' }}>LOG</span>
+          </button>
+          <div style={{ flex: 1, padding: '6px 10px' }}>
+            <div style={{ fontSize: '8px', color: 'var(--text-ghost)', letterSpacing: '1px', marginBottom: '3px' }}>
+              HABITS // {completedHabitsCount}/{todayHabits.length} DONE
             </div>
-          </div>
-
-          {/* Money button + net */}
-          <div style={{ display: 'flex', gap: '0', border: '2px solid var(--border-bright)' }}>
-            <button
-              onClick={() => setShowMoneyForm(!showMoneyForm)}
-              title="Log money"
-              style={{
-                width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: showMoneyForm ? 'var(--bg-elevated)' : 'var(--bg-surface)',
-                borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
-                borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
-                color: '#00ff41', padding: 0, minWidth: 0,
-              }}
-            ><DollarSign size={16} /></button>
-            <div style={{ padding: '2px 8px', background: 'var(--bg-base)', display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: '60px' }}>
-              <div style={{ fontSize: '9px', color: 'var(--text-ghost)', letterSpacing: '1px' }}>MONTH NET</div>
-              <div style={{ fontSize: '11px', color: monthNet >= 0 ? 'var(--neon)' : 'var(--danger)', fontWeight: 'bold' }}>
-                {monthNet >= 0 ? '+' : ''}{monthNet.toFixed(0)}
-              </div>
-            </div>
-          </div>
-
-          {/* Habits button + Win95 progress */}
-          <div style={{ display: 'flex', gap: '0', border: '2px solid var(--border-bright)' }}>
-            <button
-              onClick={() => setShowIdeaForm(!showIdeaForm)}
-              title="Log idea"
-              style={{
-                width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: showIdeaForm ? 'var(--bg-elevated)' : 'var(--bg-surface)',
-                borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
-                borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
-                color: '#00ff41', padding: 0, minWidth: 0,
-              }}
-            ><Repeat size={16} /></button>
-            <div style={{ padding: '2px 8px', background: 'var(--bg-base)', display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: '80px' }}>
-              <div style={{ fontSize: '9px', color: 'var(--text-ghost)', letterSpacing: '1px', marginBottom: '3px' }}>
-                HABITS {completedHabitsCount}/{todayHabits.length}
-              </div>
-              {/* Win95 block progress bar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{
+                fontSize: '20px', fontWeight: 'bold', lineHeight: 1,
+                color: todayHabits.length > 0 && completedHabitsCount === todayHabits.length
+                  ? 'var(--neon)' : 'var(--amber)',
+              }}>
+                {todayHabits.length > 0 ? Math.round((completedHabitsCount / todayHabits.length) * 100) : 0}%
+              </span>
               <div style={{
-                display: 'flex', gap: '2px', height: '10px',
+                display: 'flex', gap: '2px', flex: 1, height: '12px',
                 borderTop: '2px solid #003300', borderLeft: '2px solid #003300',
                 borderRight: '2px solid #1a6b1a', borderBottom: '2px solid #1a6b1a',
-                background: '#000', padding: '1px',
+                background: '#000', padding: '1px', alignItems: 'center',
               }}>
                 {Array.from({ length: Math.max(todayHabits.length, 1) }, (_, i) => (
-                  <div key={i} style={{ flex: 1, background: i < completedHabitsCount ? 'var(--neon)' : '#003300' }} />
+                  <div key={i} style={{ flex: 1, height: '100%', background: i < completedHabitsCount ? 'var(--neon)' : '#003300' }} />
                 ))}
               </div>
             </div>
           </div>
-
         </div>
+
       </div>
 
       {/* ── Overlay: Weed ── */}

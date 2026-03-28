@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import {
   Leaf,
   TrendingDown,
+  TrendingUp,
   ChevronLeft,
   ChevronRight,
   Trash2,
@@ -9,6 +10,26 @@ import {
 import { useWeedStore, WEED_AMOUNTS } from '../stores/smokingStore'
 import { useToastStore } from '../stores/toastStore'
 import { format, subDays, addMonths, subMonths, eachDayOfInterval } from 'date-fns'
+
+const panel = {
+  background: 'var(--bg-surface)',
+  borderTop: '2px solid #1a6b1a',
+  borderLeft: '2px solid #1a6b1a',
+  borderRight: '2px solid #003300',
+  borderBottom: '2px solid #003300',
+  padding: '14px',
+  fontFamily: 'var(--font-mono)',
+  marginBottom: '12px',
+}
+
+const panelTitle = {
+  fontSize: '9px',
+  color: 'var(--text-ghost)',
+  letterSpacing: '2px',
+  marginBottom: '10px',
+  borderBottom: '1px solid var(--border)',
+  paddingBottom: '6px',
+}
 
 export default function SmokingPage() {
   const [viewMonth, setViewMonth] = useState(new Date())
@@ -89,32 +110,43 @@ export default function SmokingPage() {
   }, [smokingLogs])
 
   function getHeatColor(grams) {
-    if (grams === 0) return 'bg-gray-100'
+    if (grams === 0) return '#001a00'
     const intensity = grams / monthMax
-    if (intensity <= 0.25) return 'bg-green-200'
-    if (intensity <= 0.5) return 'bg-green-300'
-    if (intensity <= 0.75) return 'bg-green-400'
-    return 'bg-green-500'
+    if (intensity <= 0.25) return '#003300'
+    if (intensity <= 0.5) return '#005500'
+    if (intensity <= 0.75) return '#007700'
+    return '#00aa00'
+  }
+
+  function getHeatTextColor(grams) {
+    if (grams === 0) return 'var(--text-ghost)'
+    return grams / monthMax > 0.5 ? 'var(--neon)' : 'var(--text-dim)'
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-5xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <Leaf size={24} className="text-green-500" />
-        <h1 className="text-2xl font-bold text-gray-900">Weed Tracker</h1>
+    <div style={{ padding: '16px', maxWidth: '1000px', margin: '0 auto', fontFamily: 'var(--font-mono)' }}>
+
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+        <Leaf size={18} style={{ color: 'var(--neon)' }} />
+        <span style={{ fontSize: '14px', color: 'var(--neon)', letterSpacing: '2px' }}>WEED_TRACKER.exe</span>
+        <span style={{ fontSize: '10px', color: 'var(--text-ghost)', marginLeft: '4px' }}>// consumption log</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div className="md:col-span-2 space-y-5">
-          {/* Today */}
-          <section className="bg-white rounded-2xl border border-gray-200 p-6">
-            <h2 className="text-base font-semibold text-gray-900 mb-4">Today</h2>
-            <div className="flex items-center justify-between">
-              <div className="text-center">
-                <div className="text-5xl font-bold text-green-500 mb-1">{todayGrams.toFixed(1)}g</div>
-                <p className="text-sm text-gray-500">consumed today</p>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '12px', alignItems: 'start' }}>
+        <div>
+
+          {/* Today Panel */}
+          <div style={panel}>
+            <div style={panelTitle}>// TODAY_LOG</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '36px', color: 'var(--neon)', textShadow: '0 0 12px rgba(0,255,65,0.6)', lineHeight: 1 }}>
+                  {todayGrams.toFixed(1)}g
+                </div>
+                <div style={{ fontSize: '9px', color: 'var(--text-ghost)', letterSpacing: '1px', marginTop: '4px' }}>consumed today</div>
               </div>
-              <div className="flex flex-wrap gap-2 max-w-[250px]">
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxWidth: '280px' }}>
                 {WEED_AMOUNTS.map((amt) => (
                   <button
                     key={amt}
@@ -122,7 +154,19 @@ export default function SmokingPage() {
                       const id = logWeed(amt)
                       addToast(`+${amt}g logged`, { type: 'success', undoFn: () => { deleteLog(id); addToast('Undone', { type: 'info' }) } })
                     }}
-                    className="px-4 py-2.5 rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm font-semibold shadow hover:shadow-md transition-all"
+                    style={{
+                      padding: '8px 14px',
+                      background: 'var(--bg-base)',
+                      borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
+                      borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
+                      color: 'var(--neon)',
+                      fontSize: '12px',
+                      fontFamily: 'var(--font-mono)',
+                      cursor: 'pointer',
+                      minWidth: 'unset',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-elevated)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-base)'}
                   >
                     +{amt}g
                   </button>
@@ -131,79 +175,94 @@ export default function SmokingPage() {
             </div>
 
             {todayLogs.length > 0 && (
-              <div className="mt-6 border-t pt-4">
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Log</p>
-                <div className="flex flex-wrap gap-2">
+              <div style={{ marginTop: '12px', borderTop: '1px solid var(--border)', paddingTop: '8px' }}>
+                <div style={{ fontSize: '9px', color: 'var(--text-ghost)', letterSpacing: '1px', marginBottom: '6px' }}>// ENTRIES</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                   {todayLogs.map((log) => (
                     <div
                       key={log.id}
-                      className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 rounded-lg text-sm group"
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '4px 8px',
+                        background: 'var(--bg-base)',
+                        border: '1px solid var(--border)',
+                        fontSize: '11px',
+                      }}
                     >
-                      <span className="text-green-700 font-medium">{log.grams}g</span>
-                      <span className="text-green-500 text-xs">{log.time}</span>
+                      <span style={{ color: 'var(--neon)', fontWeight: 'bold' }}>{log.grams}g</span>
+                      <span style={{ color: 'var(--text-ghost)', fontSize: '10px' }}>{log.time}</span>
                       <button
                         onClick={() => {
                           const g = log.grams
                           deleteLog(log.id)
-                          addToast(`${g}g entry removed`, { type: 'info', undoFn: () => { logWeed(g); addToast('Restored', { type: 'success' }) } })
+                          addToast(`${g}g removed`, { type: 'info', undoFn: () => { logWeed(g); addToast('Restored', { type: 'success' }) } })
                         }}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ background: 'transparent', border: 'none', color: 'var(--danger)', padding: '0 2px', cursor: 'pointer', minWidth: 'unset', lineHeight: 1 }}
                       >
-                        <Trash2 size={12} className="text-red-400" />
+                        <Trash2 size={11} />
                       </button>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-          </section>
+          </div>
 
-          {/* Week chart */}
-          <section className="bg-white rounded-2xl border border-gray-200 p-5">
-            <h2 className="text-base font-semibold text-gray-900 mb-4">Last 7 Days</h2>
-            <div className="flex items-end gap-3 h-40">
+          {/* Week Bar Chart */}
+          <div style={panel}>
+            <div style={panelTitle}>// 7D_CHART</div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', height: '100px' }}>
               {weekData.map((d) => (
-                <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-xs font-medium text-gray-600">{d.grams.toFixed(1)}g</span>
+                <div key={d.date} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
+                  <span style={{ fontSize: '9px', color: d.isToday ? 'var(--neon)' : 'var(--text-ghost)' }}>{d.grams > 0 ? `${d.grams.toFixed(1)}` : ''}</span>
                   <div
-                    className={`w-full rounded-t-lg transition-all ${d.isToday ? 'bg-green-500' : 'bg-green-300'}`}
-                    style={{ height: `${Math.max((d.grams / weekMax) * 100, 4)}%` }}
+                    style={{
+                      width: '100%',
+                      background: d.isToday ? 'var(--neon)' : '#005500',
+                      minHeight: '4px',
+                      height: `${Math.max((d.grams / weekMax) * 70, 4)}px`,
+                      boxShadow: d.isToday ? '0 0 6px rgba(0,255,65,0.5)' : 'none',
+                    }}
                   />
-                  <span className={`text-xs ${d.isToday ? 'font-bold text-green-600' : 'text-gray-500'}`}>
+                  <span style={{ fontSize: '9px', color: d.isToday ? 'var(--neon)' : 'var(--text-ghost)', fontWeight: d.isToday ? 'bold' : 'normal' }}>
                     {d.day}
                   </span>
                 </div>
               ))}
             </div>
-          </section>
+          </div>
 
-          {/* Monthly heatmap */}
-          <section className="bg-white rounded-2xl border border-gray-200 p-5">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <button onClick={() => setViewMonth(subMonths(viewMonth, 1))} className="p-1 hover:bg-gray-100 rounded">
-                  <ChevronLeft size={16} />
+          {/* Monthly Heatmap */}
+          <div style={panel}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  onClick={() => setViewMonth(subMonths(viewMonth, 1))}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', padding: '2px', minWidth: 'unset' }}
+                >
+                  <ChevronLeft size={14} />
                 </button>
-                <h2 className="text-base font-semibold text-gray-900 min-w-[130px] text-center">
+                <span style={{ fontSize: '11px', color: 'var(--text)', minWidth: '120px', textAlign: 'center' }}>
                   {format(viewMonth, 'MMMM yyyy')}
-                </h2>
-                <button onClick={() => setViewMonth(addMonths(viewMonth, 1))} className="p-1 hover:bg-gray-100 rounded">
-                  <ChevronRight size={16} />
+                </span>
+                <button
+                  onClick={() => setViewMonth(addMonths(viewMonth, 1))}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', padding: '2px', minWidth: 'unset' }}
+                >
+                  <ChevronRight size={14} />
                 </button>
               </div>
-              <div className="flex items-center gap-1 text-xs text-gray-400">
-                <span>Less</span>
-                <div className="w-3 h-3 rounded bg-gray-100" />
-                <div className="w-3 h-3 rounded bg-green-200" />
-                <div className="w-3 h-3 rounded bg-green-300" />
-                <div className="w-3 h-3 rounded bg-green-400" />
-                <div className="w-3 h-3 rounded bg-green-500" />
-                <span>More</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '9px', color: 'var(--text-ghost)' }}>
+                <span>low</span>
+                {['#001a00', '#003300', '#005500', '#007700', '#00aa00'].map((c) => (
+                  <div key={c} style={{ width: '10px', height: '10px', background: c, border: '1px solid #003300' }} />
+                ))}
+                <span>high</span>
               </div>
             </div>
-            <div className="grid grid-cols-7 gap-1.5">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px' }}>
               {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
-                <div key={i} className="text-center text-xs text-gray-400 py-1">{d}</div>
+                <div key={i} style={{ textAlign: 'center', fontSize: '9px', color: 'var(--text-ghost)', padding: '2px 0' }}>{d}</div>
               ))}
               {Array.from({ length: (monthData[0]?.dayOfWeek + 6) % 7 }).map((_, i) => (
                 <div key={`empty-${i}`} />
@@ -211,66 +270,62 @@ export default function SmokingPage() {
               {monthData.map((d) => (
                 <div
                   key={d.date}
-                  className={`aspect-square rounded-lg flex items-center justify-center text-xs ${getHeatColor(d.grams)} ${
-                    d.grams > 0 ? 'text-white font-medium' : 'text-gray-400'
-                  }`}
                   title={`${d.date}: ${d.grams.toFixed(1)}g`}
+                  style={{
+                    aspectRatio: '1',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '9px',
+                    background: getHeatColor(d.grams),
+                    color: getHeatTextColor(d.grams),
+                    border: d.date === todayStr ? '1px solid var(--neon)' : '1px solid transparent',
+                  }}
                 >
                   {d.dayNum}
                 </div>
               ))}
             </div>
-          </section>
+          </div>
         </div>
 
-        {/* Stats */}
-        <div className="space-y-6">
-          <section className="bg-white rounded-2xl border border-gray-200 p-5">
-            <h2 className="text-base font-semibold text-gray-900 mb-4">Statistics</h2>
-            <div className="space-y-4">
-              <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Today</p>
-                <p className="text-2xl font-bold text-green-500">{todayGrams.toFixed(1)}g</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">7-Day Avg</p>
-                <p className="text-2xl font-bold text-gray-900">{avg7}g/day</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">30-Day Avg</p>
-                <p className="text-2xl font-bold text-gray-900">{avg30}g/day</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Entries</p>
-                <p className="text-2xl font-bold text-gray-900">{smokingLogs.length}</p>
-              </div>
+        {/* Stats column */}
+        <div style={{ minWidth: '180px' }}>
+          <div style={panel}>
+            <div style={panelTitle}>// STATISTICS</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {[
+                { label: 'TODAY', value: `${todayGrams.toFixed(1)}g`, color: 'var(--neon)' },
+                { label: '7-DAY AVG', value: `${avg7}g/d`, color: 'var(--text)' },
+                { label: '30-DAY AVG', value: `${avg30}g/d`, color: 'var(--text)' },
+                { label: 'TOTAL ENTRIES', value: smokingLogs.length, color: 'var(--text-dim)' },
+              ].map(({ label, value, color }) => (
+                <div key={label}>
+                  <div style={{ fontSize: '9px', color: 'var(--text-ghost)', letterSpacing: '1px', marginBottom: '2px' }}>{label}</div>
+                  <div style={{ fontSize: '18px', color, fontWeight: 'bold' }}>{value}</div>
+                </div>
+              ))}
             </div>
-          </section>
+          </div>
 
-          <section className="bg-white rounded-2xl border border-gray-200 p-5">
-            <h2 className="text-base font-semibold text-gray-900 mb-3">Trend</h2>
+          <div style={panel}>
+            <div style={panelTitle}>// TREND</div>
             {avg7 <= avg30 ? (
-              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
-                <TrendingDown size={20} className="text-green-500" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'rgba(0,255,65,0.05)', border: '1px solid var(--border)' }}>
+                <TrendingDown size={18} style={{ color: 'var(--neon)', flexShrink: 0 }} />
                 <div>
-                  <p className="text-sm font-medium text-green-700">Going down</p>
-                  <p className="text-xs text-green-600">
-                    7d ({avg7}g) {avg7 < avg30 ? '<' : '='} 30d ({avg30}g)
-                  </p>
+                  <div style={{ fontSize: '11px', color: 'var(--neon)', fontWeight: 'bold' }}>DECREASING</div>
+                  <div style={{ fontSize: '9px', color: 'var(--text-ghost)' }}>7d: {avg7}g &lt; 30d: {avg30}g</div>
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-3 p-3 bg-amber-50 rounded-xl">
-                <TrendingDown size={20} className="text-amber-500 rotate-180" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'rgba(255,136,68,0.05)', border: '1px solid var(--border)' }}>
+                <TrendingUp size={18} style={{ color: 'var(--orange)', flexShrink: 0 }} />
                 <div>
-                  <p className="text-sm font-medium text-amber-700">Going up</p>
-                  <p className="text-xs text-amber-600">
-                    7d ({avg7}g) &gt; 30d ({avg30}g)
-                  </p>
+                  <div style={{ fontSize: '11px', color: 'var(--orange)', fontWeight: 'bold' }}>INCREASING</div>
+                  <div style={{ fontSize: '9px', color: 'var(--text-ghost)' }}>7d: {avg7}g &gt; 30d: {avg30}g</div>
                 </div>
               </div>
             )}
-          </section>
+          </div>
         </div>
       </div>
     </div>

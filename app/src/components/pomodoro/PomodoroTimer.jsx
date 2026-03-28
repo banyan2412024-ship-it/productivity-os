@@ -5,9 +5,9 @@ import { Play, Pause, RotateCcw, Timer, ChevronDown } from 'lucide-react'
 import { format } from 'date-fns'
 
 const MODE_CONFIG = {
-  focus: { label: 'Focus', color: 'indigo', stroke: '#6366f1', bg: 'bg-indigo-500', text: 'text-indigo-600', ring: 'ring-indigo-500' },
-  shortBreak: { label: 'Short Break', color: 'emerald', stroke: '#10b981', bg: 'bg-emerald-500', text: 'text-emerald-600', ring: 'ring-emerald-500' },
-  longBreak: { label: 'Long Break', color: 'blue', stroke: '#3b82f6', bg: 'bg-blue-500', text: 'text-blue-600', ring: 'ring-blue-500' },
+  focus:      { label: 'FOCUS',       color: 'var(--neon)',    dim: '#003300' },
+  shortBreak: { label: 'SHORT_BREAK', color: 'var(--cyan)',    dim: '#002222' },
+  longBreak:  { label: 'LONG_BREAK',  color: 'var(--blue)',    dim: '#001133' },
 }
 
 function playBeep() {
@@ -23,8 +23,6 @@ function playBeep() {
     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5)
     osc.start(ctx.currentTime)
     osc.stop(ctx.currentTime + 0.5)
-
-    // Second beep
     const osc2 = ctx.createOscillator()
     const gain2 = ctx.createGain()
     osc2.connect(gain2)
@@ -35,11 +33,8 @@ function playBeep() {
     gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.1)
     osc2.start(ctx.currentTime + 0.6)
     osc2.stop(ctx.currentTime + 1.1)
-
     setTimeout(() => ctx.close(), 2000)
-  } catch (e) {
-    // Web Audio not available
-  }
+  } catch (e) {}
 }
 
 export default function PomodoroTimer() {
@@ -66,7 +61,6 @@ export default function PomodoroTimer() {
   const isRunning = status === 'running' || status === 'break' || status === 'longBreak'
   const config = MODE_CONFIG[mode]
 
-  // Total duration for current mode in seconds
   const totalDuration =
     mode === 'focus'
       ? focusDuration * 60
@@ -74,27 +68,19 @@ export default function PomodoroTimer() {
         ? shortBreakDuration * 60
         : longBreakDuration * 60
 
-  // SVG circle calculations
-  const size = 200
-  const strokeWidth = 8
-  const radius = (size - strokeWidth) / 2
-  const circumference = 2 * Math.PI * radius
-  const progress = totalDuration > 0 ? timeLeft / totalDuration : 0
-  const dashOffset = circumference * (1 - progress)
-
-  // Format time
   const minutes = Math.floor(timeLeft / 60)
   const seconds = timeLeft % 60
   const timeDisplay = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 
-  // Tick interval
+  // Block progress bar — 20 blocks
+  const BLOCKS = 20
+  const filledBlocks = totalDuration > 0 ? Math.round(((totalDuration - timeLeft) / totalDuration) * BLOCKS) : 0
+
   useEffect(() => {
     if (isRunning) {
       intervalRef.current = setInterval(() => {
         const completed = tick()
-        if (completed) {
-          playBeep()
-        }
+        if (completed) playBeep()
       }, 1000)
     }
     return () => {
@@ -105,7 +91,6 @@ export default function PomodoroTimer() {
     }
   }, [isRunning, tick])
 
-  // Close dropdown on outside click
   useEffect(() => {
     function handleClick(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -117,168 +102,204 @@ export default function PomodoroTimer() {
   }, [])
 
   const handleStartPause = useCallback(() => {
-    if (isRunning) {
-      pauseTimer()
-    } else {
-      startTimer()
-    }
+    if (isRunning) pauseTimer()
+    else startTimer()
   }, [isRunning, pauseTimer, startTimer])
 
   const handleModeSwitch = useCallback(
-    (newMode) => {
-      if (isRunning) return
-      setMode(newMode)
-    },
+    (newMode) => { if (!isRunning) setMode(newMode) },
     [isRunning, setMode]
   )
 
   const handleLinkTask = useCallback(
-    (taskId) => {
-      linkTask(taskId)
-      setShowTaskDropdown(false)
-    },
+    (taskId) => { linkTask(taskId); setShowTaskDropdown(false) },
     [linkTask]
   )
 
   const linkedTask = linkedTaskId ? tasks.find((t) => t.id === linkedTaskId) : null
-  const availableTasks = tasks.filter(
-    (t) => t.status !== 'done' && t.status !== 'cancelled'
-  )
+  const availableTasks = tasks.filter((t) => t.status !== 'done' && t.status !== 'cancelled')
   const todayStr = format(new Date(), 'yyyy-MM-dd')
   const todayCount = useMemo(() => sessions.filter((s) => s.date === todayStr).length, [sessions, todayStr])
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', fontFamily: 'var(--font-mono)' }}>
+
       {/* Mode tabs */}
-      <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 gap-1">
+      <div style={{
+        display: 'flex', gap: '2px', width: '100%',
+        borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
+        borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
+        background: 'var(--bg-base)', padding: '3px',
+      }}>
         {Object.entries(MODE_CONFIG).map(([key, cfg]) => (
           <button
             key={key}
             onClick={() => handleModeSwitch(key)}
             disabled={isRunning}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              mode === key
-                ? `${cfg.bg} text-white shadow-sm`
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 disabled:opacity-50'
-            }`}
+            style={{
+              flex: 1, padding: '6px 4px',
+              background: mode === key ? cfg.dim : 'transparent',
+              border: mode === key ? `1px solid ${cfg.color}` : '1px solid transparent',
+              color: mode === key ? cfg.color : 'var(--text-ghost)',
+              fontSize: '9px', letterSpacing: '1px',
+              fontFamily: 'var(--font-mono)',
+              cursor: isRunning ? 'default' : 'pointer',
+              opacity: isRunning && mode !== key ? 0.4 : 1,
+              minWidth: 'unset',
+              textShadow: mode === key ? `0 0 6px ${cfg.color}` : 'none',
+            }}
           >
             {cfg.label}
           </button>
         ))}
       </div>
 
-      {/* Timer circle */}
-      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-        <svg width={size} height={size} className="transform -rotate-90">
-          {/* Background track */}
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={strokeWidth}
-            className="text-gray-200 dark:text-gray-700"
-          />
-          {/* Progress arc */}
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="none"
-            stroke={config.stroke}
-            strokeWidth={strokeWidth}
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={dashOffset}
-            className="transition-[stroke-dashoffset] duration-1000 ease-linear"
-          />
-        </svg>
-        {/* Time display */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span
-            className="text-4xl font-mono font-bold text-gray-900 dark:text-white tabular-nums"
-            style={{ letterSpacing: '0.05em' }}
-          >
-            {timeDisplay}
-          </span>
-          <span className={`text-xs font-medium mt-1 ${config.text}`}>
-            {config.label}
-          </span>
+      {/* Timer display */}
+      <div style={{
+        width: '100%', textAlign: 'center',
+        background: 'var(--bg-base)',
+        borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
+        borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
+        padding: '20px 16px',
+      }}>
+        <div style={{ fontSize: '9px', color: 'var(--text-ghost)', letterSpacing: '2px', marginBottom: '8px' }}>
+          // {config.label}
+        </div>
+        <div style={{
+          fontSize: '52px', fontWeight: 'bold',
+          color: config.color,
+          textShadow: `0 0 20px ${config.color}`,
+          letterSpacing: '4px',
+          lineHeight: 1,
+        }}>
+          {timeDisplay}
+        </div>
+
+        {/* Block progress bar */}
+        <div style={{
+          display: 'flex', gap: '2px', marginTop: '14px',
+          borderTop: '2px solid #003300', borderLeft: '2px solid #003300',
+          borderRight: '2px solid #1a6b1a', borderBottom: '2px solid #1a6b1a',
+          background: '#000', padding: '3px', height: '16px', alignItems: 'center',
+        }}>
+          {Array.from({ length: BLOCKS }, (_, i) => (
+            <div
+              key={i}
+              style={{
+                flex: 1, height: '100%',
+                background: i < filledBlocks ? config.color : config.dim,
+              }}
+            />
+          ))}
+        </div>
+
+        <div style={{ fontSize: '9px', color: 'var(--text-ghost)', marginTop: '6px' }}>
+          {filledBlocks}/{BLOCKS} blocks elapsed
         </div>
       </div>
 
       {/* Controls */}
-      <div className="flex items-center gap-3">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <button
           onClick={handleStartPause}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold text-base shadow-lg transition-all hover:scale-105 active:scale-95 ${config.bg}`}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '6px',
+            padding: '8px 24px',
+            background: isRunning ? 'rgba(255,136,68,0.1)' : `${config.dim}`,
+            borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
+            borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
+            color: isRunning ? 'var(--orange)' : config.color,
+            fontSize: '12px', fontFamily: 'var(--font-mono)',
+            fontWeight: 'bold', cursor: 'pointer', minWidth: 'unset',
+            letterSpacing: '1px',
+          }}
         >
-          {isRunning ? (
-            <>
-              <Pause size={20} />
-              Pause
-            </>
-          ) : (
-            <>
-              <Play size={20} />
-              Start
-            </>
-          )}
+          {isRunning ? <><Pause size={14} /> PAUSE</> : <><Play size={14} /> START</>}
         </button>
         <button
           onClick={resetTimer}
-          className="flex items-center gap-1 px-3 py-3 rounded-xl text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          title="Reset timer"
+          title="Reset"
+          style={{
+            display: 'flex', alignItems: 'center',
+            padding: '8px 12px',
+            background: 'var(--bg-base)',
+            borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
+            borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
+            color: 'var(--text-ghost)',
+            cursor: 'pointer', minWidth: 'unset',
+          }}
         >
-          <RotateCcw size={18} />
+          <RotateCcw size={14} />
         </button>
       </div>
 
-      {/* Pomodoros today */}
-      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-        <Timer size={16} />
-        <span>
-          Pomodoros today: <strong className="text-gray-900 dark:text-white">{todayCount}</strong>
-        </span>
+      {/* Sessions today */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', color: 'var(--text-dim)' }}>
+        <Timer size={12} style={{ color: 'var(--neon)' }} />
+        <span>SESSIONS TODAY:</span>
+        <strong style={{ color: 'var(--neon)' }}>{todayCount}</strong>
+        {todayCount > 0 && (
+          <span style={{ color: 'var(--text-ghost)' }}>
+            {'🍅'.repeat(Math.min(todayCount, 8))}
+          </span>
+        )}
       </div>
 
       {/* Linked task */}
-      <div className="relative w-full max-w-xs" ref={dropdownRef}>
+      <div style={{ position: 'relative', width: '100%' }} ref={dropdownRef}>
         <button
           onClick={() => setShowTaskDropdown(!showTaskDropdown)}
-          className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '8px 10px',
+            background: 'var(--bg-base)',
+            border: linkedTask ? `1px solid ${config.color}` : '1px solid var(--border)',
+            color: linkedTask ? 'var(--text)' : 'var(--text-ghost)',
+            fontSize: '11px', fontFamily: 'var(--font-mono)',
+            cursor: 'pointer', minWidth: 'unset',
+          }}
         >
-          <span className={linkedTask ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'}>
-            {linkedTask ? linkedTask.title : 'Link a task...'}
-          </span>
-          <ChevronDown size={16} className="text-gray-400" />
+          <span>{linkedTask ? `> ${linkedTask.title}` : '> link task...'}</span>
+          <ChevronDown size={12} style={{ color: 'var(--text-ghost)' }} />
         </button>
 
         {showTaskDropdown && (
-          <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+          <div style={{
+            position: 'absolute', zIndex: 20, top: '100%', left: 0, right: 0, marginTop: '2px',
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-bright)',
+            maxHeight: '180px', overflowY: 'auto',
+          }}>
             {linkedTask && (
               <button
                 onClick={() => handleLinkTask(null)}
-                className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700"
+                style={{
+                  width: '100%', textAlign: 'left', padding: '6px 10px',
+                  background: 'transparent', border: 'none', borderBottom: '1px solid var(--border)',
+                  color: 'var(--danger)', fontSize: '11px', fontFamily: 'var(--font-mono)',
+                  cursor: 'pointer',
+                }}
               >
-                Unlink task
+                [unlink task]
               </button>
             )}
             {availableTasks.length === 0 && (
-              <div className="px-4 py-3 text-sm text-gray-400">No tasks available</div>
+              <div style={{ padding: '8px 10px', fontSize: '11px', color: 'var(--text-ghost)' }}>no tasks available</div>
             )}
             {availableTasks.map((task) => (
               <button
                 key={task.id}
                 onClick={() => handleLinkTask(task.id)}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                  task.id === linkedTaskId
-                    ? 'text-indigo-600 dark:text-indigo-400 font-medium'
-                    : 'text-gray-700 dark:text-gray-300'
-                }`}
+                style={{
+                  width: '100%', textAlign: 'left', padding: '6px 10px',
+                  background: task.id === linkedTaskId ? 'var(--sel-bg)' : 'transparent',
+                  border: 'none', borderBottom: '1px solid var(--border-dark)',
+                  color: task.id === linkedTaskId ? config.color : 'var(--text-dim)',
+                  fontSize: '11px', fontFamily: 'var(--font-mono)',
+                  cursor: 'pointer',
+                }}
               >
-                {task.title}
+                {task.id === linkedTaskId ? '> ' : '  '}{task.title}
               </button>
             ))}
           </div>
