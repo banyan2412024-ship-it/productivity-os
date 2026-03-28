@@ -3,6 +3,8 @@ import { supabasePersist as dexiePersist } from './supabasePersist'
 import { v4 as uuid } from 'uuid'
 import { isToday, isBefore, addDays, startOfDay, isAfter } from 'date-fns'
 
+export const DIFFICULTY_LEVELS = ['easy', 'normal', 'hard', 'epic']
+
 export const TASK_CATEGORIES = [
   'Work',
   'Personal',
@@ -30,8 +32,10 @@ export const useTaskStore = create(
           id: uuid(),
           title: task.title || '',
           notes: task.notes || '',
+          description: task.description || '',
           status: task.status || 'inbox',
           priority: task.priority || 'medium',
+          difficulty: task.difficulty || 'normal',
           isMIT: task.isMIT || false,
           isFrog: task.isFrog || false,
           isQuickWin: task.isQuickWin || false,
@@ -40,6 +44,7 @@ export const useTaskStore = create(
           category: task.category || 'Other',
           tags: task.tags || [],
           projectId: task.projectId || null,
+          subfolderId: task.subfolderId || null,
           createdAt: new Date().toISOString(),
           completedAt: null,
         }
@@ -92,21 +97,40 @@ export const useTaskStore = create(
         })),
 
       // Projects
-      addProject: (name) => {
+      addProject: ({ name, parentId = null, description = '' } = {}) => {
         const project = {
           id: uuid(),
-          name,
+          name: name || '',
+          parentId,
+          description,
           createdAt: new Date().toISOString(),
         }
         set((s) => ({ projects: [...s.projects, project] }))
         return project.id
       },
 
-      deleteProject: (id) =>
+      updateProject: (id, updates) =>
         set((s) => ({
-          projects: s.projects.filter((p) => p.id !== id),
-          tasks: s.tasks.map((t) => (t.projectId === id ? { ...t, projectId: null } : t)),
+          projects: s.projects.map((p) => (p.id === id ? { ...p, ...updates } : p)),
         })),
+
+      deleteProject: (id) =>
+        set((s) => {
+          // Collect all subfolder ids under this project
+          const subfolderIds = s.projects
+            .filter((p) => p.parentId === id)
+            .map((p) => p.id)
+          const removedIds = new Set([id, ...subfolderIds])
+          return {
+            projects: s.projects.filter((p) => !removedIds.has(p.id)),
+            tasks: s.tasks.map((t) => {
+              if (t.projectId === id || subfolderIds.includes(t.subfolderId)) {
+                return { ...t, projectId: null, subfolderId: null }
+              }
+              return t
+            }),
+          }
+        }),
 
       renameProject: (id, name) =>
         set((s) => ({
@@ -165,7 +189,13 @@ export const useTaskStore = create(
           (t) => t.isMIT && t.status !== 'done' && t.status !== 'cancelled'
         ),
 
-      getTasksByProject: (projectId) => get().tasks.filter((t) => t.projectId === projectId),
+      getRootProjects: () => get().projects.filter((p) => !p.parentId),
+
+      getSubfolders: (projectId) => get().projects.filter((p) => p.parentId === projectId),
+
+      getTasksByProject: (projectId) => get().tasks.filter((t) => t.projectId === projectId && !t.subfolderId),
+
+      getTasksBySubfolder: (subfolderId) => get().tasks.filter((t) => t.subfolderId === subfolderId),
 
       getTasksByCategory: (category) =>
         get().tasks.filter(

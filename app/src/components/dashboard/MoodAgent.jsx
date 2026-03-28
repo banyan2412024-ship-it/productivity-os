@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useAgentAnimationStore } from '../../stores/agentAnimationStore'
 
 // ASCII art faces for different mood levels
 const FACES = [
@@ -38,6 +39,8 @@ const MESSAGES = {
 }
 
 export default function MoodAgent({ tasksCompleted, totalTasks, habitsCompleted, totalHabits, weedGrams }) {
+  const animation = useAgentAnimationStore((s) => s.animation)
+  const animFace = useAgentAnimationStore((s) => s.face)
   const score = useMemo(() => {
     let s = 0
 
@@ -102,19 +105,22 @@ export default function MoodAgent({ tasksCompleted, totalTasks, habitsCompleted,
         fontFamily: 'var(--font-mono)',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+      <div className="mood-agent-layout">
         {/* Face */}
         <div style={{ textAlign: 'center', flexShrink: 0 }}>
           <div
+            key={animation}
+            className={animation ? `agent-${animation}` : ''}
             style={{
               fontSize: '28px',
               lineHeight: 1,
               color: mood.color,
               textShadow: `0 0 8px ${mood.color}`,
               marginBottom: '4px',
+              display: 'inline-block',
             }}
           >
-            {mood.face}
+            {animFace ?? mood.face}
           </div>
           <div
             style={{
@@ -123,7 +129,7 @@ export default function MoodAgent({ tasksCompleted, totalTasks, habitsCompleted,
               letterSpacing: '1px',
             }}
           >
-            [{mood.label}]
+            {animation ? animation.toUpperCase() : `[${mood.label}]`}
           </div>
         </div>
 
@@ -139,9 +145,7 @@ export default function MoodAgent({ tasksCompleted, totalTasks, habitsCompleted,
                 fontSize: '11px',
                 color: i === 0 ? mood.color : 'var(--text-dim)',
                 marginBottom: '2px',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
+                wordBreak: 'break-word',
               }}
             >
               {msg}

@@ -23,6 +23,9 @@ const MAPPERS = {
       due_date: item.dueDate, scheduled_date: item.scheduledDate,
       category: item.category, tags: item.tags ?? [],
       project_id: item.projectId ?? null,
+      subfolder_id: item.subfolderId ?? null,
+      description: item.description ?? '',
+      difficulty: item.difficulty ?? 'normal',
       created_at: item.createdAt, completed_at: item.completedAt ?? null,
     }),
     fromRow: (row) => ({
@@ -32,14 +35,27 @@ const MAPPERS = {
       dueDate: row.due_date ?? null, scheduledDate: row.scheduled_date ?? null,
       category: row.category, tags: row.tags ?? [],
       projectId: row.project_id ?? null,
+      subfolderId: row.subfolder_id ?? null,
+      description: row.description ?? '',
+      difficulty: row.difficulty ?? 'normal',
       createdAt: row.created_at, completedAt: row.completed_at ?? null,
     }),
   },
 
   projects: {
     table: 'projects',
-    toRow: (item, uid) => ({ id: item.id, user_id: uid, name: item.name, created_at: item.createdAt }),
-    fromRow: (row) => ({ id: row.id, name: row.name, createdAt: row.created_at }),
+    toRow: (item, uid) => ({
+      id: item.id, user_id: uid, name: item.name,
+      parent_id: item.parentId ?? null,
+      description: item.description ?? '',
+      created_at: item.createdAt,
+    }),
+    fromRow: (row) => ({
+      id: row.id, name: row.name,
+      parentId: row.parent_id ?? null,
+      description: row.description ?? '',
+      createdAt: row.created_at,
+    }),
   },
 
   habits: {

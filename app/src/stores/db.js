@@ -34,6 +34,20 @@ db.version(2).stores({
   smokingLogs: 'id, date',
 })
 
+db.version(3).stores({
+  notes: 'id, title, updatedAt, *tags',
+  tasks: 'id, status, priority, projectId, subfolderId, dueDate, scheduledDate, isMIT, isFrog, isQuickWin, category',
+  projects: 'id, parentId',
+  habits: 'id, frequency, timeOfDay, stackedAfter',
+  pomodoroSessions: 'id, date, linkedTaskId',
+  timeBlocks: 'id, date',
+  settings: 'key',
+  calendarEvents: 'id, date, startTime, type',
+  ideas: 'id, category, reminderDate, createdAt',
+  transactions: 'id, date, type, category',
+  smokingLogs: 'id, date',
+})
+
 // ─── Generic helpers ────────────────────────────────────────────────────────
 
 /** Bulk-put an array of items into a table, returns when done */
