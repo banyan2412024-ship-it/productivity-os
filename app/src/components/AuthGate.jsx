@@ -88,6 +88,9 @@ export default function AuthGate({ children }) {
     }
   }, [progress, user, profile, granted])
 
+  // ── Already granted this session? Skip everything. ─────────────────────────
+  if (sessionGranted && user && profile?.status === 'approved') return children
+
   // ── Determine what to show ─────────────────────────────────────────────────
   const isReady = user && profile?.status === 'approved'
   const showMatrix = visible && !isReady // show rain for all non-ready states
