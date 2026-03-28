@@ -120,6 +120,20 @@ export const useProfileStore = create((set, get) => ({
     })
     return res.ok
   },
+
+  adminResetUserData: async (userId) => {
+    const apiUrl = import.meta.env.VITE_API_URL ?? ''
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch(`${apiUrl}/admin/reset-user-data`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify({ userId }),
+    })
+    return res.ok
+  },
 }))
 
 supabase.auth.onAuthStateChange(async (event, session) => {

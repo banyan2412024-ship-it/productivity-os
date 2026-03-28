@@ -8,10 +8,12 @@ export default function AdminPage() {
   const myProfile = useProfileStore((s) => s.profile)
   const getAllProfiles = useProfileStore((s) => s.getAllProfiles)
   const adminUpdate = useProfileStore((s) => s.adminUpdateProfile)
+  const adminReset = useProfileStore((s) => s.adminResetUserData)
 
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(null)
+  const [resetConfirm, setResetConfirm] = useState(null)
 
   useEffect(() => {
     getAllProfiles().then((data) => { setUsers(data); setLoading(false) })
@@ -47,6 +49,13 @@ export default function AdminPage() {
     const next = modules.includes(key) ? modules.filter((k) => k !== key) : [...modules, key]
     await adminUpdate(id, { enabled_modules: next })
     await refresh()
+  }
+
+  const resetData = async (id) => {
+    setBusy(id)
+    await adminReset(id)
+    setResetConfirm(null)
+    setBusy(null)
   }
 
   const pending = users.filter((u) => u.status === 'pending')
@@ -143,6 +152,26 @@ export default function AdminPage() {
                 style={{ fontSize: '8px', fontFamily: 'var(--font-mono)', padding: '2px 8px', border: '1px solid var(--cyan)', color: u.is_admin ? 'var(--cyan)' : 'var(--text-ghost)', background: 'transparent', cursor: 'pointer' }}>
                 {u.is_admin ? '[ REMOVE ADMIN ]' : '[ MAKE ADMIN ]'}
               </button>
+            )}
+            {u.id !== myProfile.id && (
+              resetConfirm === u.id ? (
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ fontSize: '8px', color: 'var(--danger)' }}>sure?</span>
+                  <button onClick={() => resetData(u.id)} disabled={busy === u.id}
+                    style={{ fontSize: '8px', fontFamily: 'var(--font-mono)', padding: '2px 8px', border: '1px solid var(--danger-bright)', color: 'var(--danger-bright)', background: 'transparent', cursor: 'pointer' }}>
+                    [ YES, WIPE ]
+                  </button>
+                  <button onClick={() => setResetConfirm(null)}
+                    style={{ fontSize: '8px', fontFamily: 'var(--font-mono)', padding: '2px 8px', border: '1px solid var(--border-mid)', color: 'var(--text-ghost)', background: 'transparent', cursor: 'pointer' }}>
+                    [ CANCEL ]
+                  </button>
+                </span>
+              ) : (
+                <button onClick={() => setResetConfirm(u.id)}
+                  style={{ fontSize: '8px', fontFamily: 'var(--font-mono)', padding: '2px 8px', border: '1px solid var(--danger)', color: 'var(--danger)', background: 'transparent', cursor: 'pointer' }}>
+                  [ RESET DATA ]
+                </button>
+              )
             )}
           </div>
         </div>

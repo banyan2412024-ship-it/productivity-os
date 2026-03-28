@@ -128,6 +128,41 @@ app.post('/api/admin/update-profile', async (req, res) => {
   res.json({ ok: true })
 })
 
+// ─── Admin reset user data ───────────────────────────────────────────────────
+
+app.post('/api/admin/reset-user-data', async (req, res) => {
+  if (!supabaseAdmin) return res.status(503).json({ error: 'Supabase not configured' })
+
+  const authHeader = req.headers.authorization
+  if (!authHeader) return res.status(401).json({ error: 'No auth token' })
+
+  const token = authHeader.replace('Bearer ', '')
+  const { data: { user }, error: authErr } = await supabaseAdmin.auth.getUser(token)
+  if (authErr || !user) return res.status(401).json({ error: 'Invalid token' })
+
+  const { data: callerProfile } = await supabaseAdmin
+    .from('profiles').select('is_admin').eq('id', user.id).single()
+  if (!callerProfile?.is_admin) return res.status(403).json({ error: 'Not admin' })
+
+  const { userId } = req.body
+  if (!userId) return res.status(400).json({ error: 'userId required' })
+
+  const tables = [
+    'tasks', 'projects', 'notes', 'ideas', 'habits',
+    'transactions', 'smoking_logs', 'calendar_events',
+    'pomodoro_sessions', 'time_blocks', 'user_settings',
+  ]
+
+  const errors = []
+  for (const table of tables) {
+    const { error } = await supabaseAdmin.from(table).delete().eq('user_id', userId)
+    if (error) errors.push(`${table}: ${error.message}`)
+  }
+
+  if (errors.length) return res.status(500).json({ errors })
+  res.json({ ok: true })
+})
+
 // ─── Generic CRUD routes ────────────────────────────────────────────────────
 
 // GET /api/:table — fetch all pages from a Notion database

@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabase'
-import { autoMigrateIfEmpty } from './autoMigrate'
 
 export const useAuthStore = create((set) => ({
   user: null,
@@ -14,7 +13,6 @@ export const useAuthStore = create((set) => ({
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
         const u = session?.user ?? null
         set({ user: u, loading: false })
-        if (u) setTimeout(() => autoMigrateIfEmpty(u.id), 1500)
       }
     })
   },
