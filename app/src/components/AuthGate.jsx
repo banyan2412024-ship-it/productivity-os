@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useAuthStore } from '../stores/authStore'
 import { useProfileStore } from '../stores/profileStore'
 import { supabase } from '../lib/supabase'
@@ -72,6 +72,8 @@ export default function AuthGate({ children }) {
   const [granted, setGranted] = useState(alreadyGranted)
   const [visible, setVisible] = useState(!alreadyGranted)
 
+  const dismissTimerRef = useRef(null)
+
   const showErr = (msg, ms = 4000) => { setError(msg); setTimeout(() => setError(''), ms) }
 
   // Clear granted flag on sign-out so next login shows animation
@@ -82,10 +84,10 @@ export default function AuthGate({ children }) {
   // ── Drive progress from real states ────────────────────────────────────────
   useEffect(() => {
     if (loading) setProgress(15)
-    else if (!user) setProgress(100) // no user — go straight to login (no HUD)
+    else if (!user) setProgress(100)
     else if (profileLoading) setProgress(50)
     else if (profile?.status === 'approved') setProgress(100)
-    else setProgress(100) // pending/rejected/no-profile — show form
+    else setProgress(100)
   }, [loading, user, profileLoading, profile])
 
   // ── ACCESS GRANTED sequence (only once per session) ────────────────────────
@@ -93,9 +95,14 @@ export default function AuthGate({ children }) {
     if (progress >= 100 && user && profile?.status === 'approved' && !granted) {
       markGranted()
       setGranted(true)
-      setTimeout(() => setVisible(false), 1800)
+      dismissTimerRef.current = setTimeout(() => setVisible(false), 1800)
     }
   }, [progress, user, profile, granted])
+
+  // Clean up dismiss timer on unmount
+  useEffect(() => {
+    return () => { if (dismissTimerRef.current) clearTimeout(dismissTimerRef.current) }
+  }, [])
 
   // ── Already granted this session — NEVER show ACCESS GRANTED animation again ──
   if (alreadyGranted) {

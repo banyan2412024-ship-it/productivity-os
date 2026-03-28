@@ -82,12 +82,15 @@ export default function MatrixLoader({ progress, showHud, granted, children }) {
       }}>
         {/* ACCESS GRANTED flash */}
         {granted && (
-          <div style={{
-            fontFamily: 'monospace', fontSize: '24px', fontWeight: 'bold',
-            color: '#fff', letterSpacing: '6px',
-            textShadow: '0 0 20px rgba(0,255,65,0.9), 0 0 40px rgba(0,255,65,0.5)',
-            animation: 'grantedFlash 1.2s ease-out forwards',
-          }}>
+          <div
+            style={{
+              fontFamily: 'monospace', fontSize: '24px', fontWeight: 'bold',
+              color: '#fff', letterSpacing: '6px',
+              textShadow: '0 0 20px rgba(0,255,65,0.9), 0 0 40px rgba(0,255,65,0.5)',
+              animation: 'grantedFlash 1.2s ease-out forwards',
+            }}
+            onAnimationEnd={(e) => { e.currentTarget.style.opacity = '0' }}
+          >
             ACCESS GRANTED
           </div>
         )}
