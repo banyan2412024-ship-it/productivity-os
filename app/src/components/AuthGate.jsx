@@ -292,6 +292,9 @@ function SetupForm({ user, username, setUsername, email, setEmail, password, set
           </button>
         </form>
         {error && <p style={{ color: '#ff2244', fontSize: '11px', margin: 0, fontFamily: 'monospace' }}>&gt; {error}</p>}
+        <button onClick={() => supabase.auth.signOut()} style={{ ...btnStyle(false), background: 'transparent', color: 'rgba(0,255,65,0.4)', border: '1px solid rgba(0,255,65,0.15)', marginTop: '4px' }}>
+          [ SIGN OUT ]
+        </button>
       </div>
     </div>
   )
