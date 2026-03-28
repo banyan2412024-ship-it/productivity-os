@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuthStore } from '../../stores/authStore'
-import { Database, Cloud } from 'lucide-react'
+import { Cloud } from 'lucide-react'
 
 export default function SyncStatus() {
   const user = useAuthStore((s) => s.user)
@@ -58,25 +58,8 @@ export default function SyncStatus() {
               <span style={{ fontSize: '11px', color: 'var(--text)' }}>&gt; connected to supabase</span>
             </div>
 
-            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '6px' }}>
-              <a
-                href="/app/migrate"
-                onClick={() => setShowMenu(false)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '4px',
-                  padding: '4px 6px', fontSize: '10px',
-                  background: 'transparent', border: '1px solid var(--border)',
-                  color: 'var(--neon-dim)', cursor: 'pointer',
-                  textDecoration: 'none', fontFamily: 'var(--font-mono)',
-                }}
-              >
-                <Database size={11} />
-                [ MIGRATE DATA ]
-              </a>
-            </div>
-
             <p style={{ fontSize: '8px', color: 'var(--text-ghost)', marginTop: '6px', borderTop: '1px solid var(--border)', paddingTop: '4px' }}>
-              device remembered — data persists per device
+              data synced to supabase
             </p>
           </div>
         </>

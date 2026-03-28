@@ -5,7 +5,7 @@ import App from './App.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
 
 // Clean up old localStorage persistence keys (one-time migration)
-;['productivity-notes', 'productivity-tasks', 'productivity-habits', 'productivity-pomodoro'].forEach(
+;['productivity-notes', 'productivity-tasks', 'productivity-habits', 'productivity-pomodoro', 'notion-page-ids'].forEach(
   (key) => localStorage.removeItem(key)
 )
 

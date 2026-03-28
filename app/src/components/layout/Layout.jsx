@@ -2,7 +2,6 @@ import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import QuickCapture from '../dashboard/QuickCapture'
 import ToastContainer from './ToastContainer'
-import SyncStatus from './SyncStatus'
 
 export default function Layout() {
   return (
@@ -11,9 +10,6 @@ export default function Layout() {
       <main className="flex-1 overflow-auto pb-16 md:pb-0">
         <Outlet />
       </main>
-      <div className="fixed bottom-3 right-3 z-30 hidden md:block">
-        <SyncStatus />
-      </div>
       <QuickCapture />
       <ToastContainer />
     </div>

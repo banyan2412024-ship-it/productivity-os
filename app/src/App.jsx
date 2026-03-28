@@ -13,7 +13,6 @@ import PomodoroPage from './pages/PomodoroPage'
 import IdeaBankPage from './pages/IdeaBankPage'
 import MoneyPage from './pages/MoneyPage'
 import SmokingPage from './pages/SmokingPage'
-import MigratePage from './pages/MigratePage'
 import SettingsPage from './pages/SettingsPage'
 import AdminPage from './pages/AdminPage'
 
@@ -55,7 +54,6 @@ export default function App() {
           <Route path="ideas" element={<IdeaBankPage />} />
           <Route path="money" element={<MoneyPage />} />
           <Route path="smoking" element={<SmokingPage />} />
-          <Route path="migrate" element={<MigratePage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="admin" element={<AdminPage />} />
         </Route>

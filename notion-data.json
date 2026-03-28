@@ -1,0 +1,4569 @@
+{
+  "tasks": [
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-811c-9d33-f31e4e1c7917",
+      "created_time": "2026-03-26T12:35:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "a3fa0c04-5cae-4004-9661-377e40c96601",
+            "name": "Work",
+            "color": "blue"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "fb5434fd-e94a-4111-8240-e3cc33a74dc9",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "fb5434fd-e94a-4111-8240-e3cc33a74dc9",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Receive Samples",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Receive Samples",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Receive-Samples-32f97ccfa631811c9d33f31e4e1c7917",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-811d-8459-fe093f7b6989",
+      "created_time": "2026-03-26T16:54:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "bd81ec77-bdef-4733-8daa-6d4570ece289",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "bd81ec77-bdef-4733-8daa-6d4570ece289",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Sub folders",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Sub folders",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Sub-folders-32f97ccfa631811d8459fe093f7b6989",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-811f-b7fe-c3c309d656dd",
+      "created_time": "2026-03-26T16:52:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "408f615e-7c26-4c74-9044-e9516139f98e",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "408f615e-7c26-4c74-9044-e9516139f98e",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Add text copy box for every task and folder.",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Add text copy box for every task and folder.",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Add-text-copy-box-for-every-task-and-folder-32f97ccfa631811fb7fec3c309d656dd",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-8127-b6d4-f7277165c30a",
+      "created_time": "2026-03-26T16:49:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "a339a748-ffb2-4c15-9199-5d143e3b8a99",
+            "name": "done",
+            "color": "green"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "ad31481f-d32c-4ed3-afde-afce7cf634cc",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "ad31481f-d32c-4ed3-afde-afce7cf634cc",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Deploy Prompt Ctrl + .",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Deploy Prompt Ctrl + .",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Deploy-Prompt-Ctrl-32f97ccfa6318127b6d4f7277165c30a",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-8137-92f6-d61bcb058744",
+      "created_time": "2026-03-26T16:57:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "ec43cb05-8d5e-4d9a-a9b8-2cccf990d5e8",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "ec43cb05-8d5e-4d9a-a9b8-2cccf990d5e8",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "think of some cool animations on the charachter when you complete a task or do something bad. a diffrent animation with every action that is ssignificant for productivity.",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "think of some cool animations on the charachter when you complete a task or do something bad. a diffrent animation with every action that is ssignificant for productivity.",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/think-of-some-cool-animations-on-the-charachter-when-you-complete-a-task-or-do-something-bad-a-diff-32f97ccfa631813792f6d61bcb058744",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-8139-a815-e9342c513bcd",
+      "created_time": "2026-03-26T17:35:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "ccb711b1-65e6-4479-9d53-62b86e48c68f",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "ccb711b1-65e6-4479-9d53-62b86e48c68f",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Brainstorm",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Brainstorm",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Brainstorm-32f97ccfa6318139a815e9342c513bcd",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-814a-a05b-e6e9bb5da517",
+      "created_time": "2026-03-26T16:50:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "49389ed0-1cc7-439b-bccd-c20fc928fb61",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "49389ed0-1cc7-439b-bccd-c20fc928fb61",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Test and Bug Fix",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Test and Bug Fix",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Test-and-Bug-Fix-32f97ccfa631814aa05be6e9bb5da517",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-8179-8fc5-e029e1f92fd8",
+      "created_time": "2026-03-26T17:35:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "bfa05525-bdcc-4c22-851c-fc2d582e1e86",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "bfa05525-bdcc-4c22-851c-fc2d582e1e86",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Think of the idea and how you want it to run",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Think of the idea and how you want it to run",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Think-of-the-idea-and-how-you-want-it-to-run-32f97ccfa63181798fc5e029e1f92fd8",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-817a-b5da-c9b34a2c0634",
+      "created_time": "2026-03-26T16:58:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "8678387a-bc7f-493e-aa7b-0e3e9c4fc9bc",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "8678387a-bc7f-493e-aa7b-0e3e9c4fc9bc",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Change terminal logo",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Change terminal logo",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Change-terminal-logo-32f97ccfa631817ab5dac9b34a2c0634",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-8189-b3ed-cd02baa01b6b",
+      "created_time": "2026-03-26T16:47:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "a3fa0c04-5cae-4004-9661-377e40c96601",
+            "name": "Work",
+            "color": "blue"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "6cca3ec5-3b06-4bcc-80b5-7ced3b50c060",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "6cca3ec5-3b06-4bcc-80b5-7ced3b50c060",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "b598b23e-8bdd-466f-a4a4-be785cd8eadd",
+            "name": "high",
+            "color": "red"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Test Samples",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Test Samples",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Test-Samples-32f97ccfa6318189b3edcd02baa01b6b",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-818b-a148-fb4beae86c72",
+      "created_time": "2026-03-26T16:53:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "72d36e37-29a1-45d5-9497-c19e918fc95b",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "72d36e37-29a1-45d5-9497-c19e918fc95b",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Make it so the difficulty is one button like the priority button, also add more of them, something fun and creative",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Make it so the difficulty is one button like the priority button, also add more of them, something fun and creative",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Make-it-so-the-difficulty-is-one-button-like-the-priority-button-also-add-more-of-them-something-f-32f97ccfa631818ba148fb4beae86c72",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-818c-9cec-c5a80288e3a8",
+      "created_time": "2026-03-26T16:56:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "396fc6b1-c8bc-4ff9-8094-a83a5f9704d4",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "396fc6b1-c8bc-4ff9-8094-a83a5f9704d4",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "mobile charachter text fix",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "mobile charachter text fix",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/mobile-charachter-text-fix-32f97ccfa631818c9cecc5a80288e3a8",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-81c4-9936-d75dc93d14df",
+      "created_time": "2026-03-26T16:52:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "7687bdbb-37dd-4d4f-aa57-f298c6c5e9c5",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "7687bdbb-37dd-4d4f-aa57-f298c6c5e9c5",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Set up SupaBase",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Set up SupaBase",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Set-up-SupaBase-32f97ccfa63181c49936d75dc93d14df",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-81cc-84ec-c95393949395",
+      "created_time": "2026-03-26T16:47:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "a3fa0c04-5cae-4004-9661-377e40c96601",
+            "name": "Work",
+            "color": "blue"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "a5d01552-a380-43b3-bcdb-61ecd58aae5f",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "a5d01552-a380-43b3-bcdb-61ecd58aae5f",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "b598b23e-8bdd-466f-a4a4-be785cd8eadd",
+            "name": "high",
+            "color": "red"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Receive Samples",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Receive Samples",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Receive-Samples-32f97ccfa63181cc84ecc95393949395",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-81d9-afc5-efaf274ff4e7",
+      "created_time": "2026-03-26T17:01:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "1e7ac140-75cd-4d12-a1a5-0e6fe3794687",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "1e7ac140-75cd-4d12-a1a5-0e6fe3794687",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Next to the 3 buttons on top add 3 main statistic for all of them. weed make it the trend. money make it the net. and idea nothing. third one should be a habit progress bar that is mindows 95 themed with blocks",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Next to the 3 buttons on top add 3 main statistic for all of them. weed make it the trend. money make it the net. and idea nothing. third one should be a habit progress bar that is mindows 95 themed with blocks",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Next-to-the-3-buttons-on-top-add-3-main-statistic-for-all-of-them-weed-make-it-the-trend-money-mak-32f97ccfa63181d9afc5efaf274ff4e7",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-81ee-a889-c808ecafe86d",
+      "created_time": "2026-03-26T16:50:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "a1780b56-6bee-464b-befc-0dc579eea39a",
+        "database_id": "45b24976-ef0a-4652-89d4-0eb308342e3f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Quick Win": {
+          "id": "%3DVYh",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Is Frog": {
+          "id": "C%3BvO",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Status": {
+          "id": "FpzV",
+          "type": "select",
+          "select": {
+            "id": "2eb5329f-71b4-49c2-8a03-ef192af27695",
+            "name": "inbox",
+            "color": "gray"
+          }
+        },
+        "Due Date": {
+          "id": "Ihmh",
+          "type": "date",
+          "date": null
+        },
+        "Is MIT": {
+          "id": "KSan",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Category": {
+          "id": "XV%3Dw",
+          "type": "select",
+          "select": {
+            "id": "40a1cb1b-c280-4ff9-9699-243d9bfe4a0d",
+            "name": "Other",
+            "color": "default"
+          }
+        },
+        "Local ID": {
+          "id": "kNlO",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "bd519a11-c720-4bd5-b53d-14215b6006b3",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "bd519a11-c720-4bd5-b53d-14215b6006b3",
+              "href": null
+            }
+          ]
+        },
+        "Priority": {
+          "id": "wWFD",
+          "type": "select",
+          "select": {
+            "id": "57c872db-b79b-4b90-b44e-6a90bdb06a42",
+            "name": "medium",
+            "color": "yellow"
+          }
+        },
+        "Notes": {
+          "id": "%7BHUV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Work on the design",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Work on the design",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Work-on-the-design-32f97ccfa63181eea889c808ecafe86d",
+      "public_url": null,
+      "archived": false
+    }
+  ],
+  "ideas": [
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-810f-9fdb-d748fcf6ce1d",
+      "created_time": "2026-03-26T16:45:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "f143fa1c-e298-4638-a1c9-faad24868c37",
+        "database_id": "f4ebf325-aefd-4c55-b63c-cbd4671b9919"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Local ID": {
+          "id": "%3Azs%7C",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "6066eb79-e8be-49d2-b334-08ef9f1e347c",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "6066eb79-e8be-49d2-b334-08ef9f1e347c",
+              "href": null
+            }
+          ]
+        },
+        "Status": {
+          "id": "T%3Fgs",
+          "type": "select",
+          "select": {
+            "id": "a6649e07-f434-4ce1-a638-243d5bfb0dfd",
+            "name": "active",
+            "color": "green"
+          }
+        },
+        "Reminder Date": {
+          "id": "_%5DLg",
+          "type": "date",
+          "date": null
+        },
+        "Category": {
+          "id": "bZYI",
+          "type": "select",
+          "select": {
+            "id": "d0161107-6bd4-482c-812e-c87497800d0c",
+            "name": "Other",
+            "color": "gray"
+          }
+        },
+        "Description": {
+          "id": "%7DFkV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Telegram Translation Bot",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Telegram Translation Bot",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Telegram-Translation-Bot-32f97ccfa631810f9fdbd748fcf6ce1d",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-81bc-9d60-e4ed4a21c7cc",
+      "created_time": "2026-03-26T13:59:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "f143fa1c-e298-4638-a1c9-faad24868c37",
+        "database_id": "f4ebf325-aefd-4c55-b63c-cbd4671b9919"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Local ID": {
+          "id": "%3Azs%7C",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "24723b0a-4eda-4a5e-aa49-facf76ee1fab",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "24723b0a-4eda-4a5e-aa49-facf76ee1fab",
+              "href": null
+            }
+          ]
+        },
+        "Status": {
+          "id": "T%3Fgs",
+          "type": "select",
+          "select": {
+            "id": "a6649e07-f434-4ce1-a638-243d5bfb0dfd",
+            "name": "active",
+            "color": "green"
+          }
+        },
+        "Reminder Date": {
+          "id": "_%5DLg",
+          "type": "date",
+          "date": null
+        },
+        "Category": {
+          "id": "bZYI",
+          "type": "select",
+          "select": {
+            "id": "d0161107-6bd4-482c-812e-c87497800d0c",
+            "name": "Other",
+            "color": "gray"
+          }
+        },
+        "Description": {
+          "id": "%7DFkV",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Grandpa Bee Hive Notes App",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Grandpa Bee Hive Notes App",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Grandpa-Bee-Hive-Notes-App-32f97ccfa63181bc9d60e4ed4a21c7cc",
+      "public_url": null,
+      "archived": false
+    }
+  ],
+  "transactions": [
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-811b-9f2c-cbdcea148a38",
+      "created_time": "2026-03-26T16:42:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "0df4a51d-3cab-4c30-911c-c29481c4d2d6",
+        "database_id": "ca3a6385-0381-49b1-9cd2-98925d9fec5f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Amount": {
+          "id": "I%40Ve",
+          "type": "number",
+          "number": 30
+        },
+        "Date": {
+          "id": "Q%5C%5Bd",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Type": {
+          "id": "hiRB",
+          "type": "select",
+          "select": {
+            "id": "5e3b2662-67bb-4f35-93a0-f2186a5f1066",
+            "name": "expense",
+            "color": "red"
+          }
+        },
+        "Local ID": {
+          "id": "lECP",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "86d78d6b-e38a-4716-b7c4-beca603b66b7",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "86d78d6b-e38a-4716-b7c4-beca603b66b7",
+              "href": null
+            }
+          ]
+        },
+        "Category": {
+          "id": "zdSM",
+          "type": "select",
+          "select": {
+            "id": "865838a5-ba3e-4b1d-a536-c87cd65c959d",
+            "name": "Other",
+            "color": "gray"
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Other",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Other",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Other-32f97ccfa631811b9f2ccbdcea148a38",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-812b-8f28-f553cae0a7d7",
+      "created_time": "2026-03-26T12:40:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "0df4a51d-3cab-4c30-911c-c29481c4d2d6",
+        "database_id": "ca3a6385-0381-49b1-9cd2-98925d9fec5f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Amount": {
+          "id": "I%40Ve",
+          "type": "number",
+          "number": 34.86
+        },
+        "Date": {
+          "id": "Q%5C%5Bd",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Type": {
+          "id": "hiRB",
+          "type": "select",
+          "select": {
+            "id": "5e3b2662-67bb-4f35-93a0-f2186a5f1066",
+            "name": "expense",
+            "color": "red"
+          }
+        },
+        "Local ID": {
+          "id": "lECP",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "479fa494-4cc0-484b-8ff9-73d113013ea1",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "479fa494-4cc0-484b-8ff9-73d113013ea1",
+              "href": null
+            }
+          ]
+        },
+        "Category": {
+          "id": "zdSM",
+          "type": "select",
+          "select": {
+            "id": "865838a5-ba3e-4b1d-a536-c87cd65c959d",
+            "name": "Other",
+            "color": "gray"
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Other",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Other",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Other-32f97ccfa631812b8f28f553cae0a7d7",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-813b-8790-d4cce77a9842",
+      "created_time": "2026-03-26T11:30:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "0df4a51d-3cab-4c30-911c-c29481c4d2d6",
+        "database_id": "ca3a6385-0381-49b1-9cd2-98925d9fec5f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Amount": {
+          "id": "I%40Ve",
+          "type": "number",
+          "number": 300
+        },
+        "Date": {
+          "id": "Q%5C%5Bd",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Type": {
+          "id": "hiRB",
+          "type": "select",
+          "select": {
+            "id": "aec5e279-eea1-450f-865c-aa995fa04f2f",
+            "name": "income",
+            "color": "green"
+          }
+        },
+        "Local ID": {
+          "id": "lECP",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "bf28917a-6f2e-478b-a890-9455a8a8174c",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "bf28917a-6f2e-478b-a890-9455a8a8174c",
+              "href": null
+            }
+          ]
+        },
+        "Category": {
+          "id": "zdSM",
+          "type": "select",
+          "select": {
+            "id": "b72514c6-a8da-4910-887c-a0c136f0a3ab",
+            "name": "Gift",
+            "color": "pink"
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Gift",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Gift",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Gift-32f97ccfa631813b8790d4cce77a9842",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-816f-9df1-e25679138ed9",
+      "created_time": "2026-03-26T15:51:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "0df4a51d-3cab-4c30-911c-c29481c4d2d6",
+        "database_id": "ca3a6385-0381-49b1-9cd2-98925d9fec5f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Amount": {
+          "id": "I%40Ve",
+          "type": "number",
+          "number": 40
+        },
+        "Date": {
+          "id": "Q%5C%5Bd",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Type": {
+          "id": "hiRB",
+          "type": "select",
+          "select": {
+            "id": "5e3b2662-67bb-4f35-93a0-f2186a5f1066",
+            "name": "expense",
+            "color": "red"
+          }
+        },
+        "Local ID": {
+          "id": "lECP",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "c7067469-717a-401d-aa0f-c4555eed449f",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "c7067469-717a-401d-aa0f-c4555eed449f",
+              "href": null
+            }
+          ]
+        },
+        "Category": {
+          "id": "zdSM",
+          "type": "select",
+          "select": {
+            "id": "e9c733f5-5685-439b-a591-70bf92949f13",
+            "name": "Food & Dining",
+            "color": "orange"
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Food & Dining",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Food & Dining",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Food-Dining-32f97ccfa631816f9df1e25679138ed9",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-817f-8b47-e4899778a3ab",
+      "created_time": "2026-03-26T12:38:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "0df4a51d-3cab-4c30-911c-c29481c4d2d6",
+        "database_id": "ca3a6385-0381-49b1-9cd2-98925d9fec5f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Amount": {
+          "id": "I%40Ve",
+          "type": "number",
+          "number": 40
+        },
+        "Date": {
+          "id": "Q%5C%5Bd",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Type": {
+          "id": "hiRB",
+          "type": "select",
+          "select": {
+            "id": "5e3b2662-67bb-4f35-93a0-f2186a5f1066",
+            "name": "expense",
+            "color": "red"
+          }
+        },
+        "Local ID": {
+          "id": "lECP",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "4ba79ff0-d5a2-463c-a20f-fb83460df815",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "4ba79ff0-d5a2-463c-a20f-fb83460df815",
+              "href": null
+            }
+          ]
+        },
+        "Category": {
+          "id": "zdSM",
+          "type": "select",
+          "select": {
+            "id": "2dfeac68-067a-4138-9480-60c6815441ae",
+            "name": "Entertainment",
+            "color": "pink"
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Entertainment",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Entertainment",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Entertainment-32f97ccfa631817f8b47e4899778a3ab",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-81ae-ac3c-f4b4a625896f",
+      "created_time": "2026-03-26T16:42:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "0df4a51d-3cab-4c30-911c-c29481c4d2d6",
+        "database_id": "ca3a6385-0381-49b1-9cd2-98925d9fec5f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Amount": {
+          "id": "I%40Ve",
+          "type": "number",
+          "number": 30
+        },
+        "Date": {
+          "id": "Q%5C%5Bd",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Type": {
+          "id": "hiRB",
+          "type": "select",
+          "select": {
+            "id": "aec5e279-eea1-450f-865c-aa995fa04f2f",
+            "name": "income",
+            "color": "green"
+          }
+        },
+        "Local ID": {
+          "id": "lECP",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "849ba012-3495-4f62-a84a-0256326e86f0",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "849ba012-3495-4f62-a84a-0256326e86f0",
+              "href": null
+            }
+          ]
+        },
+        "Category": {
+          "id": "zdSM",
+          "type": "select",
+          "select": {
+            "id": "865838a5-ba3e-4b1d-a536-c87cd65c959d",
+            "name": "Other",
+            "color": "gray"
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Other",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Other",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Other-32f97ccfa63181aeac3cf4b4a625896f",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-81b1-8614-c2049d18fd0f",
+      "created_time": "2026-03-26T11:32:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "0df4a51d-3cab-4c30-911c-c29481c4d2d6",
+        "database_id": "ca3a6385-0381-49b1-9cd2-98925d9fec5f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Amount": {
+          "id": "I%40Ve",
+          "type": "number",
+          "number": 300
+        },
+        "Date": {
+          "id": "Q%5C%5Bd",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Type": {
+          "id": "hiRB",
+          "type": "select",
+          "select": {
+            "id": "aec5e279-eea1-450f-865c-aa995fa04f2f",
+            "name": "income",
+            "color": "green"
+          }
+        },
+        "Local ID": {
+          "id": "lECP",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "f70fd70c-1240-4605-a96f-bd5e41fda857",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "f70fd70c-1240-4605-a96f-bd5e41fda857",
+              "href": null
+            }
+          ]
+        },
+        "Category": {
+          "id": "zdSM",
+          "type": "select",
+          "select": {
+            "id": "865838a5-ba3e-4b1d-a536-c87cd65c959d",
+            "name": "Other",
+            "color": "gray"
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Other",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Other",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Other-32f97ccfa63181b18614c2049d18fd0f",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-81b6-b7f6-ece793fd7060",
+      "created_time": "2026-03-26T11:32:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "0df4a51d-3cab-4c30-911c-c29481c4d2d6",
+        "database_id": "ca3a6385-0381-49b1-9cd2-98925d9fec5f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Amount": {
+          "id": "I%40Ve",
+          "type": "number",
+          "number": 50
+        },
+        "Date": {
+          "id": "Q%5C%5Bd",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Type": {
+          "id": "hiRB",
+          "type": "select",
+          "select": {
+            "id": "5e3b2662-67bb-4f35-93a0-f2186a5f1066",
+            "name": "expense",
+            "color": "red"
+          }
+        },
+        "Local ID": {
+          "id": "lECP",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "4f87b7f7-2df3-4018-a02e-336fb6446519",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "4f87b7f7-2df3-4018-a02e-336fb6446519",
+              "href": null
+            }
+          ]
+        },
+        "Category": {
+          "id": "zdSM",
+          "type": "select",
+          "select": {
+            "id": "2dfeac68-067a-4138-9480-60c6815441ae",
+            "name": "Entertainment",
+            "color": "pink"
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Entertainment",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Entertainment",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Entertainment-32f97ccfa63181b6b7f6ece793fd7060",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-81cd-8730-e6b3f313b83e",
+      "created_time": "2026-03-26T11:31:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "0df4a51d-3cab-4c30-911c-c29481c4d2d6",
+        "database_id": "ca3a6385-0381-49b1-9cd2-98925d9fec5f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Amount": {
+          "id": "I%40Ve",
+          "type": "number",
+          "number": 100
+        },
+        "Date": {
+          "id": "Q%5C%5Bd",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Type": {
+          "id": "hiRB",
+          "type": "select",
+          "select": {
+            "id": "5e3b2662-67bb-4f35-93a0-f2186a5f1066",
+            "name": "expense",
+            "color": "red"
+          }
+        },
+        "Local ID": {
+          "id": "lECP",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "0f40b339-8e80-4f49-a02c-77aa4b09fdc5",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "0f40b339-8e80-4f49-a02c-77aa4b09fdc5",
+              "href": null
+            }
+          ]
+        },
+        "Category": {
+          "id": "zdSM",
+          "type": "select",
+          "select": {
+            "id": "f1248a61-9a77-4f18-972c-a2c5e6ea7ca0",
+            "name": "Transport",
+            "color": "blue"
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Transport",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Transport",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Transport-32f97ccfa63181cd8730e6b3f313b83e",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-81d1-a4b7-fffefd6d4d88",
+      "created_time": "2026-03-26T11:32:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "0df4a51d-3cab-4c30-911c-c29481c4d2d6",
+        "database_id": "ca3a6385-0381-49b1-9cd2-98925d9fec5f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Amount": {
+          "id": "I%40Ve",
+          "type": "number",
+          "number": 205
+        },
+        "Date": {
+          "id": "Q%5C%5Bd",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Type": {
+          "id": "hiRB",
+          "type": "select",
+          "select": {
+            "id": "5e3b2662-67bb-4f35-93a0-f2186a5f1066",
+            "name": "expense",
+            "color": "red"
+          }
+        },
+        "Local ID": {
+          "id": "lECP",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "1066caf1-779c-4f29-b207-c7e66a0bb60a",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "1066caf1-779c-4f29-b207-c7e66a0bb60a",
+              "href": null
+            }
+          ]
+        },
+        "Category": {
+          "id": "zdSM",
+          "type": "select",
+          "select": {
+            "id": "865838a5-ba3e-4b1d-a536-c87cd65c959d",
+            "name": "Other",
+            "color": "gray"
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Other",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Other",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Other-32f97ccfa63181d1a4b7fffefd6d4d88",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-81e4-b040-cda6b2ac145c",
+      "created_time": "2026-03-26T11:31:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "0df4a51d-3cab-4c30-911c-c29481c4d2d6",
+        "database_id": "ca3a6385-0381-49b1-9cd2-98925d9fec5f"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Amount": {
+          "id": "I%40Ve",
+          "type": "number",
+          "number": 120
+        },
+        "Date": {
+          "id": "Q%5C%5Bd",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Type": {
+          "id": "hiRB",
+          "type": "select",
+          "select": {
+            "id": "5e3b2662-67bb-4f35-93a0-f2186a5f1066",
+            "name": "expense",
+            "color": "red"
+          }
+        },
+        "Local ID": {
+          "id": "lECP",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "9ca588d5-5aea-4d5f-a978-2e0d90f8a7e8",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "9ca588d5-5aea-4d5f-a978-2e0d90f8a7e8",
+              "href": null
+            }
+          ]
+        },
+        "Category": {
+          "id": "zdSM",
+          "type": "select",
+          "select": {
+            "id": "e9c733f5-5685-439b-a591-70bf92949f13",
+            "name": "Food & Dining",
+            "color": "orange"
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Food & Dining",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Food & Dining",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Food-Dining-32f97ccfa63181e4b040cda6b2ac145c",
+      "public_url": null,
+      "archived": false
+    }
+  ],
+  "weed": [
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-8125-969b-e4fbc81dc533",
+      "created_time": "2026-03-26T16:55:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "64fc8f15-9989-48e2-a744-25d7deb3132d",
+        "database_id": "870f7841-48e0-4ca0-aa0d-b174ca1d4842"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Time": {
+          "id": "B%5DhH",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "23:55",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "23:55",
+              "href": null
+            }
+          ]
+        },
+        "Grams": {
+          "id": "G%5BSO",
+          "type": "number",
+          "number": 1
+        },
+        "Date": {
+          "id": "V%3DnL",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Local ID": {
+          "id": "bIxp",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "93fd0f2b-ca0e-4279-b77c-fba2ebf626fe",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "93fd0f2b-ca0e-4279-b77c-fba2ebf626fe",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "1g at 23:55",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "1g at 23:55",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/1g-at-23-55-32f97ccfa6318125969be4fbc81dc533",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-8166-8cef-c90a070f8d36",
+      "created_time": "2026-03-26T11:27:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "64fc8f15-9989-48e2-a744-25d7deb3132d",
+        "database_id": "870f7841-48e0-4ca0-aa0d-b174ca1d4842"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Time": {
+          "id": "B%5DhH",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "18:27",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "18:27",
+              "href": null
+            }
+          ]
+        },
+        "Grams": {
+          "id": "G%5BSO",
+          "type": "number",
+          "number": 2
+        },
+        "Date": {
+          "id": "V%3DnL",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Local ID": {
+          "id": "bIxp",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "bbdcbb63-8047-4c2a-b95c-cd4a3c7b75e2",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "bbdcbb63-8047-4c2a-b95c-cd4a3c7b75e2",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "2g at 18:27",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "2g at 18:27",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/2g-at-18-27-32f97ccfa63181668cefc90a070f8d36",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-8168-99e7-eaad7a0a5f16",
+      "created_time": "2026-03-26T16:55:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "64fc8f15-9989-48e2-a744-25d7deb3132d",
+        "database_id": "870f7841-48e0-4ca0-aa0d-b174ca1d4842"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Time": {
+          "id": "B%5DhH",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "23:55",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "23:55",
+              "href": null
+            }
+          ]
+        },
+        "Grams": {
+          "id": "G%5BSO",
+          "type": "number",
+          "number": 2
+        },
+        "Date": {
+          "id": "V%3DnL",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Local ID": {
+          "id": "bIxp",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "1ea370d3-17c9-4a48-a734-e48ab9edab44",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "1ea370d3-17c9-4a48-a734-e48ab9edab44",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "2g at 23:55",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "2g at 23:55",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/2g-at-23-55-32f97ccfa631816899e7eaad7a0a5f16",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-8181-8bce-c7366c7778db",
+      "created_time": "2026-03-26T16:55:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "64fc8f15-9989-48e2-a744-25d7deb3132d",
+        "database_id": "870f7841-48e0-4ca0-aa0d-b174ca1d4842"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Time": {
+          "id": "B%5DhH",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "23:55",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "23:55",
+              "href": null
+            }
+          ]
+        },
+        "Grams": {
+          "id": "G%5BSO",
+          "type": "number",
+          "number": 0.25
+        },
+        "Date": {
+          "id": "V%3DnL",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Local ID": {
+          "id": "bIxp",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "a0ca9954-450b-4866-9883-3a948885d347",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "a0ca9954-450b-4866-9883-3a948885d347",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "0.25g at 23:55",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "0.25g at 23:55",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/0-25g-at-23-55-32f97ccfa63181818bcec7366c7778db",
+      "public_url": null,
+      "archived": false
+    },
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-8199-8d4f-f8fbdba4100c",
+      "created_time": "2026-03-26T16:55:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "64fc8f15-9989-48e2-a744-25d7deb3132d",
+        "database_id": "870f7841-48e0-4ca0-aa0d-b174ca1d4842"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Time": {
+          "id": "B%5DhH",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "23:55",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "23:55",
+              "href": null
+            }
+          ]
+        },
+        "Grams": {
+          "id": "G%5BSO",
+          "type": "number",
+          "number": 1
+        },
+        "Date": {
+          "id": "V%3DnL",
+          "type": "date",
+          "date": {
+            "start": "2026-03-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Local ID": {
+          "id": "bIxp",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "c3d512b3-d38c-4928-8a07-f0ed9735cad2",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "c3d512b3-d38c-4928-8a07-f0ed9735cad2",
+              "href": null
+            }
+          ]
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "1g at 23:55",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "1g at 23:55",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/1g-at-23-55-32f97ccfa63181998d4ff8fbdba4100c",
+      "public_url": null,
+      "archived": false
+    }
+  ],
+  "events": [
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-8179-adaa-d1f1b4510360",
+      "created_time": "2026-03-26T12:03:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "40de7372-8b10-48a2-b4ed-73250147c264",
+        "database_id": "8bedd2f2-304b-47a9-a1dd-12d9d051e509"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Local ID": {
+          "id": "Od%5CF",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "2deb1b51-8a83-4635-8857-a6a4cdc2955b",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "2deb1b51-8a83-4635-8857-a6a4cdc2955b",
+              "href": null
+            }
+          ]
+        },
+        "End Time": {
+          "id": "oHTg",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "16:30",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "16:30",
+              "href": null
+            }
+          ]
+        },
+        "Start Time": {
+          "id": "tfKR",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "15:00",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "15:00",
+              "href": null
+            }
+          ]
+        },
+        "Date": {
+          "id": "z~bC",
+          "type": "date",
+          "date": {
+            "start": "2026-03-27",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Gym",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Gym",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Gym-32f97ccfa6318179adaad1f1b4510360",
+      "public_url": null,
+      "archived": false
+    }
+  ],
+  "habits": [
+    {
+      "object": "page",
+      "id": "32f97ccf-a631-8023-9917-f8c1c4f84585",
+      "created_time": "2026-03-26T04:11:00.000Z",
+      "last_edited_time": "2026-03-27T04:43:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "2f8d872b-594c-8175-8b7d-0002a5762207"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "32e97ccf-a631-8171-a1e2-0027e2d5e73f"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "data_source_id",
+        "data_source_id": "3a5cfd48-5b02-4393-8f04-5015e8a323b1",
+        "database_id": "7b22c4aa-a52a-425d-8598-90fe5eaf7cc5"
+      },
+      "in_trash": false,
+      "is_archived": false,
+      "is_locked": false,
+      "properties": {
+        "Color": {
+          "id": "%3D%60fZ",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "#00ff41",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "#00ff41",
+              "href": null
+            }
+          ]
+        },
+        "Longest Streak": {
+          "id": "A%5D%40P",
+          "type": "number",
+          "number": 0
+        },
+        "Local ID": {
+          "id": "SpZ%60",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "32f97ccf-a631-8023-9917-f8c1c4f84585",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "32f97ccf-a631-8023-9917-f8c1c4f84585",
+              "href": null
+            }
+          ]
+        },
+        "Time of Day": {
+          "id": "%5Cl%5BD",
+          "type": "select",
+          "select": {
+            "id": "0fe6c265-9472-4454-92bf-9e8456ad746f",
+            "name": "anytime",
+            "color": "gray"
+          }
+        },
+        "Current Streak": {
+          "id": "b%7CTO",
+          "type": "number",
+          "number": 0
+        },
+        "Frequency": {
+          "id": "tEPO",
+          "type": "select",
+          "select": {
+            "id": "679c244b-50f8-45d4-9b28-d2112e038967",
+            "name": "daily",
+            "color": "blue"
+          }
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Physical Activity",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Physical Activity",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Physical-Activity-32f97ccfa63180239917f8c1c4f84585",
+      "public_url": null,
+      "archived": false
+    }
+  ]
+}

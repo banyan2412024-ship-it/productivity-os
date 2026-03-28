@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabase'
+import { supabaseAdmin } from '../lib/supabaseAdmin'
 import { applyTheme } from '../lib/applyTheme'
 import { DEFAULT_THEME } from '../themes'
 
@@ -68,13 +69,6 @@ export const useProfileStore = create((set, get) => ({
       const profile = { ...row, created_at: new Date().toISOString() }
       set({ profile, profileLoading: false })
       applyTheme(profile.theme)
-      // Notify admin of new signup (fire-and-forget)
-      const apiUrl = import.meta.env.VITE_API_URL ?? ''
-      fetch(`${apiUrl}/notify-signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username }),
-      }).catch(() => {})
       return profile
     } catch (e) {
       console.warn('[profileStore] createProfile threw:', e.message)
@@ -117,31 +111,22 @@ export const useProfileStore = create((set, get) => ({
   },
 
   adminUpdateProfile: async (userId, updates) => {
-    const apiUrl = import.meta.env.VITE_API_URL ?? ''
-    const { data: { session } } = await supabase.auth.getSession()
-    const res = await fetch(`${apiUrl}/api/admin/update-profile`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session?.access_token}`,
-      },
-      body: JSON.stringify({ userId, updates }),
-    })
-    return res.ok
+    const { error } = await supabaseAdmin.from('profiles').update(updates).eq('id', userId)
+    return !error
   },
 
   adminResetUserData: async (userId) => {
-    const apiUrl = import.meta.env.VITE_API_URL ?? ''
-    const { data: { session } } = await supabase.auth.getSession()
-    const res = await fetch(`${apiUrl}/api/admin/reset-user-data`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session?.access_token}`,
-      },
-      body: JSON.stringify({ userId }),
-    })
-    return res.ok
+    const tables = [
+      'tasks', 'projects', 'notes', 'ideas', 'habits',
+      'transactions', 'smoking_logs', 'calendar_events',
+      'pomodoro_sessions', 'time_blocks', 'user_settings',
+    ]
+    const errors = []
+    for (const table of tables) {
+      const { error } = await supabaseAdmin.from(table).delete().eq('user_id', userId)
+      if (error) errors.push(error.message)
+    }
+    return errors.length === 0
   },
 }))
 
