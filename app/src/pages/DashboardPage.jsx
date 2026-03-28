@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useProfileStore } from '../stores/profileStore'
 import {
   ChevronLeft,
   ChevronRight,
@@ -52,6 +53,11 @@ export default function DashboardPage() {
   const [calMonth, setCalMonth] = useState(new Date())
 
   // Stores
+  const profile = useProfileStore((s) => s.profile)
+  const enabledModules = profile?.enabled_modules ?? ['tasks', 'notes', 'ideas', 'habits', 'pomodoro']
+  const hasWeed = enabledModules.includes('smoking')
+  const hasMoney = enabledModules.includes('money')
+
   const tasks = useTaskStore((s) => s.tasks)
   const addTask = useTaskStore((s) => s.addTask)
   const updateTask = useTaskStore((s) => s.updateTask)
@@ -326,11 +332,11 @@ export default function DashboardPage() {
 
       {/* ── STATUS BAR: Weed | Money | Habits ── */}
       <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '16px',
+        display: 'grid', gridTemplateColumns: `repeat(${1 + (hasWeed ? 1 : 0) + (hasMoney ? 1 : 0)}, 1fr)`, gap: '8px', marginBottom: '16px',
       }}>
 
         {/* WEED */}
-        {(() => {
+        {hasWeed && (() => {
           const avg = weedWeek.slice(0, 6).reduce((s, d) => s + d.grams, 0) / 6
           const today7 = weedWeek[6]?.grams ?? 0
           const trending = today7 > avg
@@ -369,6 +375,7 @@ export default function DashboardPage() {
         })()}
 
         {/* MONEY */}
+        {hasMoney && (
         <div style={{
           background: 'var(--bg-surface)',
           borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
@@ -401,6 +408,7 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+        )}
 
         {/* HABITS */}
         <div style={{
