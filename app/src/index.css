@@ -651,6 +651,51 @@ hr, .divider {
   .tasks-tabs-mobile {
     display: flex !important;
   }
+
+  /* Notes responsive */
+  .notes-list-hidden-mobile {
+    display: none !important;
+  }
+  .notes-back-btn {
+    display: block !important;
+  }
+  .notes-empty-state {
+    display: none !important;
+  }
+
+  /* Pomodoro responsive */
+  .pomodoro-layout {
+    flex-direction: column !important;
+  }
+  .pomodoro-timer-panel {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 20px 16px !important;
+  }
+
+  /* Dashboard header stats — stack on small screens */
+  .dashboard-stats-row {
+    flex-wrap: wrap;
+    gap: 6px !important;
+  }
+}
+
+/* Notes desktop list width */
+.notes-list-visible {
+  width: 260px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+}
+
+@media (max-width: 767px) {
+  .notes-list-visible {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-height: 40vh;
+  }
 }
 
 /* ─── Agent animation keyframes ─────────────────────────────────────────────── */

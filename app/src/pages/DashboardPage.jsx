@@ -326,7 +326,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Entry + Stats */}
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
+        <div className="dashboard-stats-row" style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
 
           {/* Weed button + trend */}
           <div style={{ display: 'flex', gap: '0', border: '2px solid var(--border-bright)' }}>
