@@ -13,37 +13,54 @@ export default function PomodoroPage() {
   const [activeTab, setActiveTab] = useState('blocks')
 
   return (
-    <div className="flex h-full min-h-0">
-      {/* Left side - Timer */}
-      <div className="w-2/5 flex-shrink-0 flex items-center justify-center border-r border-gray-200 dark:border-gray-700 p-8">
+    <div className="pomodoro-layout" style={{ display: 'flex', height: '100%', minHeight: 0 }}>
+
+      {/* Timer — left on desktop, top on mobile */}
+      <div
+        className="pomodoro-timer-panel"
+        style={{
+          width: '40%', flexShrink: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          borderRight: '1px solid var(--border)',
+          padding: '32px 16px',
+        }}
+      >
         <PomodoroTimer />
       </div>
 
-      {/* Right side - Tabs content */}
-      <div className="flex-1 flex flex-col min-h-0 p-6">
+      {/* Content — right on desktop, bottom on mobile */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
         {/* Tab bar */}
-        <div className="flex items-center gap-1 mb-5 flex-shrink-0">
+        <div style={{
+          display: 'flex', gap: '2px', flexShrink: 0,
+          padding: '8px', borderBottom: '1px solid var(--border)',
+          background: 'var(--bg-surface)',
+        }}>
           {TABS.map((tab) => {
             const Icon = tab.icon
+            const isActive = activeTab === tab.key
             return (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  activeTab === tab.key
-                    ? 'bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                }`}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  padding: '5px 14px', fontSize: '10px',
+                  background: isActive ? 'var(--bg-elevated)' : 'transparent',
+                  color: isActive ? 'var(--neon)' : 'var(--text-dim)',
+                  borderBottom: isActive ? '2px solid var(--neon)' : '2px solid transparent',
+                  borderTop: 'none', borderLeft: 'none', borderRight: 'none',
+                  cursor: 'pointer', minWidth: 'unset', letterSpacing: '0.5px',
+                }}
               >
-                <Icon size={16} />
-                {tab.label}
+                <Icon size={13} />{tab.label}
               </button>
             )
           })}
         </div>
 
         {/* Tab content */}
-        <div className="flex-1 min-h-0 overflow-y-auto">
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
           {activeTab === 'blocks' && <TimeBlockView />}
           {activeTab === 'stats' && <PomodoroStats />}
         </div>

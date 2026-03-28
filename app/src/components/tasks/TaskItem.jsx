@@ -1,53 +1,53 @@
 import { useState, useRef, useEffect } from 'react'
-import { useTaskStore, TASK_CATEGORIES } from '../../stores/taskStore'
+import { useTaskStore, TASK_CATEGORIES, DIFFICULTY_LEVELS } from '../../stores/taskStore'
 import { useToastStore } from '../../stores/toastStore'
+import { useAgentAnimationStore } from '../../stores/agentAnimationStore'
 import {
-  Star,
-  Bug,
-  Zap,
-  Trash2,
-  Calendar,
-  ChevronDown,
-  ChevronRight,
-  CheckCircle2,
-  Circle,
-  Tag,
-  FolderOpen,
-  FileText,
+  Star, Zap, Trash2, Calendar,
+  ChevronDown, ChevronRight,
+  CheckCircle2, Circle, Tag, FolderOpen, FileText, Copy, Swords,
 } from 'lucide-react'
 import { format } from 'date-fns'
 
-const priorityColors = {
-  high: 'bg-red-500',
-  medium: 'bg-yellow-500',
-  low: 'bg-gray-400',
+/* ── styles ─────────────────────────────────────────────────────────────────── */
+
+const PRIORITY_STYLE = {
+  high:   { background: 'var(--danger)',       color: '#fff' },
+  medium: { background: 'var(--amber)',         color: '#000' },
+  low:    { background: 'var(--border-bright)', color: 'var(--text)' },
 }
 
-const priorityBorders = {
-  high: 'border-red-200',
-  medium: 'border-yellow-200',
-  low: 'border-gray-200',
+const DIFFICULTY_STYLE = {
+  easy:   { color: '#00ff41', label: 'Easy' },
+  normal: { color: 'var(--text-ghost)', label: 'Normal' },
+  hard:   { color: 'var(--amber)', label: 'Hard' },
+  epic:   { color: 'var(--danger-bright)', label: 'EPIC' },
 }
 
-const priorityLabels = {
-  high: 'High',
-  medium: 'Med',
-  low: 'Low',
+const labelStyle = {
+  fontSize: '9px', color: 'var(--text-ghost)', letterSpacing: '1px',
+  textTransform: 'uppercase', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px',
 }
+
+const sectionStyle = { marginTop: '10px' }
+
+/* ── component ──────────────────────────────────────────────────────────────── */
 
 export default function TaskItem({ task, showGTDPrompts = false }) {
-  const updateTask = useTaskStore((s) => s.updateTask)
-  const deleteTask = useTaskStore((s) => s.deleteTask)
-  const addTask = useTaskStore((s) => s.addTask)
-  const toggleMIT = useTaskStore((s) => s.toggleMIT)
-  const toggleFrog = useTaskStore((s) => s.toggleFrog)
-  const projects = useTaskStore((s) => s.projects)
-  const addToast = useToastStore((s) => s.addToast)
-  const [expanded, setExpanded] = useState(false)
+  const updateTask   = useTaskStore((s) => s.updateTask)
+  const deleteTask   = useTaskStore((s) => s.deleteTask)
+  const addTask      = useTaskStore((s) => s.addTask)
+  const toggleMIT    = useTaskStore((s) => s.toggleMIT)
+  const toggleFrog   = useTaskStore((s) => s.toggleFrog)
+  const projects     = useTaskStore((s) => s.projects)
+  const addToast     = useToastStore((s) => s.addToast)
+  const triggerAnimation = useAgentAnimationStore((s) => s.triggerAnimation)
+
+  const [expanded, setExpanded]       = useState(false)
   const [editingTitle, setEditingTitle] = useState(false)
-  const [titleValue, setTitleValue] = useState(task.title)
-  const [notesValue, setNotesValue] = useState(task.notes || '')
-  const [showGTD, setShowGTD] = useState(false)
+  const [titleValue, setTitleValue]   = useState(task.title)
+  const [notesValue, setNotesValue]   = useState(task.notes || '')
+  const [descValue, setDescValue]     = useState(task.description || '')
   const titleRef = useRef(null)
 
   useEffect(() => {
@@ -57,16 +57,22 @@ export default function TaskItem({ task, showGTDPrompts = false }) {
     }
   }, [editingTitle])
 
+  // Sync local state when task prop changes
+  useEffect(() => { setTitleValue(task.title) }, [task.title])
+  useEffect(() => { setNotesValue(task.notes || '') }, [task.notes])
+  useEffect(() => { setDescValue(task.description || '') }, [task.description])
+
   const isDone = task.status === 'done'
 
   const handleToggleDone = () => {
     const prevStatus = task.status
     if (isDone) {
       updateTask(task.id, { status: 'today' })
-      addToast(`"${task.title}" reopened`, { type: 'info', undoFn: () => { updateTask(task.id, { status: prevStatus }); addToast('Reverted', { type: 'info' }) } })
+      addToast(`"${task.title}" reopened`, { type: 'info', undoFn: () => { updateTask(task.id, { status: prevStatus }) } })
     } else {
       updateTask(task.id, { status: 'done' })
-      addToast(`"${task.title}" completed`, { type: 'success', undoFn: () => { updateTask(task.id, { status: prevStatus }); addToast('Reverted', { type: 'info' }) } })
+      addToast(`"${task.title}" completed ✓`, { type: 'success', undoFn: () => { updateTask(task.id, { status: prevStatus }) } })
+      triggerAnimation('celebrate')
     }
   }
 
@@ -79,184 +85,171 @@ export default function TaskItem({ task, showGTDPrompts = false }) {
     }
   }
 
-  const handleTitleKeyDown = (e) => {
-    if (e.key === 'Enter') handleTitleSave()
-    if (e.key === 'Escape') {
-      setTitleValue(task.title)
-      setEditingTitle(false)
-    }
-  }
-
-  const handleMIT = (e) => {
+  const cyclePriority = (e) => {
     e.stopPropagation()
-    const result = toggleMIT(task.id)
-    if (result === false) {
-      // already 3 MITs
-    }
+    const order = ['high', 'medium', 'low']
+    const next = order[(order.indexOf(task.priority) + 1) % order.length]
+    updateTask(task.id, { priority: next })
   }
 
-  const handleFrog = (e) => {
+  const cycleDifficulty = (e) => {
     e.stopPropagation()
-    toggleFrog(task.id)
-  }
-
-  const handleQuickWin = (e) => {
-    e.stopPropagation()
-    updateTask(task.id, { isQuickWin: !task.isQuickWin })
-  }
-
-  const handlePriorityChange = (priority) => {
-    updateTask(task.id, { priority })
+    const next = DIFFICULTY_LEVELS[(DIFFICULTY_LEVELS.indexOf(task.difficulty || 'normal') + 1) % DIFFICULTY_LEVELS.length]
+    updateTask(task.id, { difficulty: next })
   }
 
   const handleNotesBlur = () => {
-    if (notesValue !== task.notes) {
-      updateTask(task.id, { notes: notesValue })
-    }
+    if (notesValue !== task.notes) updateTask(task.id, { notes: notesValue })
   }
 
-  const handleProjectChange = (projectId) => {
-    updateTask(task.id, { projectId: projectId || null })
+  const handleDescBlur = () => {
+    if (descValue !== task.description) updateTask(task.id, { description: descValue })
+  }
+
+  const handleCopyDesc = () => {
+    if (!descValue) return
+    navigator.clipboard.writeText(descValue)
+    addToast('Copied to clipboard', { type: 'success' })
   }
 
   const handleSchedule = (dateStr) => {
-    if (dateStr) {
-      updateTask(task.id, {
-        scheduledDate: new Date(dateStr).toISOString(),
-        status: 'scheduled',
-      })
-    }
+    if (dateStr) updateTask(task.id, { scheduledDate: new Date(dateStr).toISOString(), status: 'scheduled' })
   }
 
   const handleDueDate = (dateStr) => {
-    if (dateStr) {
-      updateTask(task.id, { dueDate: new Date(dateStr).toISOString() })
-    } else {
-      updateTask(task.id, { dueDate: null })
-    }
+    updateTask(task.id, { dueDate: dateStr ? new Date(dateStr).toISOString() : null })
   }
 
-  // Determine accent styling
-  let accentClasses = 'border-gray-100'
-  if (task.isFrog && !isDone) accentClasses = 'border-green-200 bg-green-50/50'
-  else if (task.isMIT && !isDone) accentClasses = 'border-amber-200 bg-amber-50/50'
-  else if (task.isQuickWin && !isDone) accentClasses = 'border-blue-200 bg-blue-50/50'
+  // Root projects only for dropdown
+  const rootProjects = projects.filter((p) => !p.parentId)
+
+  const pStyle = PRIORITY_STYLE[task.priority] || PRIORITY_STYLE.medium
+  const diff = task.difficulty || 'normal'
+  const dStyle = DIFFICULTY_STYLE[diff]
+
+  const borderColor = task.isFrog && !isDone ? '#00ff41'
+    : task.isMIT && !isDone ? 'var(--amber)'
+    : task.isQuickWin && !isDone ? 'var(--cyan)'
+    : 'var(--border)'
 
   return (
     <div
-      className={`group relative rounded-lg border transition-all ${accentClasses} ${
-        isDone ? 'opacity-50' : ''
-      }`}
-      onMouseEnter={() => showGTDPrompts && setShowGTD(true)}
-      onMouseLeave={() => showGTDPrompts && setShowGTD(false)}
+      style={{
+        borderLeft: `3px solid ${borderColor}`,
+        borderTop: '1px solid var(--border)',
+        borderRight: '1px solid var(--border)',
+        borderBottom: '1px solid var(--border)',
+        background: isDone ? 'transparent' : 'var(--bg-surface)',
+        opacity: isDone ? 0.55 : 1,
+        marginBottom: '3px',
+      }}
     >
-      {/* Main row */}
-      <div className="flex items-center gap-2 px-3 py-2.5">
-        {/* Expand chevron */}
+      {/* ── Main row ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 8px' }}>
+
+        {/* Expand */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+          style={{ background: 'transparent', border: 'none', color: 'var(--text-ghost)', padding: '2px', cursor: 'pointer', minWidth: 'unset', display: 'flex' }}
         >
-          {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          {expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         </button>
 
         {/* Checkbox */}
         <button
           onClick={handleToggleDone}
-          className={`shrink-0 transition-colors ${
-            isDone
-              ? 'text-green-500 hover:text-green-600'
-              : 'text-gray-300 hover:text-gray-500'
-          }`}
+          style={{ background: 'transparent', border: 'none', color: isDone ? 'var(--neon)' : 'var(--text-ghost)', padding: '2px', cursor: 'pointer', minWidth: 'unset', display: 'flex' }}
         >
-          {isDone ? <CheckCircle2 size={18} /> : <Circle size={18} />}
+          {isDone ? <CheckCircle2 size={15} /> : <Circle size={15} />}
         </button>
 
         {/* Title */}
-        <div className="flex-1 min-w-0">
+        <div style={{ flex: 1, minWidth: 0 }}>
           {editingTitle ? (
             <input
               ref={titleRef}
-              type="text"
               value={titleValue}
               onChange={(e) => setTitleValue(e.target.value)}
               onBlur={handleTitleSave}
-              onKeyDown={handleTitleKeyDown}
-              className="w-full bg-transparent text-sm font-medium text-gray-800 outline-none border-b border-blue-400 pb-0.5"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleTitleSave()
+                if (e.key === 'Escape') { setTitleValue(task.title); setEditingTitle(false) }
+              }}
+              style={{ width: '100%', fontSize: '12px', background: 'transparent', color: 'var(--neon)', border: 'none', borderBottom: '1px solid var(--neon)', outline: 'none', padding: '1px 0' }}
             />
           ) : (
             <span
               onClick={() => !isDone && setEditingTitle(true)}
-              style={isDone ? {} : { color: 'var(--neon)' }}
-              className={`text-sm font-medium cursor-text truncate block ${
-                isDone ? 'line-through text-gray-400' : ''
-              }`}
+              style={{
+                fontSize: '12px',
+                color: isDone ? 'var(--text-ghost)' : 'var(--text)',
+                textDecoration: isDone ? 'line-through' : 'none',
+                cursor: isDone ? 'default' : 'text',
+                display: 'block',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
             >
               {task.title}
             </span>
           )}
         </div>
 
-        {/* Badges and icons */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {/* Category badge */}
-          {task.category && task.category !== 'Other' && (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-500">
-              {task.category}
-            </span>
-          )}
+        {/* Badges */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
 
-          {/* Priority badge */}
-          <span
-            className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold text-white ${priorityColors[task.priority]}`}
-          >
-            {priorityLabels[task.priority]}
-          </span>
-
-          {/* Quick win lightning */}
+          {/* Priority (cycling) */}
           <button
-            onClick={handleQuickWin}
-            className={`p-0.5 rounded transition-colors ${
-              task.isQuickWin
-                ? 'text-blue-500 bg-blue-100'
-                : 'text-gray-300 hover:text-blue-400 opacity-0 group-hover:opacity-100'
-            }`}
-            title="Quick Win (under 2 min)"
+            onClick={cyclePriority}
+            title="Cycle priority"
+            style={{ ...pStyle, fontSize: '9px', padding: '1px 6px', border: 'none', cursor: 'pointer', minWidth: 'unset', letterSpacing: '0.5px' }}
           >
-            <Zap size={14} />
+            {task.priority?.toUpperCase()}
           </button>
 
-          {/* MIT star */}
+          {/* Difficulty (visible when non-normal) */}
+          {diff !== 'normal' && (
+            <button
+              onClick={cycleDifficulty}
+              title="Cycle difficulty"
+              style={{ background: 'transparent', border: `1px solid ${dStyle.color}`, color: dStyle.color, fontSize: '9px', padding: '1px 5px', cursor: 'pointer', minWidth: 'unset' }}
+            >
+              {dStyle.label}
+            </button>
+          )}
+
+          {/* Quick win */}
           <button
-            onClick={handleMIT}
-            className={`p-0.5 rounded transition-colors ${
-              task.isMIT
-                ? 'text-amber-500 bg-amber-100'
-                : 'text-gray-300 hover:text-amber-400 opacity-0 group-hover:opacity-100'
-            }`}
-            title="Most Important Task (max 3)"
+            onClick={(e) => { e.stopPropagation(); updateTask(task.id, { isQuickWin: !task.isQuickWin }) }}
+            title="Quick Win"
+            style={{ background: 'transparent', border: 'none', color: task.isQuickWin ? 'var(--cyan)' : 'var(--text-ghost)', padding: '2px', cursor: 'pointer', minWidth: 'unset', display: 'flex', opacity: task.isQuickWin ? 1 : 0.4 }}
           >
-            <Star size={14} fill={task.isMIT ? 'currentColor' : 'none'} />
+            <Zap size={12} />
+          </button>
+
+          {/* MIT */}
+          <button
+            onClick={(e) => { e.stopPropagation(); toggleMIT(task.id) }}
+            title="Most Important Task"
+            style={{ background: 'transparent', border: 'none', color: task.isMIT ? 'var(--amber)' : 'var(--text-ghost)', padding: '2px', cursor: 'pointer', minWidth: 'unset', display: 'flex', opacity: task.isMIT ? 1 : 0.4 }}
+          >
+            <Star size={12} fill={task.isMIT ? 'currentColor' : 'none'} />
           </button>
 
           {/* Frog */}
           <button
-            onClick={handleFrog}
-            className={`p-0.5 rounded transition-colors ${
-              task.isFrog
-                ? 'text-green-500 bg-green-100'
-                : 'text-gray-300 hover:text-green-400 opacity-0 group-hover:opacity-100'
-            }`}
-            title="Eat the Frog (hardest task)"
+            onClick={(e) => { e.stopPropagation(); toggleFrog(task.id) }}
+            title="Eat the Frog"
+            style={{ background: 'transparent', border: 'none', fontSize: '12px', padding: '1px', cursor: 'pointer', minWidth: 'unset', opacity: task.isFrog ? 1 : 0.4 }}
           >
-            <Bug size={14} />
+            🐸
           </button>
 
           {/* Due date */}
           {task.dueDate && (
-            <span className="text-[11px] text-gray-500 flex items-center gap-0.5">
-              <Calendar size={11} />
-              {format(new Date(task.dueDate), 'MMM d')}
+            <span style={{ fontSize: '10px', color: 'var(--amber)', display: 'flex', alignItems: 'center', gap: '2px' }}>
+              <Calendar size={10} />{format(new Date(task.dueDate), 'MMM d')}
             </span>
           )}
 
@@ -266,198 +259,195 @@ export default function TaskItem({ task, showGTDPrompts = false }) {
               e.stopPropagation()
               const saved = { ...task }
               deleteTask(task.id)
-              addToast(`"${task.title}" deleted`, { type: 'info', undoFn: () => { addTask(saved); addToast('Task restored', { type: 'success' }) } })
+              addToast(`"${task.title}" deleted`, { type: 'info', undoFn: () => { addTask(saved) } })
             }}
-            className="p-0.5 rounded text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-            title="Delete task"
+            title="Delete"
+            style={{ background: 'transparent', border: 'none', color: 'var(--danger)', padding: '2px', cursor: 'pointer', minWidth: 'unset', display: 'flex', opacity: 0.5 }}
+            onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+            onMouseLeave={e => e.currentTarget.style.opacity = '0.5'}
           >
-            <Trash2 size={14} />
+            <Trash2 size={12} />
           </button>
         </div>
       </div>
 
-      {/* GTD Processing Prompts (for Inbox) */}
-      {showGTDPrompts && showGTD && !isDone && (
-        <div className="px-3 pb-2 flex items-center gap-2 text-xs border-t border-dashed border-gray-200 pt-2 mx-3">
-          <span className="text-gray-500 font-medium">Quick actions:</span>
-          <button
-            onClick={() => updateTask(task.id, { status: 'cancelled' })}
-            className="px-2 py-0.5 rounded bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-          >
-            Not actionable
-          </button>
-          <button
-            onClick={() => updateTask(task.id, { isQuickWin: true, status: 'today' })}
-            className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors flex items-center gap-1"
-          >
-            <Zap size={11} /> Under 2 min
-          </button>
-          <div className="flex items-center gap-1">
-            <Calendar size={11} className="text-gray-400" />
-            <input
-              type="date"
-              className="text-xs bg-gray-100 rounded px-1.5 py-0.5 text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
-              onChange={(e) => handleSchedule(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
-          <button
-            onClick={() => updateTask(task.id, { status: 'today' })}
-            className="px-2 py-0.5 rounded bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors"
-          >
-            Do today
-          </button>
+      {/* ── GTD prompts ── */}
+      {showGTDPrompts && !isDone && (
+        <div style={{ padding: '4px 28px', borderTop: '1px dashed var(--border)', display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
+          <span style={{ fontSize: '9px', color: 'var(--text-ghost)' }}>QUICK ACTION:</span>
+          <button onClick={() => updateTask(task.id, { status: 'cancelled' })} style={{ fontSize: '9px', padding: '2px 8px' }}>Not actionable</button>
+          <button onClick={() => updateTask(task.id, { isQuickWin: true, status: 'today' })} style={{ fontSize: '9px', padding: '2px 8px' }}>⚡ Under 2min</button>
+          <input type="date" onChange={(e) => handleSchedule(e.target.value)} style={{ fontSize: '9px', padding: '2px 6px' }} />
+          <button onClick={() => updateTask(task.id, { status: 'today' })} style={{ fontSize: '9px', padding: '2px 8px' }}>Do today</button>
         </div>
       )}
 
-      {/* Expanded details */}
+      {/* ── Expanded details ── */}
       {expanded && (
-        <div className="px-3 pb-3 pt-1 border-t border-gray-100 mx-3 space-y-3">
+        <div style={{ padding: '10px 12px 12px', borderTop: '1px solid var(--border)' }}>
+
+          {/* Description / Prompt copy box */}
+          <div style={sectionStyle}>
+            <div style={{ ...labelStyle, justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Copy size={10} /> PROMPT / DESCRIPTION
+              </span>
+              {descValue && (
+                <button
+                  onClick={handleCopyDesc}
+                  title="Copy to clipboard"
+                  style={{ background: 'var(--neon)', color: '#000', border: 'none', fontSize: '9px', padding: '2px 8px', cursor: 'pointer', minWidth: 'unset', letterSpacing: '0.5px' }}
+                >
+                  [ COPY ]
+                </button>
+              )}
+            </div>
+            <textarea
+              value={descValue}
+              onChange={(e) => setDescValue(e.target.value)}
+              onBlur={handleDescBlur}
+              placeholder="> write a prompt or description to copy..."
+              rows={3}
+              style={{ width: '100%', fontSize: '11px', resize: 'vertical', background: 'var(--bg-base)' }}
+            />
+          </div>
+
           {/* Notes */}
-          <div>
-            <label className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold flex items-center gap-1 mb-1">
-              <FileText size={11} /> Notes
-            </label>
+          <div style={sectionStyle}>
+            <div style={labelStyle}><FileText size={10} /> NOTES</div>
             <textarea
               value={notesValue}
               onChange={(e) => setNotesValue(e.target.value)}
               onBlur={handleNotesBlur}
-              placeholder="Add notes..."
+              placeholder="> internal notes..."
               rows={2}
-              className="w-full text-sm text-gray-700 bg-gray-50 rounded-md border border-gray-200 px-2.5 py-1.5 outline-none focus:border-blue-300 focus:ring-1 focus:ring-blue-100 resize-none placeholder:text-gray-300"
+              style={{ width: '100%', fontSize: '11px', resize: 'vertical', background: 'var(--bg-base)' }}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            {/* Due date */}
+          {/* Row: dates */}
+          <div style={{ ...sectionStyle, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold flex items-center gap-1 mb-1">
-                <Calendar size={11} /> Due Date
-              </label>
+              <div style={labelStyle}><Calendar size={10} /> DUE DATE</div>
               <input
                 type="date"
                 value={task.dueDate ? format(new Date(task.dueDate), 'yyyy-MM-dd') : ''}
                 onChange={(e) => handleDueDate(e.target.value)}
-                className="w-full text-sm bg-gray-50 rounded-md border border-gray-200 px-2.5 py-1.5 outline-none focus:border-blue-300 text-gray-700"
+                style={{ width: '100%', fontSize: '11px' }}
               />
             </div>
-
-            {/* Scheduled date */}
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold flex items-center gap-1 mb-1">
-                <Calendar size={11} /> Scheduled
-              </label>
+              <div style={labelStyle}><Calendar size={10} /> SCHEDULED</div>
               <input
                 type="date"
-                value={
-                  task.scheduledDate
-                    ? format(new Date(task.scheduledDate), 'yyyy-MM-dd')
-                    : ''
-                }
+                value={task.scheduledDate ? format(new Date(task.scheduledDate), 'yyyy-MM-dd') : ''}
                 onChange={(e) => handleSchedule(e.target.value)}
-                className="w-full text-sm bg-gray-50 rounded-md border border-gray-200 px-2.5 py-1.5 outline-none focus:border-blue-300 text-gray-700"
+                style={{ width: '100%', fontSize: '11px' }}
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            {/* Priority */}
+          {/* Row: priority / difficulty / category / project */}
+          <div style={{ ...sectionStyle, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-1 block">
-                Priority
-              </label>
-              <div className="flex gap-1">
+              <div style={labelStyle}>PRIORITY</div>
+              <div style={{ display: 'flex', gap: '4px' }}>
                 {['high', 'medium', 'low'].map((p) => (
                   <button
                     key={p}
-                    onClick={() => handlePriorityChange(p)}
-                    className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors ${
-                      task.priority === p
-                        ? `${priorityColors[p]} text-white`
-                        : `bg-gray-100 text-gray-500 hover:bg-gray-200`
-                    }`}
+                    onClick={() => updateTask(task.id, { priority: p })}
+                    style={{
+                      ...PRIORITY_STYLE[p],
+                      fontSize: '9px', padding: '2px 8px', border: 'none',
+                      cursor: 'pointer', minWidth: 'unset',
+                      opacity: task.priority === p ? 1 : 0.4,
+                    }}
                   >
-                    {priorityLabels[p]}
+                    {p.toUpperCase()}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Category */}
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold flex items-center gap-1 mb-1">
-                <Tag size={11} /> Category
-              </label>
+              <div style={labelStyle}><Swords size={10} /> DIFFICULTY</div>
+              <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                {DIFFICULTY_LEVELS.map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => updateTask(task.id, { difficulty: d })}
+                    style={{
+                      fontSize: '9px', padding: '2px 6px',
+                      background: 'transparent',
+                      border: `1px solid ${DIFFICULTY_STYLE[d].color}`,
+                      color: DIFFICULTY_STYLE[d].color,
+                      cursor: 'pointer', minWidth: 'unset',
+                      opacity: (task.difficulty || 'normal') === d ? 1 : 0.35,
+                    }}
+                  >
+                    {DIFFICULTY_STYLE[d].label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ ...sectionStyle, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div>
+              <div style={labelStyle}><Tag size={10} /> CATEGORY</div>
               <select
                 value={task.category || 'Other'}
                 onChange={(e) => updateTask(task.id, { category: e.target.value })}
-                className="w-full text-sm bg-gray-50 rounded-md border border-gray-200 px-2.5 py-1.5 outline-none focus:border-blue-300 text-gray-700"
+                style={{ width: '100%', fontSize: '10px' }}
               >
-                {TASK_CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
+                {TASK_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
 
-            {/* Project */}
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold flex items-center gap-1 mb-1">
-                <FolderOpen size={11} /> Project
-              </label>
+              <div style={labelStyle}><FolderOpen size={10} /> PROJECT</div>
               <select
                 value={task.projectId || ''}
-                onChange={(e) => handleProjectChange(e.target.value)}
-                className="w-full text-sm bg-gray-50 rounded-md border border-gray-200 px-2.5 py-1.5 outline-none focus:border-blue-300 text-gray-700"
+                onChange={(e) => updateTask(task.id, { projectId: e.target.value || null })}
+                style={{ width: '100%', fontSize: '10px' }}
               >
-                <option value="">No project</option>
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
+                <option value="">— none —</option>
+                {rootProjects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </div>
           </div>
 
           {/* Tags */}
-          <div>
-            <label className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold flex items-center gap-1 mb-1">
-              <Tag size={11} /> Tags
-            </label>
-            <div className="flex items-center gap-1 flex-wrap">
+          <div style={sectionStyle}>
+            <div style={labelStyle}><Tag size={10} /> TAGS</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', alignItems: 'center' }}>
               {(task.tags || []).map((tag, i) => (
                 <span
                   key={i}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full"
+                  style={{ fontSize: '10px', color: 'var(--cyan)', border: '1px solid var(--cyan-dim)', padding: '1px 6px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                 >
                   {tag}
                   <button
-                    onClick={() =>
-                      updateTask(task.id, {
-                        tags: task.tags.filter((_, idx) => idx !== i),
-                      })
-                    }
-                    className="text-gray-400 hover:text-red-400"
+                    onClick={() => updateTask(task.id, { tags: task.tags.filter((_, idx) => idx !== i) })}
+                    style={{ background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer', minWidth: 'unset', padding: '0', fontSize: '11px', lineHeight: 1 }}
                   >
-                    &times;
+                    ×
                   </button>
                 </span>
               ))}
               <input
-                type="text"
-                placeholder="Add tag..."
-                className="text-xs bg-transparent outline-none text-gray-500 placeholder:text-gray-300 w-20"
+                placeholder="+ tag"
+                style={{ fontSize: '10px', background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-dim)', width: '60px' }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && e.target.value.trim()) {
-                    updateTask(task.id, {
-                      tags: [...(task.tags || []), e.target.value.trim()],
-                    })
+                    updateTask(task.id, { tags: [...(task.tags || []), e.target.value.trim()] })
                     e.target.value = ''
                   }
                 }}
               />
             </div>
           </div>
+
         </div>
       )}
     </div>

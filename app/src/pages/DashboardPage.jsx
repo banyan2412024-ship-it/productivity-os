@@ -10,6 +10,7 @@ import {
   Flame,
   DollarSign,
   Leaf,
+  Repeat,
   X,
 } from 'lucide-react'
 import { useTaskStore, TASK_CATEGORIES } from '../stores/taskStore'
@@ -20,6 +21,7 @@ import { useMoneyStore, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../stores/
 import { useWeedStore, WEED_AMOUNTS } from '../stores/smokingStore'
 import { useToastStore } from '../stores/toastStore'
 import MoodAgent from '../components/dashboard/MoodAgent'
+import { useAgentAnimationStore } from '../stores/agentAnimationStore'
 import {
   format,
   addDays,
@@ -70,6 +72,7 @@ export default function DashboardPage() {
   const logWeed = useWeedStore((s) => s.logWeed)
   const deleteWeedLog = useWeedStore((s) => s.deleteLog)
   const addToast = useToastStore((s) => s.addToast)
+  const triggerAnimation = useAgentAnimationStore((s) => s.triggerAnimation)
 
   const todayStr = format(new Date(), 'yyyy-MM-dd')
   const selectedStr = format(selectedDate, 'yyyy-MM-dd')
@@ -149,6 +152,15 @@ export default function DashboardPage() {
   const moneyToday = useMemo(() => {
     return transactions.filter((t) => t.date === todayStr && t.type === 'expense').reduce((s, t) => s + t.amount, 0)
   }, [transactions, todayStr])
+
+  // Month net (income - expenses)
+  const monthNet = useMemo(() => {
+    const monthStr = format(new Date(), 'yyyy-MM')
+    const monthTx = transactions.filter((t) => t.date && t.date.startsWith(monthStr))
+    const income = monthTx.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+    const expenses = monthTx.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+    return income - expenses
+  }, [transactions])
 
   // 7-day weed chart data
   const weedWeek = useMemo(() => {
@@ -252,6 +264,7 @@ export default function DashboardPage() {
       type: 'success',
       undoFn: () => { deleteTransaction(id); addToast('Transaction undone', { type: 'info' }) },
     })
+    if (moneyType === 'expense' && amt > 50) triggerAnimation('worried')
     setMoneyAmt('')
     setMoneyDesc('')
     setMoneyCat('Other')
@@ -277,6 +290,7 @@ export default function DashboardPage() {
       type: 'success',
       undoFn: () => { deleteWeedLog(id); addToast('Weed log undone', { type: 'info' }) },
     })
+    triggerAnimation('disappointed')
     setShowWeedForm(false)
   }
 
@@ -287,6 +301,7 @@ export default function DashboardPage() {
       type: 'success',
       undoFn: () => { toggleCompletion(habit.id, todayStr); addToast('Habit undone', { type: 'info' }) },
     })
+    if (!wasDone) triggerAnimation('celebrate')
   }
 
   const maxWeed = Math.max(...weedWeek.map((d) => d.grams), 0.1)
@@ -310,36 +325,91 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Quick Entry Icons */}
-        <div style={{ display: 'flex', gap: '6px' }}>
-          {[
-            { icon: Leaf, label: 'Weed', action: () => setShowWeedForm(!showWeedForm), color: '#00ff41' },
-            { icon: DollarSign, label: 'Money', action: () => setShowMoneyForm(!showMoneyForm), color: '#00ff41' },
-            { icon: Lightbulb, label: 'Idea', action: () => setShowIdeaForm(!showIdeaForm), color: '#00ff41' },
-          ].map(({ icon: Icon, label, action, color }) => (
+        {/* Quick Entry + Stats */}
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
+
+          {/* Weed button + trend */}
+          <div style={{ display: 'flex', gap: '0', border: '2px solid var(--border-bright)' }}>
             <button
-              key={label}
-              onClick={action}
-              title={label}
+              onClick={() => setShowWeedForm(!showWeedForm)}
+              title="Log weed"
               style={{
-                width: '36px',
-                height: '36px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'var(--bg-surface)',
-                borderTop: '2px solid #1a6b1a',
-                borderLeft: '2px solid #1a6b1a',
-                borderRight: '2px solid #003300',
-                borderBottom: '2px solid #003300',
-                color,
-                padding: 0,
-                minWidth: 0,
+                width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: showWeedForm ? 'var(--bg-elevated)' : 'var(--bg-surface)',
+                borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
+                borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
+                color: '#00ff41', padding: 0, minWidth: 0,
               }}
-            >
-              <Icon size={16} />
-            </button>
-          ))}
+            ><Leaf size={16} /></button>
+            <div style={{ padding: '2px 8px', background: 'var(--bg-base)', display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: '60px' }}>
+              {(() => {
+                const avg = weedWeek.slice(0, 6).reduce((s, d) => s + d.grams, 0) / 6
+                const today7 = weedWeek[6]?.grams ?? 0
+                const trending = today7 > avg
+                return (
+                  <>
+                    <div style={{ fontSize: '9px', color: 'var(--text-ghost)', letterSpacing: '1px' }}>7D TREND</div>
+                    <div style={{ fontSize: '11px', color: trending ? 'var(--danger)' : 'var(--neon)', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                      {trending ? '▲' : '▼'} {avg.toFixed(1)}g/d
+                    </div>
+                  </>
+                )
+              })()}
+            </div>
+          </div>
+
+          {/* Money button + net */}
+          <div style={{ display: 'flex', gap: '0', border: '2px solid var(--border-bright)' }}>
+            <button
+              onClick={() => setShowMoneyForm(!showMoneyForm)}
+              title="Log money"
+              style={{
+                width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: showMoneyForm ? 'var(--bg-elevated)' : 'var(--bg-surface)',
+                borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
+                borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
+                color: '#00ff41', padding: 0, minWidth: 0,
+              }}
+            ><DollarSign size={16} /></button>
+            <div style={{ padding: '2px 8px', background: 'var(--bg-base)', display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: '60px' }}>
+              <div style={{ fontSize: '9px', color: 'var(--text-ghost)', letterSpacing: '1px' }}>MONTH NET</div>
+              <div style={{ fontSize: '11px', color: monthNet >= 0 ? 'var(--neon)' : 'var(--danger)', fontWeight: 'bold' }}>
+                {monthNet >= 0 ? '+' : ''}{monthNet.toFixed(0)}
+              </div>
+            </div>
+          </div>
+
+          {/* Habits button + Win95 progress */}
+          <div style={{ display: 'flex', gap: '0', border: '2px solid var(--border-bright)' }}>
+            <button
+              onClick={() => setShowIdeaForm(!showIdeaForm)}
+              title="Log idea"
+              style={{
+                width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: showIdeaForm ? 'var(--bg-elevated)' : 'var(--bg-surface)',
+                borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
+                borderRight: '2px solid #003300', borderBottom: '2px solid #003300',
+                color: '#00ff41', padding: 0, minWidth: 0,
+              }}
+            ><Repeat size={16} /></button>
+            <div style={{ padding: '2px 8px', background: 'var(--bg-base)', display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: '80px' }}>
+              <div style={{ fontSize: '9px', color: 'var(--text-ghost)', letterSpacing: '1px', marginBottom: '3px' }}>
+                HABITS {completedHabitsCount}/{todayHabits.length}
+              </div>
+              {/* Win95 block progress bar */}
+              <div style={{
+                display: 'flex', gap: '2px', height: '10px',
+                borderTop: '2px solid #003300', borderLeft: '2px solid #003300',
+                borderRight: '2px solid #1a6b1a', borderBottom: '2px solid #1a6b1a',
+                background: '#000', padding: '1px',
+              }}>
+                {Array.from({ length: Math.max(todayHabits.length, 1) }, (_, i) => (
+                  <div key={i} style={{ flex: 1, background: i < completedHabitsCount ? 'var(--neon)' : '#003300' }} />
+                ))}
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 

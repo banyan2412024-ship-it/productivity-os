@@ -1,13 +1,13 @@
 import { NavLink } from 'react-router-dom'
 import {
-  CalendarDays, FileText, CheckSquare, Repeat,
+  CalendarDays, FileText, FolderOpen, Repeat,
   Timer, Lightbulb, DollarSign, Leaf, Settings, Shield,
 } from 'lucide-react'
 import { useProfileStore } from '../../stores/profileStore'
 
 const ALL_NAV = [
   { to: '/app',           icon: CalendarDays, label: '> Terminal', module: null },
-  { to: '/app/tasks',     icon: CheckSquare,  label: 'Tasks',      module: 'tasks' },
+  { to: '/app/tasks',     icon: FolderOpen,   label: 'Projects',   module: 'tasks' },
   { to: '/app/ideas',     icon: Lightbulb,    label: 'Ideas',      module: 'ideas' },
   { to: '/app/notes',     icon: FileText,     label: 'Notes',      module: 'notes' },
   { to: '/app/habits',    icon: Repeat,       label: 'Habits',     module: 'habits' },

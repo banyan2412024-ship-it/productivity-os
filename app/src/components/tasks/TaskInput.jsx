@@ -1,7 +1,7 @@
 import { useState, useRef, useId } from 'react'
-import { useTaskStore, TASK_CATEGORIES } from '../../stores/taskStore'
+import { useTaskStore, TASK_CATEGORIES, DIFFICULTY_LEVELS } from '../../stores/taskStore'
 import { useToastStore } from '../../stores/toastStore'
-import { Plus, Zap, Calendar, X } from 'lucide-react'
+import { Plus, Zap, Calendar, X, Swords } from 'lucide-react'
 
 const priorities = ['medium', 'high', 'low']
 const priorityColors = {
@@ -10,6 +10,13 @@ const priorityColors = {
   low:    { bg: 'var(--border-bright)',   color: 'var(--text)' },
 }
 const priorityLabels = { high: 'High', medium: 'Med', low: 'Low' }
+
+const difficultyColors = {
+  easy:   '#00ff41',
+  normal: 'var(--text-ghost)',
+  hard:   'var(--amber)',
+  epic:   'var(--danger-bright)',
+}
 
 const DURATION_PRESETS = [
   { label: '5m',  value: '5m'  },
@@ -22,7 +29,7 @@ const DURATION_PRESETS = [
   { label: '1w',  value: '1w'  },
 ]
 
-export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAdded }) {
+export default function TaskInput({ defaultStatus = 'inbox', projectId, subfolderId, onTaskAdded }) {
   const uid      = useId()
   const dateRef  = useRef(null)
   const addTask  = useTaskStore((s) => s.addTask)
@@ -32,6 +39,7 @@ export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAd
   const [open,       setOpen]       = useState(false)
   const [title,      setTitle]      = useState('')
   const [priority,   setPriority]   = useState('medium')
+  const [difficulty, setDifficulty] = useState('normal')
   const [isQuickWin, setIsQuickWin] = useState(false)
   const [isFrog,     setIsFrog]     = useState(false)
   const [category,   setCategory]   = useState('Other')
@@ -45,9 +53,15 @@ export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAd
     setPriority(priorities[(idx + 1) % priorities.length])
   }
 
+  const cycleDifficulty = () => {
+    const idx = DIFFICULTY_LEVELS.indexOf(difficulty)
+    setDifficulty(DIFFICULTY_LEVELS[(idx + 1) % DIFFICULTY_LEVELS.length])
+  }
+
   const reset = () => {
     setTitle('')
     setPriority('medium')
+    setDifficulty('normal')
     setIsQuickWin(false)
     setIsFrog(false)
     setCategory('Other')
@@ -69,7 +83,9 @@ export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAd
       category,
       isQuickWin,
       isFrog,
+      difficulty,
       ...(projectId && { projectId }),
+      ...(subfolderId && { subfolderId }),
       ...(dueDate && { dueDate: new Date(dueDate).toISOString() }),
       ...(duration && { estimatedDuration: duration }),
     }
@@ -154,6 +170,23 @@ export default function TaskInput({ defaultStatus = 'inbox', projectId, onTaskAd
           title="Cycle priority"
         >
           {priorityLabels[priority]}
+        </button>
+
+        {/* Difficulty */}
+        <button
+          type="button"
+          onClick={cycleDifficulty}
+          title="Cycle difficulty"
+          style={{
+            padding: '2px 8px', fontSize: '10px', fontFamily: 'var(--font-mono)',
+            background: 'transparent',
+            border: `1px solid ${difficultyColors[difficulty]}`,
+            color: difficultyColors[difficulty],
+            cursor: 'pointer', minWidth: 'unset',
+            display: 'flex', alignItems: 'center', gap: '3px',
+          }}
+        >
+          <Swords size={10} /> {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
         </button>
 
         {/* Frog 🐸 */}

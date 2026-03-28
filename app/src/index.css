@@ -624,6 +624,35 @@ hr, .divider {
   gap: 12px;
 }
 
+/* ─── TasksPage responsive layout ───────────────────────────────────────────── */
+
+.tasks-sidebar-desktop {
+  display: flex;
+}
+
+.tasks-tabs-mobile {
+  display: none;
+  overflow-x: auto;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.tasks-tabs-mobile::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .tasks-sidebar-desktop {
+    display: none !important;
+  }
+  .tasks-tabs-mobile {
+    display: flex !important;
+  }
+}
+
 /* ─── Agent animation keyframes ─────────────────────────────────────────────── */
 
 @keyframes agent-bounce {
