@@ -191,12 +191,14 @@ function LoginRegisterForm({ tab, setTab, email, setEmail, password, setPassword
   }
 
   const tabBtnStyle = (active) => ({
-    flex: 1, padding: '8px', fontSize: '10px', fontFamily: 'monospace',
-    background: active ? 'rgba(0,255,65,0.08)' : 'transparent',
-    borderBottom: active ? '2px solid #00ff41' : '2px solid transparent',
-    color: active ? '#00ff41' : 'rgba(0,255,65,0.3)',
-    cursor: 'pointer', border: 'none', letterSpacing: '1px',
+    flex: 1, padding: '10px 8px', fontSize: '11px', fontFamily: 'monospace',
+    background: active ? 'rgba(0,255,65,0.1)' : 'transparent',
+    border: 'none',
+    borderBottom: active ? '2px solid #00ff41' : '2px solid rgba(0,255,65,0.15)',
+    color: active ? '#00ff41' : 'rgba(0,255,65,0.6)',
+    cursor: 'pointer', letterSpacing: '1px',
     transition: 'all 0.2s',
+    fontWeight: active ? 'bold' : 'normal',
   })
 
   return (
