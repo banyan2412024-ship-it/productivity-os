@@ -37,3 +37,7 @@ services:
         sync: false
       - key: ADMIN_EMAIL
         sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false

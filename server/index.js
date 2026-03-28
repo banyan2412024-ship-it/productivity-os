@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const { Client } = require('@notionhq/client')
+const { createClient } = require('@supabase/supabase-js')
 
 const app = express()
 const allowedOrigins = (process.env.ALLOWED_ORIGIN || '')
@@ -15,6 +16,11 @@ app.use(cors({
 app.use(express.json())
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY })
+
+// Supabase admin client (service role — bypasses RLS)
+const supabaseAdmin = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+  : null
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -94,6 +100,32 @@ app.post('/api/notify-signup', async (req, res) => {
     console.error('notify-signup error:', err.message)
     res.json({ sent: false, error: err.message })
   }
+})
+
+// ─── Admin profile update (bypasses RLS via service role) ────────────────────
+
+app.post('/api/admin/update-profile', async (req, res) => {
+  if (!supabaseAdmin) return res.status(503).json({ error: 'Supabase not configured' })
+
+  const authHeader = req.headers.authorization
+  if (!authHeader) return res.status(401).json({ error: 'No auth token' })
+
+  // Verify caller is admin
+  const token = authHeader.replace('Bearer ', '')
+  const { data: { user }, error: authErr } = await supabaseAdmin.auth.getUser(token)
+  if (authErr || !user) return res.status(401).json({ error: 'Invalid token' })
+
+  const { data: callerProfile } = await supabaseAdmin
+    .from('profiles').select('is_admin').eq('id', user.id).single()
+  if (!callerProfile?.is_admin) return res.status(403).json({ error: 'Not admin' })
+
+  // Apply update
+  const { userId, updates } = req.body
+  if (!userId || !updates) return res.status(400).json({ error: 'userId and updates required' })
+
+  const { error } = await supabaseAdmin.from('profiles').update(updates).eq('id', userId)
+  if (error) return res.status(500).json({ error: error.message })
+  res.json({ ok: true })
 })
 
 // ─── Generic CRUD routes ────────────────────────────────────────────────────

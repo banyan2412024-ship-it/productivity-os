@@ -108,8 +108,17 @@ export const useProfileStore = create((set, get) => ({
   },
 
   adminUpdateProfile: async (userId, updates) => {
-    const { error } = await supabase.from('profiles').update(updates).eq('id', userId)
-    return !error
+    const apiUrl = import.meta.env.VITE_API_URL ?? ''
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch(`${apiUrl}/admin/update-profile`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify({ userId, updates }),
+    })
+    return res.ok
   },
 }))
 
