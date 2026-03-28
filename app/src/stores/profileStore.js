@@ -59,6 +59,13 @@ export const useProfileStore = create((set, get) => ({
       const profile = { ...row, created_at: new Date().toISOString() }
       set({ profile, profileLoading: false })
       applyTheme(profile.theme)
+      // Notify admin of new signup (fire-and-forget)
+      const apiUrl = import.meta.env.VITE_API_URL ?? ''
+      fetch(`${apiUrl}/notify-signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
+      }).catch(() => {})
       return profile
     } catch (e) {
       console.warn('[profileStore] createProfile threw:', e.message)

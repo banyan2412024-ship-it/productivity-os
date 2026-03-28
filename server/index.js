@@ -59,6 +59,43 @@ app.get('/api/health', async (req, res) => {
   res.json({ status: 'ok', notion: configured ? (canConnect ? 'connected' : 'configured') : 'missing API key' })
 })
 
+// ─── New user signup notification ────────────────────────────────────────────
+
+app.post('/api/notify-signup', async (req, res) => {
+  const { username } = req.body
+  if (!username) return res.status(400).json({ error: 'username required' })
+
+  const apiKey = process.env.RESEND_API_KEY
+  const adminEmail = process.env.ADMIN_EMAIL
+  if (!apiKey || !adminEmail) return res.json({ skipped: true })
+
+  try {
+    const { Resend } = require('resend')
+    const resend = new Resend(apiKey)
+    await resend.emails.send({
+      from: 'ProductivityOS <onboarding@resend.dev>',
+      to: adminEmail,
+      subject: `New signup: ${username}`,
+      html: `
+        <div style="font-family:monospace;background:#0a130a;color:#a8d5a2;padding:24px;border:1px solid #1a3d1a">
+          <h2 style="color:#00ff41;margin:0 0 16px">&gt; NEW USER REGISTERED</h2>
+          <p>Username: <strong style="color:#00ff41">${username}</strong></p>
+          <p>Status: <span style="color:#c8a84b">PENDING APPROVAL</span></p>
+          <br/>
+          <a href="https://app.chrome24.store/app/admin"
+             style="display:inline-block;padding:10px 24px;background:#1a3d1a;color:#00ff41;text-decoration:none;border:1px solid #00ff41;font-family:monospace">
+            [ OPEN ADMIN PANEL ]
+          </a>
+        </div>
+      `,
+    })
+    res.json({ sent: true })
+  } catch (err) {
+    console.error('notify-signup error:', err.message)
+    res.json({ sent: false, error: err.message })
+  }
+})
+
 // ─── Generic CRUD routes ────────────────────────────────────────────────────
 
 // GET /api/:table — fetch all pages from a Notion database
