@@ -179,7 +179,14 @@ function LoginRegisterForm({ tab, setTab, email, setEmail, password, setPassword
       const { needsEmailConfirm } = await signUp(email.trim(), password, username.trim())
       if (needsEmailConfirm) { setInfo('CHECK YOUR EMAIL — confirm then log in.'); setBusy(false); return }
       sessionStorage.setItem('pending_username', username.trim())
-    } catch (err) { showErr(err.message) }
+    } catch (err) {
+      const msg = err.message?.toLowerCase() ?? ''
+      if (msg.includes('rate limit') || msg.includes('email_rate_limit')) {
+        showErr('TOO MANY SIGNUPS — try again in a few minutes, or contact the admin.')
+      } else {
+        showErr(err.message)
+      }
+    }
     setBusy(false)
   }
 
