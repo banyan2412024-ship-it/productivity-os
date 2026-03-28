@@ -410,7 +410,7 @@ export default function DashboardPage() {
         </div>
         )}
 
-        {/* HABITS */}
+        {/* IDEA */}
         <div style={{
           background: 'var(--bg-surface)',
           borderTop: '2px solid #1a6b1a', borderLeft: '2px solid #1a6b1a',
@@ -419,40 +419,23 @@ export default function DashboardPage() {
         }}>
           <button
             onClick={() => setShowIdeaForm(!showIdeaForm)}
-            title="Log idea"
+            title="Capture idea"
             style={{
               width: '40px', flexShrink: 0,
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px',
               background: showIdeaForm ? 'rgba(204,68,255,0.1)' : 'var(--bg-elevated)',
               borderRight: '1px solid var(--border)',
-              color: 'var(--orange)', padding: 0, minWidth: 0, cursor: 'pointer',
+              color: 'var(--purple)', padding: 0, minWidth: 0, cursor: 'pointer',
             }}
           >
-            <Repeat size={14} />
-            <span style={{ fontSize: '7px', letterSpacing: '1px', color: 'var(--text-ghost)' }}>LOG</span>
+            <Lightbulb size={14} />
+            <span style={{ fontSize: '7px', letterSpacing: '1px', color: 'var(--text-ghost)' }}>NEW</span>
           </button>
           <div style={{ flex: 1, padding: '6px 10px' }}>
-            <div style={{ fontSize: '8px', color: 'var(--text-ghost)', letterSpacing: '1px', marginBottom: '3px' }}>
-              HABITS // {completedHabitsCount}/{todayHabits.length} DONE
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{
-                fontSize: '20px', fontWeight: 'bold', lineHeight: 1,
-                color: todayHabits.length > 0 && completedHabitsCount === todayHabits.length
-                  ? 'var(--neon)' : 'var(--amber)',
-              }}>
-                {todayHabits.length > 0 ? Math.round((completedHabitsCount / todayHabits.length) * 100) : 0}%
-              </span>
-              <div style={{
-                display: 'flex', gap: '2px', flex: 1, height: '12px',
-                borderTop: '2px solid #003300', borderLeft: '2px solid #003300',
-                borderRight: '2px solid #1a6b1a', borderBottom: '2px solid #1a6b1a',
-                background: '#000', padding: '1px', alignItems: 'center',
-              }}>
-                {Array.from({ length: Math.max(todayHabits.length, 1) }, (_, i) => (
-                  <div key={i} style={{ flex: 1, height: '100%', background: i < completedHabitsCount ? 'var(--neon)' : '#003300' }} />
-                ))}
-              </div>
+            <div style={{ fontSize: '8px', color: 'var(--text-ghost)', letterSpacing: '1px', marginBottom: '3px' }}>IDEAS // TOTAL</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+              <span style={{ fontSize: '20px', color: 'var(--purple)', fontWeight: 'bold', lineHeight: 1 }}>{ideas.length}</span>
+              <span style={{ fontSize: '10px', color: 'var(--text-ghost)' }}>captured</span>
             </div>
           </div>
         </div>
