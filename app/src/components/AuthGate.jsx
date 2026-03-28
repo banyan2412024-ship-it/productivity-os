@@ -97,18 +97,40 @@ export default function AuthGate({ children }) {
     }
   }, [progress, user, profile, granted])
 
-  // ── Already granted? Render app immediately (don't depend on profile ref) ──
-  if (alreadyGranted && user) return children
+  // ── Already granted this session — NEVER show ACCESS GRANTED animation again ──
+  if (alreadyGranted) {
+    // Silently wait while auth resolves (avoids ACCESS GRANTED flash on page load/navigate)
+    if (loading || (user && profileLoading)) return null
+    // App ready — straight to app
+    if (user && profile?.status === 'approved') return children
+    // Auth degraded (signed out / rejected) — show login directly, no matrix
+    // The clearGranted() useEffect will fire on next tick
+    return (
+      <div style={{ position: 'fixed', inset: 0, background: '#0a130a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {!user && <LoginRegisterForm
+          tab={tab} setTab={setTab} email={email} setEmail={setEmail}
+          password={password} setPassword={setPassword} username={username}
+          setUsername={setUsername} error={error} info={info} busy={busy}
+          setBusy={setBusy} showErr={showErr} setInfo={setInfo} signUp={signUp}
+        />}
+        {user && !profile && <SetupForm
+          user={user} username={username} setUsername={setUsername}
+          email={email} setEmail={setEmail} password={password} setPassword={setPassword}
+          error={error} busy={busy} setBusy={setBusy} showErr={showErr}
+          linkEmail={linkEmail} createProfile={createProfile}
+        />}
+        {user && profile?.status === 'pending' && <PendingPanel username={profile.username} />}
+        {user && profile?.status === 'rejected' && <RejectedPanel />}
+      </div>
+    )
+  }
 
-  // ── Determine what to show ─────────────────────────────────────────────────
+  // ── Fresh session (no prior grant) — show Matrix rain + auth UI ───────────
   const isReady = user && profile?.status === 'approved'
-  const showMatrix = visible && !isReady // show rain for all non-ready states
-  const showLoadingHud = loading || (user && profileLoading) // show progress bar
-  const showForm = !loading && !profileLoading && !granted // hide forms during any loading
+  const showLoadingHud = loading || (user && profileLoading)
+  const showForm = !loading && !profileLoading && !granted
 
-  // App is ready — no more loading screen
   if (isReady && !visible) return children
-  // Brief overlap: app is ready but still fading out
   if (isReady && visible) {
     return (
       <>
@@ -118,7 +140,6 @@ export default function AuthGate({ children }) {
     )
   }
 
-  // ── All pre-auth states render inside the Matrix rain ──────────────────────
   return (
     <MatrixLoader progress={progress} showHud={showLoadingHud} granted={granted}>
       {showForm && !user && <LoginRegisterForm
@@ -127,14 +148,12 @@ export default function AuthGate({ children }) {
         setUsername={setUsername} error={error} info={info} busy={busy}
         setBusy={setBusy} showErr={showErr} setInfo={setInfo} signUp={signUp}
       />}
-
       {showForm && user && !profile && <SetupForm
         user={user} username={username} setUsername={setUsername}
         email={email} setEmail={setEmail} password={password} setPassword={setPassword}
         error={error} busy={busy} setBusy={setBusy} showErr={showErr}
         linkEmail={linkEmail} createProfile={createProfile}
       />}
-
       {showForm && user && profile?.status === 'pending' && <PendingPanel username={profile.username} />}
       {showForm && user && profile?.status === 'rejected' && <RejectedPanel />}
     </MatrixLoader>
