@@ -15,7 +15,7 @@ export const useProfileStore = create((set, get) => ({
   profile: null,
   profileLoading: true,
 
-  loadProfile: async (userId) => {
+  loadProfile: async (userId, attempt = 1) => {
     try {
       const { data, error } = await withTimeout(
         supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
@@ -24,12 +24,21 @@ export const useProfileStore = create((set, get) => ({
       if (data) {
         set({ profile: data, profileLoading: false })
         applyTheme(data.theme, data.custom_theme)
-      } else {
-        set({ profile: null, profileLoading: false })
+        return data
       }
-      return data ?? null
+      // Retry once on null — could be a transient network blip
+      if (attempt === 1) {
+        await new Promise((r) => setTimeout(r, 800))
+        return get().loadProfile(userId, 2)
+      }
+      set({ profile: null, profileLoading: false })
+      return null
     } catch (e) {
       console.warn('[profileStore] loadProfile threw:', e.message)
+      if (attempt === 1) {
+        await new Promise((r) => setTimeout(r, 800))
+        return get().loadProfile(userId, 2)
+      }
       set({ profile: null, profileLoading: false })
       return null
     }
