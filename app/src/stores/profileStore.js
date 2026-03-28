@@ -110,7 +110,7 @@ export const useProfileStore = create((set, get) => ({
   adminUpdateProfile: async (userId, updates) => {
     const apiUrl = import.meta.env.VITE_API_URL ?? ''
     const { data: { session } } = await supabase.auth.getSession()
-    const res = await fetch(`${apiUrl}/admin/update-profile`, {
+    const res = await fetch(`${apiUrl}/api/admin/update-profile`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ export const useProfileStore = create((set, get) => ({
   adminResetUserData: async (userId) => {
     const apiUrl = import.meta.env.VITE_API_URL ?? ''
     const { data: { session } } = await supabase.auth.getSession()
-    const res = await fetch(`${apiUrl}/admin/reset-user-data`, {
+    const res = await fetch(`${apiUrl}/api/admin/reset-user-data`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
