@@ -41,8 +41,10 @@ const titleBarStyle = {
   letterSpacing: '2px', display: 'flex', justifyContent: 'space-between',
 }
 
-/* ── Persist across component re-mounts within the same session ──────────── */
-let sessionGranted = false
+/* ── Persist via sessionStorage — survives HMR, module reload, tab sleep ──── */
+function isGranted() { return sessionStorage.getItem('auth_granted') === '1' }
+function markGranted() { sessionStorage.setItem('auth_granted', '1') }
+function clearGranted() { sessionStorage.removeItem('auth_granted') }
 
 /* ── Component ─────────────────────────────────────────────────────────────── */
 
@@ -55,6 +57,8 @@ export default function AuthGate({ children }) {
   const profileLoading = useProfileStore((s) => s.profileLoading)
   const createProfile = useProfileStore((s) => s.createProfile)
 
+  const alreadyGranted = isGranted()
+
   const [tab, setTab] = useState('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -64,11 +68,16 @@ export default function AuthGate({ children }) {
   const [busy, setBusy] = useState(false)
 
   // Loading screen state — skip animation if already granted this session
-  const [progress, setProgress] = useState(sessionGranted ? 100 : 0)
-  const [granted, setGranted] = useState(sessionGranted)
-  const [visible, setVisible] = useState(!sessionGranted)
+  const [progress, setProgress] = useState(alreadyGranted ? 100 : 0)
+  const [granted, setGranted] = useState(alreadyGranted)
+  const [visible, setVisible] = useState(!alreadyGranted)
 
   const showErr = (msg, ms = 4000) => { setError(msg); setTimeout(() => setError(''), ms) }
+
+  // Clear granted flag on sign-out so next login shows animation
+  useEffect(() => {
+    if (!user && !loading) clearGranted()
+  }, [user, loading])
 
   // ── Drive progress from real states ────────────────────────────────────────
   useEffect(() => {
@@ -82,14 +91,14 @@ export default function AuthGate({ children }) {
   // ── ACCESS GRANTED sequence (only once per session) ────────────────────────
   useEffect(() => {
     if (progress >= 100 && user && profile?.status === 'approved' && !granted) {
-      sessionGranted = true
+      markGranted()
       setGranted(true)
       setTimeout(() => setVisible(false), 1800)
     }
   }, [progress, user, profile, granted])
 
-  // ── Already granted this session? Skip everything. ─────────────────────────
-  if (sessionGranted && user && profile?.status === 'approved') return children
+  // ── Already granted? Render app immediately (don't depend on profile ref) ──
+  if (alreadyGranted && user) return children
 
   // ── Determine what to show ─────────────────────────────────────────────────
   const isReady = user && profile?.status === 'approved'
