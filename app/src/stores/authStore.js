@@ -10,10 +10,11 @@ export const useAuthStore = create((set) => ({
     const fallback = setTimeout(() => set({ loading: false }), 3000)
     supabase.auth.onAuthStateChange((event, session) => {
       clearTimeout(fallback)
-      const u = session?.user ?? null
-      set({ user: u, loading: false })
-      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && u) {
-        setTimeout(() => autoMigrateIfEmpty(u.id), 1500)
+      // Only update user on meaningful events — TOKEN_REFRESHED can briefly null the session
+      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+        const u = session?.user ?? null
+        set({ user: u, loading: false })
+        if (u) setTimeout(() => autoMigrateIfEmpty(u.id), 1500)
       }
     })
   },

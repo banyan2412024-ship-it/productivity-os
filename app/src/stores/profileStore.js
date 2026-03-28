@@ -41,7 +41,7 @@ export const useProfileStore = create((set, get) => ({
       username,
       theme: DEFAULT_THEME,
       custom_theme: null,
-      enabled_modules: ['tasks', 'notes', 'ideas', 'habits', 'pomodoro', 'money', 'smoking'],
+      enabled_modules: ['tasks', 'notes', 'ideas', 'habits', 'pomodoro'],
       is_admin: false,
       status: 'pending',
     }

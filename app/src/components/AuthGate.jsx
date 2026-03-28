@@ -41,6 +41,9 @@ const titleBarStyle = {
   letterSpacing: '2px', display: 'flex', justifyContent: 'space-between',
 }
 
+/* ── Persist across component re-mounts within the same session ──────────── */
+let sessionGranted = false
+
 /* ── Component ─────────────────────────────────────────────────────────────── */
 
 export default function AuthGate({ children }) {
@@ -60,10 +63,10 @@ export default function AuthGate({ children }) {
   const [info, setInfo] = useState('')
   const [busy, setBusy] = useState(false)
 
-  // Loading screen state
-  const [progress, setProgress] = useState(0)
-  const [granted, setGranted] = useState(false)
-  const [visible, setVisible] = useState(true) // controls fade-out
+  // Loading screen state — skip animation if already granted this session
+  const [progress, setProgress] = useState(sessionGranted ? 100 : 0)
+  const [granted, setGranted] = useState(sessionGranted)
+  const [visible, setVisible] = useState(!sessionGranted)
 
   const showErr = (msg, ms = 4000) => { setError(msg); setTimeout(() => setError(''), ms) }
 
@@ -76,9 +79,10 @@ export default function AuthGate({ children }) {
     else setProgress(100) // pending/rejected/no-profile — show form
   }, [loading, user, profileLoading, profile])
 
-  // ── ACCESS GRANTED sequence ────────────────────────────────────────────────
+  // ── ACCESS GRANTED sequence (only once per session) ────────────────────────
   useEffect(() => {
     if (progress >= 100 && user && profile?.status === 'approved' && !granted) {
+      sessionGranted = true
       setGranted(true)
       setTimeout(() => setVisible(false), 1800)
     }
