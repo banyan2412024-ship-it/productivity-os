@@ -7,7 +7,7 @@ import MatrixLoader from './MatrixLoader'
 /* ── Shared styles ─────────────────────────────────────────────────────────── */
 
 const panelStyle = {
-  width: '340px',
+  width: 'min(340px, calc(100vw - 32px))',
   background: 'rgba(10, 19, 10, 0.85)',
   backdropFilter: 'blur(12px)',
   border: '1px solid rgba(0, 255, 65, 0.2)',

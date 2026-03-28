@@ -78,6 +78,7 @@ export default function MatrixLoader({ progress, showHud, granted, children }) {
         position: 'absolute', inset: 0,
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
+        overflowY: 'auto', padding: '16px 0',
       }}>
         {/* ACCESS GRANTED flash */}
         {granted && (
