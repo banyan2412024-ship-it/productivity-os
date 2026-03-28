@@ -88,7 +88,7 @@ export default function AuthGate({ children }) {
   const isReady = user && profile?.status === 'approved'
   const showMatrix = visible && !isReady // show rain for all non-ready states
   const showLoadingHud = loading || (user && profileLoading) // show progress bar
-  const showForm = !loading && !granted // show login/setup forms (not during initial load)
+  const showForm = !loading && !profileLoading && !granted // hide forms during any loading
 
   // App is ready — no more loading screen
   if (isReady && !visible) return children
