@@ -110,15 +110,15 @@ export default function AuthGate({ children }) {
       setBusy(true)
       try {
         if (isAnon && email && password) {
-          // Upgrade anonymous → email account
           await linkEmail(email.trim(), password)
         }
         const p = await createProfile(user.id, username.trim())
-        if (!p) showErr('Failed to create profile — try again')
+        if (!p) showErr('FAILED — try a different username or refresh')
       } catch (err) {
-        showErr(err.message)
+        showErr(err.message || 'UNKNOWN ERROR')
+      } finally {
+        setBusy(false)
       }
-      setBusy(false)
     }
 
     return (

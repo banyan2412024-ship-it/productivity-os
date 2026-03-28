@@ -3,18 +3,23 @@ import { supabase } from '../lib/supabase'
 import { applyTheme } from '../lib/applyTheme'
 import { DEFAULT_THEME } from '../themes'
 
+/** Race any promise against a timeout (default 6s) */
+function withTimeout(promise, ms = 6000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), ms)),
+  ])
+}
+
 export const useProfileStore = create((set, get) => ({
   profile: null,
   profileLoading: true,
 
   loadProfile: async (userId) => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle()
-
+      const { data, error } = await withTimeout(
+        supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
+      )
       if (error) console.warn('[profileStore] loadProfile error:', error.message)
       if (data) {
         set({ profile: data, profileLoading: false })
@@ -40,21 +45,25 @@ export const useProfileStore = create((set, get) => ({
       is_admin: false,
       status: 'pending',
     }
-    const { error } = await supabase.from('profiles').insert(row)
-    if (error) {
-      if (error.code === '23505') {
-        // Username already taken by another user
-        if (error.message?.includes('username')) throw new Error('USERNAME ALREADY TAKEN')
-        // Profile already exists for this user — load it
-        return get().loadProfile(userId)
+    try {
+      const { error } = await withTimeout(
+        supabase.from('profiles').insert(row)
+      )
+      if (error) {
+        if (error.code === '23505') {
+          if (error.message?.includes('username')) throw new Error('USERNAME ALREADY TAKEN')
+          return get().loadProfile(userId)
+        }
+        throw new Error(error.message ?? 'INSERT FAILED')
       }
-      console.warn('[profileStore] createProfile error:', error.message)
-      return null
+      const profile = { ...row, created_at: new Date().toISOString() }
+      set({ profile, profileLoading: false })
+      applyTheme(profile.theme)
+      return profile
+    } catch (e) {
+      console.warn('[profileStore] createProfile threw:', e.message)
+      throw e
     }
-    const profile = { ...row, created_at: new Date().toISOString() }
-    set({ profile, profileLoading: false })
-    applyTheme(profile.theme)
-    return profile
   },
 
   setTheme: async (themeKey) => {
@@ -100,14 +109,18 @@ export const useProfileStore = create((set, get) => ({
 supabase.auth.onAuthStateChange(async (event, session) => {
   if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
     if (session?.user) {
-      const profile = await useProfileStore.getState().loadProfile(session.user.id)
-      // New registration: username was stored in sessionStorage before signUp
-      if (!profile && event === 'SIGNED_IN') {
-        const pending = sessionStorage.getItem('pending_username')
-        if (pending) {
-          sessionStorage.removeItem('pending_username')
-          await useProfileStore.getState().createProfile(session.user.id, pending)
+      try {
+        const profile = await useProfileStore.getState().loadProfile(session.user.id)
+        if (!profile && event === 'SIGNED_IN') {
+          const pending = sessionStorage.getItem('pending_username')
+          if (pending) {
+            sessionStorage.removeItem('pending_username')
+            await useProfileStore.getState().createProfile(session.user.id, pending)
+          }
         }
+      } catch (e) {
+        console.warn('[profileStore] onAuthStateChange error:', e.message)
+        useProfileStore.setState({ profileLoading: false })
       }
     } else {
       useProfileStore.setState({ profileLoading: false })
