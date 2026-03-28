@@ -106,28 +106,26 @@ export default function AuthGate({ children }) {
 
   // ── Already granted this session — NEVER show ACCESS GRANTED animation again ──
   if (alreadyGranted) {
-    // Silently wait while auth resolves (avoids ACCESS GRANTED flash on page load/navigate)
-    if (loading || (user && profileLoading)) return null
+    // Wait while auth/profile resolves — also wait if user has no profile yet (transient null)
+    if (loading || (user && profileLoading) || (user && !profile)) return null
     // App ready — straight to app
     if (user && profile?.status === 'approved') return children
-    // Auth degraded (signed out / rejected) — show login directly, no matrix
-    // The clearGranted() useEffect will fire on next tick
-    return (
+    // Signed out — show login
+    if (!user) return (
       <div style={{ position: 'fixed', inset: 0, background: '#0a130a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {!user && <LoginRegisterForm
+        <LoginRegisterForm
           tab={tab} setTab={setTab} email={email} setEmail={setEmail}
           password={password} setPassword={setPassword} username={username}
           setUsername={setUsername} error={error} info={info} busy={busy}
           setBusy={setBusy} showErr={showErr} setInfo={setInfo} signUp={signUp}
-        />}
-        {user && !profile && <SetupForm
-          user={user} username={username} setUsername={setUsername}
-          email={email} setEmail={setEmail} password={password} setPassword={setPassword}
-          error={error} busy={busy} setBusy={setBusy} showErr={showErr}
-          linkEmail={linkEmail} createProfile={createProfile}
-        />}
-        {user && profile?.status === 'pending' && <PendingPanel username={profile.username} />}
-        {user && profile?.status === 'rejected' && <RejectedPanel />}
+        />
+      </div>
+    )
+    // Pending/rejected
+    return (
+      <div style={{ position: 'fixed', inset: 0, background: '#0a130a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {profile?.status === 'pending' && <PendingPanel username={profile.username} />}
+        {profile?.status === 'rejected' && <RejectedPanel />}
       </div>
     )
   }
