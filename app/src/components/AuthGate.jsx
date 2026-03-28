@@ -4,24 +4,44 @@ import { useProfileStore } from '../stores/profileStore'
 import { supabase } from '../lib/supabase'
 import MatrixLoader from './MatrixLoader'
 
+/* ── Shared styles ─────────────────────────────────────────────────────────── */
+
+const panelStyle = {
+  width: '340px',
+  background: 'rgba(10, 19, 10, 0.85)',
+  backdropFilter: 'blur(12px)',
+  border: '1px solid rgba(0, 255, 65, 0.2)',
+  boxShadow: '0 0 30px rgba(0, 255, 65, 0.1), inset 0 0 20px rgba(0, 0, 0, 0.5)',
+}
+
 const btnStyle = (disabled) => ({
-  width: '100%',
-  marginTop: '4px',
-  opacity: disabled ? 0.5 : 1,
-  fontFamily: 'var(--font-mono)',
+  width: '100%', marginTop: '4px', opacity: disabled ? 0.5 : 1,
+  fontFamily: 'monospace', fontSize: '11px', letterSpacing: '1px',
+  padding: '10px', cursor: disabled ? 'default' : 'pointer',
+  background: 'rgba(0, 255, 65, 0.08)', color: '#00ff41',
+  border: '1px solid rgba(0, 255, 65, 0.3)',
+  transition: 'all 0.2s',
 })
 
-const inputStyle = { width: '100%', fontFamily: 'var(--font-mono)' }
+const inputStyle = {
+  width: '100%', fontFamily: 'monospace', fontSize: '12px',
+  padding: '8px 10px', background: 'rgba(0, 0, 0, 0.6)',
+  border: '1px solid rgba(0, 255, 65, 0.2)', color: '#00ff41',
+  outline: 'none',
+}
 
 const labelStyle = {
-  fontSize: '9px',
-  color: 'var(--text-ghost)',
-  fontFamily: 'var(--font-mono)',
-  textTransform: 'uppercase',
-  letterSpacing: '1px',
-  marginBottom: '2px',
-  display: 'block',
+  fontSize: '9px', color: 'rgba(0, 255, 65, 0.4)', fontFamily: 'monospace',
+  textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '2px', display: 'block',
 }
+
+const titleBarStyle = {
+  padding: '8px 12px', borderBottom: '1px solid rgba(0, 255, 65, 0.15)',
+  fontFamily: 'monospace', fontSize: '11px', color: '#00ff41',
+  letterSpacing: '2px', display: 'flex', justifyContent: 'space-between',
+}
+
+/* ── Component ─────────────────────────────────────────────────────────────── */
 
 export default function AuthGate({ children }) {
   const user = useAuthStore((s) => s.user)
@@ -39,155 +59,78 @@ export default function AuthGate({ children }) {
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
   const [busy, setBusy] = useState(false)
-  const [loaderDone, setLoaderDone] = useState(false)
-  const [loaderProgress, setLoaderProgress] = useState(0)
 
-  const showErr = (msg, ms = 4000) => {
-    setError(msg)
-    setTimeout(() => setError(''), ms)
-  }
+  // Loading screen state
+  const [progress, setProgress] = useState(0)
+  const [granted, setGranted] = useState(false)
+  const [visible, setVisible] = useState(true) // controls fade-out
 
-  // Drive progress from real loading states
+  const showErr = (msg, ms = 4000) => { setError(msg); setTimeout(() => setError(''), ms) }
+
+  // ── Drive progress from real states ────────────────────────────────────────
   useEffect(() => {
-    if (loading) {
-      setLoaderProgress(10)
-    } else if (!user) {
-      // Not logged in — skip loader
-      setLoaderProgress(100)
-    } else if (profileLoading) {
-      setLoaderProgress(50)
-    } else if (profile) {
-      setLoaderProgress(100)
-    } else {
-      // user exists but no profile — skip loader to show setup form
-      setLoaderProgress(100)
-    }
+    if (loading) setProgress(15)
+    else if (!user) setProgress(100) // no user — go straight to login (no HUD)
+    else if (profileLoading) setProgress(50)
+    else if (profile?.status === 'approved') setProgress(100)
+    else setProgress(100) // pending/rejected/no-profile — show form
   }, [loading, user, profileLoading, profile])
 
-  const handleLoaderDone = useCallback(() => setLoaderDone(true), [])
-
-  // ── Show Matrix loader while auth + profile are resolving ──────────────────
-  const needsLoader = user && !loaderDone && (loading || profileLoading || (profile && loaderProgress < 100))
-  // Also show loader on initial auth check (even before we know if user exists)
-  const showLoader = !loaderDone && (loading || (user && profileLoading) || (user && profile && !loaderDone))
-
-  if (showLoader) {
-    return <MatrixLoader progress={loaderProgress} onDone={handleLoaderDone} />
-  }
-
-  // ── Authenticated + profile exists ───────────────────────────────────────────
-  if (user && profile) {
-    if (profile.status === 'pending') {
-      return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)' }}>
-          <div style={{ width: '340px', background: 'var(--bg-surface)', border: '1px solid var(--border-mid)' }}>
-            <div className="title-bar">
-              <span>■ ACCESS PENDING</span>
-            </div>
-            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <p style={{ color: 'var(--text-dim)', fontSize: '11px', margin: 0, lineHeight: 1.7 }}>
-                &gt; Account <span style={{ color: 'var(--neon)' }}>{profile.username}</span> registered.<br />
-                &gt; Awaiting admin approval.<br />
-                &gt; You will be able to log in once approved.
-              </p>
-              <button onClick={() => supabase.auth.signOut()} style={{ ...btnStyle(false), marginTop: '8px' }}>
-                [ SIGN OUT ]
-              </button>
-            </div>
-          </div>
-        </div>
-      )
+  // ── ACCESS GRANTED sequence ────────────────────────────────────────────────
+  useEffect(() => {
+    if (progress >= 100 && user && profile?.status === 'approved' && !granted) {
+      setGranted(true)
+      setTimeout(() => setVisible(false), 1800)
     }
+  }, [progress, user, profile, granted])
 
-    if (profile.status === 'rejected') {
-      return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)' }}>
-          <div style={{ width: '340px', background: 'var(--bg-surface)', border: '1px solid var(--border-mid)' }}>
-            <div className="title-bar">
-              <span>■ ACCESS DENIED</span>
-            </div>
-            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <p style={{ color: 'var(--danger)', fontSize: '11px', margin: 0 }}>
-                &gt; Your account request was not approved.
-              </p>
-              <button onClick={() => supabase.auth.signOut()} style={btnStyle(false)}>
-                [ SIGN OUT ]
-              </button>
-            </div>
-          </div>
-        </div>
-      )
-    }
+  // ── Determine what to show ─────────────────────────────────────────────────
+  const isReady = user && profile?.status === 'approved'
+  const showMatrix = visible && !isReady // show rain for all non-ready states
+  const showLoadingHud = loading || (user && profileLoading) // show progress bar
+  const showForm = !loading && !granted // show login/setup forms (not during initial load)
 
-    return children
-  }
-
-  // ── Authenticated but no profile yet ───────────────────────────────────────
-  if (user && !profile) {
-    const isAnon = user.is_anonymous
-    const handleSetup = async (e) => {
-      e.preventDefault()
-      if (!username.trim()) return showErr('USERNAME REQUIRED')
-      setBusy(true)
-      try {
-        if (isAnon && email && password) {
-          await linkEmail(email.trim(), password)
-        }
-        const p = await createProfile(user.id, username.trim())
-        if (!p) showErr('FAILED — try a different username or refresh')
-      } catch (err) {
-        showErr(err.message || 'UNKNOWN ERROR')
-      } finally {
-        setBusy(false)
-      }
-    }
-
+  // App is ready — no more loading screen
+  if (isReady && !visible) return children
+  // Brief overlap: app is ready but still fading out
+  if (isReady && visible) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)' }}>
-        <div style={{ width: '340px', background: 'var(--bg-surface)', border: '1px solid var(--border-mid)' }}>
-          <div className="title-bar">
-            <span>■ INITIALIZE PROFILE</span>
-          </div>
-          <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <p style={{ color: 'var(--text-dim)', fontSize: '10px', margin: 0, lineHeight: 1.6 }}>
-              &gt; Set your username to continue.
-              {isAnon && <><br />&gt; Optionally link an email to secure your account.</>}
-            </p>
-            <form onSubmit={handleSetup} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div>
-                <label style={labelStyle}>&gt; Username</label>
-                <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="your_handle" style={inputStyle} autoFocus />
-              </div>
-              {isAnon && (
-                <>
-                  <div>
-                    <label style={labelStyle}>&gt; Email (optional)</label>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" style={inputStyle} />
-                  </div>
-                  {email && (
-                    <div>
-                      <label style={labelStyle}>&gt; Password</label>
-                      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" style={inputStyle} />
-                    </div>
-                  )}
-                </>
-              )}
-              <button type="submit" disabled={busy} style={btnStyle(busy)}>
-                {busy ? '[ SAVING... ]' : '[ CONFIRM ]'}
-              </button>
-            </form>
-            {error && <p style={{ color: 'var(--danger)', fontSize: '11px', margin: 0 }}>&gt; {error}</p>}
-          </div>
-        </div>
-      </div>
+      <>
+        {children}
+        <MatrixLoader progress={100} showHud={false} granted={granted} />
+      </>
     )
   }
 
-  // ── Not authenticated ─────────────────────────────────────────────────────────
+  // ── All pre-auth states render inside the Matrix rain ──────────────────────
+  return (
+    <MatrixLoader progress={progress} showHud={showLoadingHud} granted={granted}>
+      {showForm && !user && <LoginRegisterForm
+        tab={tab} setTab={setTab} email={email} setEmail={setEmail}
+        password={password} setPassword={setPassword} username={username}
+        setUsername={setUsername} error={error} info={info} busy={busy}
+        setBusy={setBusy} showErr={showErr} setInfo={setInfo} signUp={signUp}
+      />}
+
+      {showForm && user && !profile && <SetupForm
+        user={user} username={username} setUsername={setUsername}
+        email={email} setEmail={setEmail} password={password} setPassword={setPassword}
+        error={error} busy={busy} setBusy={setBusy} showErr={showErr}
+        linkEmail={linkEmail} createProfile={createProfile}
+      />}
+
+      {showForm && user && profile?.status === 'pending' && <PendingPanel username={profile.username} />}
+      {showForm && user && profile?.status === 'rejected' && <RejectedPanel />}
+    </MatrixLoader>
+  )
+}
+
+/* ── Login / Register ──────────────────────────────────────────────────────── */
+
+function LoginRegisterForm({ tab, setTab, email, setEmail, password, setPassword, username, setUsername, error, info, busy, setBusy, showErr, setInfo, signUp }) {
   const handleLogin = async (e) => {
     e.preventDefault()
-    setBusy(true)
-    setInfo('')
+    setBusy(true); setInfo('')
     const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
     if (err) showErr(err.message)
     setBusy(false)
@@ -196,97 +139,145 @@ export default function AuthGate({ children }) {
   const handleRegister = async (e) => {
     e.preventDefault()
     if (!username.trim()) return showErr('USERNAME REQUIRED')
-    setBusy(true)
-    setInfo('')
+    setBusy(true); setInfo('')
     try {
       const { needsEmailConfirm } = await signUp(email.trim(), password, username.trim())
-      if (needsEmailConfirm) {
-        setInfo('CHECK YOUR EMAIL — confirm then log in.')
-        setBusy(false)
-        return
-      }
+      if (needsEmailConfirm) { setInfo('CHECK YOUR EMAIL — confirm then log in.'); setBusy(false); return }
       sessionStorage.setItem('pending_username', username.trim())
-    } catch (err) {
-      showErr(err.message)
-    }
+    } catch (err) { showErr(err.message) }
     setBusy(false)
   }
 
-  const tabStyle = (active) => ({
-    flex: 1,
-    padding: '6px',
-    fontSize: '10px',
-    fontFamily: 'var(--font-mono)',
-    background: active ? 'var(--neon-ghost)' : 'transparent',
-    borderBottom: active ? '2px solid var(--neon)' : '2px solid transparent',
-    color: active ? 'var(--neon)' : 'var(--text-ghost)',
-    cursor: 'pointer',
-    border: 'none',
+  const tabBtnStyle = (active) => ({
+    flex: 1, padding: '8px', fontSize: '10px', fontFamily: 'monospace',
+    background: active ? 'rgba(0,255,65,0.08)' : 'transparent',
+    borderBottom: active ? '2px solid #00ff41' : '2px solid transparent',
+    color: active ? '#00ff41' : 'rgba(0,255,65,0.3)',
+    cursor: 'pointer', border: 'none', letterSpacing: '1px',
+    transition: 'all 0.2s',
   })
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)' }}>
-      <div style={{ width: '340px', background: 'var(--bg-surface)', border: '1px solid var(--border-mid)' }}>
-        <div className="title-bar" style={{ justifyContent: 'space-between' }}>
-          <span>■ AUTHENTICATION</span>
-          <span style={{ color: 'var(--text-ghost)' }}>v2.0</span>
-        </div>
+    <div style={panelStyle}>
+      <div style={titleBarStyle}>
+        <span>■ AUTHENTICATION</span>
+        <span style={{ color: 'rgba(0,255,65,0.3)' }}>v2.0</span>
+      </div>
 
-        <div style={{ display: 'flex', borderBottom: '1px solid var(--border-mid)' }}>
-          <button style={tabStyle(tab === 'login')} onClick={() => { setTab('login'); setError(''); setInfo('') }}>
-            [ LOGIN ]
-          </button>
-          <button style={tabStyle(tab === 'register')} onClick={() => { setTab('register'); setError(''); setInfo('') }}>
-            [ REGISTER ]
-          </button>
-        </div>
+      <div style={{ display: 'flex', borderBottom: '1px solid rgba(0,255,65,0.1)' }}>
+        <button style={tabBtnStyle(tab === 'login')} onClick={() => { setTab('login'); showErr('') }}>[ LOGIN ]</button>
+        <button style={tabBtnStyle(tab === 'register')} onClick={() => { setTab('register'); showErr('') }}>[ REGISTER ]</button>
+      </div>
 
-        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          {tab === 'login' && (
-            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div>
-                <label style={labelStyle}>&gt; Email</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" style={inputStyle} autoFocus />
-              </div>
-              <div>
-                <label style={labelStyle}>&gt; Password</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" style={inputStyle} />
-              </div>
+      <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {tab === 'login' && (
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div><label style={labelStyle}>&gt; Email</label>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" style={inputStyle} autoFocus /></div>
+            <div><label style={labelStyle}>&gt; Password</label>
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" style={inputStyle} /></div>
+            <button type="submit" disabled={busy} style={btnStyle(busy)}>
+              {busy ? '[ CONNECTING... ]' : '[ AUTHENTICATE ]'}
+            </button>
+          </form>
+        )}
+
+        {tab === 'register' && (
+          <>
+            <p style={{ color: 'rgba(0,255,65,0.5)', fontSize: '10px', margin: 0, lineHeight: 1.6, fontFamily: 'monospace' }}>
+              &gt; Register for an account.<br />&gt; An admin will approve your request.
+            </p>
+            <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div><label style={labelStyle}>&gt; Username</label>
+                <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="your_handle" style={inputStyle} autoFocus /></div>
+              <div><label style={labelStyle}>&gt; Email</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" style={inputStyle} /></div>
+              <div><label style={labelStyle}>&gt; Password</label>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" style={inputStyle} /></div>
               <button type="submit" disabled={busy} style={btnStyle(busy)}>
-                {busy ? '[ CONNECTING... ]' : '[ AUTHENTICATE ]'}
+                {busy ? '[ REGISTERING... ]' : '[ REGISTER ]'}
               </button>
             </form>
-          )}
+          </>
+        )}
 
-          {tab === 'register' && (
+        {error && <p style={{ color: '#ff2244', fontSize: '11px', margin: 0, fontFamily: 'monospace' }}>&gt; {error}</p>}
+        {info && <p style={{ color: '#00e5cc', fontSize: '11px', margin: 0, fontFamily: 'monospace' }}>&gt; {info}</p>}
+      </div>
+    </div>
+  )
+}
+
+/* ── Profile Setup ─────────────────────────────────────────────────────────── */
+
+function SetupForm({ user, username, setUsername, email, setEmail, password, setPassword, error, busy, setBusy, showErr, linkEmail, createProfile }) {
+  const isAnon = user.is_anonymous
+  const handleSetup = async (e) => {
+    e.preventDefault()
+    if (!username.trim()) return showErr('USERNAME REQUIRED')
+    setBusy(true)
+    try {
+      if (isAnon && email && password) await linkEmail(email.trim(), password)
+      const p = await createProfile(user.id, username.trim())
+      if (!p) showErr('FAILED — try a different username or refresh')
+    } catch (err) { showErr(err.message || 'UNKNOWN ERROR') }
+    finally { setBusy(false) }
+  }
+
+  return (
+    <div style={panelStyle}>
+      <div style={titleBarStyle}><span>■ INITIALIZE PROFILE</span></div>
+      <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <p style={{ color: 'rgba(0,255,65,0.5)', fontSize: '10px', margin: 0, lineHeight: 1.6, fontFamily: 'monospace' }}>
+          &gt; Set your username to continue.
+          {isAnon && <><br />&gt; Optionally link an email to secure your account.</>}
+        </p>
+        <form onSubmit={handleSetup} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div><label style={labelStyle}>&gt; Username</label>
+            <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="your_handle" style={inputStyle} autoFocus /></div>
+          {isAnon && (
             <>
-              <p style={{ color: 'var(--text-dim)', fontSize: '10px', margin: 0, lineHeight: 1.6 }}>
-                &gt; Register for an account.<br />
-                &gt; An admin will approve your request.
-              </p>
-              <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div>
-                  <label style={labelStyle}>&gt; Username</label>
-                  <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="your_handle" style={inputStyle} autoFocus />
-                </div>
-                <div>
-                  <label style={labelStyle}>&gt; Email</label>
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" style={inputStyle} />
-                </div>
-                <div>
-                  <label style={labelStyle}>&gt; Password</label>
-                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" style={inputStyle} />
-                </div>
-                <button type="submit" disabled={busy} style={btnStyle(busy)}>
-                  {busy ? '[ REGISTERING... ]' : '[ REGISTER ]'}
-                </button>
-              </form>
+              <div><label style={labelStyle}>&gt; Email (optional)</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" style={inputStyle} /></div>
+              {email && <div><label style={labelStyle}>&gt; Password</label>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" style={inputStyle} /></div>}
             </>
           )}
+          <button type="submit" disabled={busy} style={btnStyle(busy)}>
+            {busy ? '[ SAVING... ]' : '[ CONFIRM ]'}
+          </button>
+        </form>
+        {error && <p style={{ color: '#ff2244', fontSize: '11px', margin: 0, fontFamily: 'monospace' }}>&gt; {error}</p>}
+      </div>
+    </div>
+  )
+}
 
-          {error && <p style={{ color: 'var(--danger)', fontSize: '11px', margin: 0 }}>&gt; {error}</p>}
-          {info  && <p style={{ color: 'var(--cyan)',   fontSize: '11px', margin: 0 }}>&gt; {info}</p>}
-        </div>
+/* ── Pending / Rejected ────────────────────────────────────────────────────── */
+
+function PendingPanel({ username }) {
+  return (
+    <div style={panelStyle}>
+      <div style={titleBarStyle}><span>■ ACCESS PENDING</span></div>
+      <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <p style={{ color: 'rgba(0,255,65,0.5)', fontSize: '11px', margin: 0, lineHeight: 1.7, fontFamily: 'monospace' }}>
+          &gt; Account <span style={{ color: '#00ff41' }}>{username}</span> registered.<br />
+          &gt; Awaiting admin approval.<br />
+          &gt; You will be able to log in once approved.
+        </p>
+        <button onClick={() => supabase.auth.signOut()} style={{ ...btnStyle(false), marginTop: '8px' }}>[ SIGN OUT ]</button>
+      </div>
+    </div>
+  )
+}
+
+function RejectedPanel() {
+  return (
+    <div style={panelStyle}>
+      <div style={titleBarStyle}><span>■ ACCESS DENIED</span></div>
+      <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <p style={{ color: '#ff2244', fontSize: '11px', margin: 0, fontFamily: 'monospace' }}>&gt; Your account request was not approved.</p>
+        <button onClick={() => supabase.auth.signOut()} style={btnStyle(false)}>[ SIGN OUT ]</button>
       </div>
     </div>
   )
