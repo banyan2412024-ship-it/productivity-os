@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuthStore } from '../stores/authStore'
 import { useProfileStore } from '../stores/profileStore'
 import { supabase } from '../lib/supabase'
+import MatrixLoader from './MatrixLoader'
 
 const btnStyle = (disabled) => ({
   width: '100%',
@@ -38,24 +39,44 @@ export default function AuthGate({ children }) {
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
   const [busy, setBusy] = useState(false)
+  const [loaderDone, setLoaderDone] = useState(false)
+  const [loaderProgress, setLoaderProgress] = useState(0)
 
   const showErr = (msg, ms = 4000) => {
     setError(msg)
     setTimeout(() => setError(''), ms)
   }
 
-  // ── Loading — only block on auth, not profile (profile loads lazily) ─────────
-  if (loading) {
-    return (
-      <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', color: 'var(--neon-dim)', fontSize: '11px' }}>
-        &gt; INITIALIZING...
-      </div>
-    )
+  // Drive progress from real loading states
+  useEffect(() => {
+    if (loading) {
+      setLoaderProgress(10)
+    } else if (!user) {
+      // Not logged in — skip loader
+      setLoaderProgress(100)
+    } else if (profileLoading) {
+      setLoaderProgress(50)
+    } else if (profile) {
+      setLoaderProgress(100)
+    } else {
+      // user exists but no profile — skip loader to show setup form
+      setLoaderProgress(100)
+    }
+  }, [loading, user, profileLoading, profile])
+
+  const handleLoaderDone = useCallback(() => setLoaderDone(true), [])
+
+  // ── Show Matrix loader while auth + profile are resolving ──────────────────
+  const needsLoader = user && !loaderDone && (loading || profileLoading || (profile && loaderProgress < 100))
+  // Also show loader on initial auth check (even before we know if user exists)
+  const showLoader = !loaderDone && (loading || (user && profileLoading) || (user && profile && !loaderDone))
+
+  if (showLoader) {
+    return <MatrixLoader progress={loaderProgress} onDone={handleLoaderDone} />
   }
 
   // ── Authenticated + profile exists ───────────────────────────────────────────
   if (user && profile) {
-    // Pending approval
     if (profile.status === 'pending') {
       return (
         <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)' }}>
@@ -101,7 +122,7 @@ export default function AuthGate({ children }) {
     return children
   }
 
-  // ── Authenticated but no profile yet (existing anonymous user or post-signup) ─
+  // ── Authenticated but no profile yet ───────────────────────────────────────
   if (user && !profile) {
     const isAnon = user.is_anonymous
     const handleSetup = async (e) => {
@@ -179,15 +200,11 @@ export default function AuthGate({ children }) {
     setInfo('')
     try {
       const { needsEmailConfirm } = await signUp(email.trim(), password, username.trim())
-      // Profile will be created after auth state resolves in onAuthStateChange
-      // We need to create it after user object is available
       if (needsEmailConfirm) {
         setInfo('CHECK YOUR EMAIL — confirm then log in.')
         setBusy(false)
         return
       }
-      // If no email confirm needed, onAuthStateChange fires and we handle profile creation there
-      // But we need the username — store it temporarily
       sessionStorage.setItem('pending_username', username.trim())
     } catch (err) {
       showErr(err.message)
@@ -215,7 +232,6 @@ export default function AuthGate({ children }) {
           <span style={{ color: 'var(--text-ghost)' }}>v2.0</span>
         </div>
 
-        {/* Tabs */}
         <div style={{ display: 'flex', borderBottom: '1px solid var(--border-mid)' }}>
           <button style={tabStyle(tab === 'login')} onClick={() => { setTab('login'); setError(''); setInfo('') }}>
             [ LOGIN ]
