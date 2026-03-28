@@ -6,14 +6,14 @@ import {
 import { useProfileStore } from '../../stores/profileStore'
 
 const ALL_NAV = [
-  { to: '/app',           icon: CalendarDays, label: '> Terminal', module: null },
-  { to: '/app/tasks',     icon: FolderOpen,   label: 'Projects',   module: 'tasks' },
-  { to: '/app/ideas',     icon: Lightbulb,    label: 'Ideas',      module: 'ideas' },
-  { to: '/app/notes',     icon: FileText,     label: 'Notes',      module: 'notes' },
-  { to: '/app/habits',    icon: Repeat,       label: 'Habits',     module: 'habits' },
-  { to: '/app/pomodoro',  icon: Timer,        label: 'Pomodoro',   module: 'pomodoro' },
-  { to: '/app/money',     icon: DollarSign,   label: 'Money',      module: 'money' },
-  { to: '/app/smoking',   icon: Leaf,         label: 'Weed',       module: 'smoking' },
+  { to: '/app',           icon: CalendarDays, label: '> Terminal', module: null,       color: 'var(--neon)' },
+  { to: '/app/tasks',     icon: FolderOpen,   label: 'Projects',   module: 'tasks',    color: 'var(--cyan)' },
+  { to: '/app/ideas',     icon: Lightbulb,    label: 'Ideas',      module: 'ideas',    color: 'var(--purple)' },
+  { to: '/app/notes',     icon: FileText,     label: 'Notes',      module: 'notes',    color: 'var(--blue)' },
+  { to: '/app/habits',    icon: Repeat,       label: 'Habits',     module: 'habits',   color: 'var(--orange)' },
+  { to: '/app/pomodoro',  icon: Timer,        label: 'Pomodoro',   module: 'pomodoro', color: 'var(--amber)' },
+  { to: '/app/money',     icon: DollarSign,   label: 'Money',      module: 'money',    color: 'var(--neon)' },
+  { to: '/app/smoking',   icon: Leaf,         label: 'Weed',       module: 'smoking',  color: 'var(--orange)' },
 ]
 
 const MOBILE_MODULES = ['tasks', 'ideas', 'habits', 'money', 'smoking']
@@ -79,16 +79,20 @@ export default function Sidebar() {
         </div>
 
         <nav className="flex flex-col gap-1 w-full px-2 flex-1">
-          {navItems.map(({ to, icon: Icon, label }) => (
+          {navItems.map(({ to, icon: Icon, label, color }) => (
             <NavLink
               key={to}
               to={to}
               end={to === '/app'}
               className="flex items-center gap-3 px-3 py-2.5 whitespace-nowrap"
-              style={linkStyle}
+              style={({ isActive }) => ({ ...linkStyle({ isActive }), borderLeftColor: isActive ? color : 'transparent' })}
             >
-              <Icon size={16} className="shrink-0" />
-              <span className="opacity-0 group-hover:opacity-100 transition-opacity">{label}</span>
+              {({ isActive }) => (
+                <>
+                  <Icon size={16} className="shrink-0" style={{ color: isActive ? color : 'var(--text-ghost)' }} />
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: isActive ? color : undefined }}>{label}</span>
+                </>
+              )}
             </NavLink>
           ))}
         </nav>

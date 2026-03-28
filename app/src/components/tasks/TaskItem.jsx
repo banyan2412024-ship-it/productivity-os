@@ -18,10 +18,10 @@ const PRIORITY_STYLE = {
 }
 
 const DIFFICULTY_STYLE = {
-  easy:   { color: '#00ff41', label: 'Easy' },
+  easy:   { color: 'var(--cyan)',   label: 'Easy' },
   normal: { color: 'var(--text-ghost)', label: 'Normal' },
-  hard:   { color: 'var(--amber)', label: 'Hard' },
-  epic:   { color: 'var(--danger-bright)', label: 'EPIC' },
+  hard:   { color: 'var(--orange)', label: 'Hard' },
+  epic:   { color: 'var(--purple)', label: 'EPIC' },
 }
 
 const labelStyle = {

@@ -12,10 +12,10 @@ const priorityColors = {
 const priorityLabels = { high: 'High', medium: 'Med', low: 'Low' }
 
 const difficultyColors = {
-  easy:   '#00ff41',
+  easy:   'var(--cyan)',
   normal: 'var(--text-ghost)',
-  hard:   'var(--amber)',
-  epic:   'var(--danger-bright)',
+  hard:   'var(--orange)',
+  epic:   'var(--purple)',
 }
 
 const DURATION_PRESETS = [

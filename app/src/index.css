@@ -3,48 +3,59 @@
 /* ─── Forest OS — CSS Variables ─────────────────────────────────────────────── */
 
 :root {
-  /* Backgrounds — layered forest depth */
-  --bg-base:        #0a130a;
-  --bg-surface:     #0f1f0f;
-  --bg-elevated:    #152415;
+  /* ── Backgrounds ── */
+  --bg-base:        #080e08;
+  --bg-surface:     #0d1a0d;
+  --bg-elevated:    #142214;
   --bg-hover:       #1a2e1a;
 
-  /* Borders */
-  --border:         #1a3d1a;   /* mid — panels, dividers */
-  --border-dark:    #0d1f0d;
-  --border-mid:     #1a3d1a;
-  --border-bright:  #2a5e2a;
+  /* ── Borders ── */
+  --border:         #1e4a1e;
+  --border-dark:    #0a160a;
+  --border-mid:     #1e4a1e;
+  --border-bright:  #3a7a3a;
 
-  /* Text — phosphor family */
-  --text:           #a8d5a2;   /* sage — main body text */
-  --text-dim:       #5a8a55;   /* muted — labels, captions */
-  --text-ghost:     #2d4d2a;   /* barely visible — metadata */
-  --text-primary:   #a8d5a2;
-  --text-secondary: #5a8a55;
-  --text-bright:    #00ff41;   /* neon — ONLY active / hover / selected */
+  /* ── Text hierarchy (3 readable levels + bright) ── */
+  --text:           #c8e8c0;   /* L1 — primary body text, clearly readable */
+  --text-dim:       #80b878;   /* L2 — labels, secondary info */
+  --text-ghost:     #4a7844;   /* L3 — metadata, hints — visible but quiet */
+  --text-primary:   #c8e8c0;
+  --text-secondary: #80b878;
+  --text-bright:    #00ff41;   /* active / selected / neon */
 
-  /* Compat aliases */
+  /* ── Phosphor green ── */
   --neon:           #00ff41;
-  --neon-dim:       #5a8a55;
-  --neon-ghost:     #2d4d2a;
+  --neon-dim:       #80b878;
+  --neon-ghost:     #1e4a1e;
 
-  /* Accents */
-  --cyan:           #00e5cc;   /* stats, data values, links */
+  /* ── 16-bit accent palette ── */
+  --cyan:           #00e5cc;   /* teal — stats, data, quick wins */
   --cyan-dim:       #007a6e;
-  --amber:          #c8a84b;   /* trends up, warnings */
+  --amber:          #e8c84a;   /* gold — MIT, warnings, dates */
+  --amber-dim:      #7a6620;
+  --purple:         #cc44ff;   /* magenta — ideas, creative */
+  --purple-dim:     #661f88;
+  --blue:           #4488ff;   /* blue — calendar, scheduled */
+  --blue-dim:       #1a3a7a;
+  --orange:         #ff8844;   /* orange — habits, streaks, epic */
+  --orange-dim:     #7a3a18;
 
-  /* Danger */
-  --danger:         #b03030;   /* muted red — errors, delete */
-  --danger-bright:  #ff0033;   /* only on critical confirms */
+  /* ── Danger ── */
+  --danger:         #e04040;   /* red — errors, delete, hard */
+  --danger-bright:  #ff2244;   /* critical only */
 
-  /* Selection */
-  --sel-bg:         #0f1f0f;
+  /* ── Selection ── */
+  --sel-bg:         #0d1a0d;
   --sel-text:       #00ff41;
 
-  /* Glows — only on interaction */
-  --glow-green:     0 0 8px rgba(0,255,65,0.6), 0 0 16px rgba(0,255,65,0.25);
-  --glow-cyan:      0 0 8px rgba(0,229,204,0.6), 0 0 16px rgba(0,229,204,0.2);
-  --glow-red:       0 0 8px rgba(176,48,48,0.7);
+  /* ── Glows ── */
+  --glow-green:     0 0 8px rgba(0,255,65,0.6),  0 0 20px rgba(0,255,65,0.2);
+  --glow-cyan:      0 0 8px rgba(0,229,204,0.6),  0 0 20px rgba(0,229,204,0.2);
+  --glow-red:       0 0 8px rgba(224,64,64,0.7);
+  --glow-purple:    0 0 8px rgba(204,68,255,0.5), 0 0 20px rgba(204,68,255,0.2);
+  --glow-amber:     0 0 8px rgba(232,200,74,0.5);
+  --glow-blue:      0 0 8px rgba(68,136,255,0.5);
+  --glow-orange:    0 0 8px rgba(255,136,68,0.5);
 
   --font-mono:      'Share Tech Mono', 'Courier New', monospace;
 }
@@ -97,32 +108,32 @@ body {
 /* ─── Scrollbars ────────────────────────────────────────────────────────────── */
 
 ::-webkit-scrollbar { width: 10px; background: var(--bg-base); }
-::-webkit-scrollbar-thumb { background: #1a3d1a; border: 1px solid #2a5e2a; }
-::-webkit-scrollbar-thumb:hover { background: #2a5e2a; }
-::-webkit-scrollbar-button { background: var(--bg-surface); border: 1px solid #0d1f0d; }
+::-webkit-scrollbar-thumb { background: #1e4a1e; border: 1px solid #3a7a3a; }
+::-webkit-scrollbar-thumb:hover { background: #3a7a3a; }
+::-webkit-scrollbar-button { background: var(--bg-surface); border: 1px solid #0a160a; }
 
 /* ─── Bevel System ──────────────────────────────────────────────────────────── */
 
 .bevel-raised {
-  border-top:    2px solid #2a5e2a;
-  border-left:   2px solid #2a5e2a;
-  border-right:  2px solid #0d1f0d;
-  border-bottom: 2px solid #0d1f0d;
+  border-top:    2px solid #3a7a3a;
+  border-left:   2px solid #3a7a3a;
+  border-right:  2px solid #0a160a;
+  border-bottom: 2px solid #0a160a;
   background: var(--bg-surface);
 }
 
 .bevel-raised:active {
-  border-top:    2px solid #0d1f0d;
-  border-left:   2px solid #0d1f0d;
-  border-right:  2px solid #2a5e2a;
-  border-bottom: 2px solid #2a5e2a;
+  border-top:    2px solid #0a160a;
+  border-left:   2px solid #0a160a;
+  border-right:  2px solid #3a7a3a;
+  border-bottom: 2px solid #3a7a3a;
 }
 
 .bevel-inset {
-  border-top:    2px solid #0d1f0d;
-  border-left:   2px solid #0d1f0d;
-  border-right:  2px solid #2a5e2a;
-  border-bottom: 2px solid #2a5e2a;
+  border-top:    2px solid #0a160a;
+  border-left:   2px solid #0a160a;
+  border-right:  2px solid #3a7a3a;
+  border-bottom: 2px solid #3a7a3a;
   background: var(--bg-base);
 }
 
@@ -154,41 +165,41 @@ body {
 button, .btn {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--text);           /* sage by default */
+  color: var(--text-dim);
   padding: 4px 14px;
   min-width: 70px;
   cursor: pointer;
-  border-top:    2px solid #2a5e2a;
-  border-left:   2px solid #2a5e2a;
-  border-right:  2px solid #0d1f0d;
-  border-bottom: 2px solid #0d1f0d;
+  border-top:    2px solid #3a7a3a;
+  border-left:   2px solid #3a7a3a;
+  border-right:  2px solid #0a160a;
+  border-bottom: 2px solid #0a160a;
   background: var(--bg-surface);
   transition: none;
 }
 
 button:active, .btn:active {
-  border-top:    2px solid #0d1f0d;
-  border-left:   2px solid #0d1f0d;
-  border-right:  2px solid #2a5e2a;
-  border-bottom: 2px solid #2a5e2a;
+  border-top:    2px solid #0a160a;
+  border-left:   2px solid #0a160a;
+  border-right:  2px solid #3a7a3a;
+  border-bottom: 2px solid #3a7a3a;
 }
 
 button:hover:not(:disabled), .btn:hover:not(:disabled) {
-  color: var(--neon);           /* neon only on hover */
+  color: var(--neon);
   box-shadow: var(--glow-green);
 }
 
 button:focus-visible, .btn:focus-visible {
-  outline: 1px dotted #2a5e2a;
+  outline: 1px dotted #3a7a3a;
   outline-offset: -4px;
 }
 
 button.danger, .btn-danger {
   color: var(--danger);
-  border-top-color: #5e1a1a;
-  border-left-color: #5e1a1a;
-  border-right-color: #1f0d0d;
-  border-bottom-color: #1f0d0d;
+  border-top-color: #7a2020;
+  border-left-color: #7a2020;
+  border-right-color: #200808;
+  border-bottom-color: #200808;
 }
 
 button.danger:hover:not(:disabled) {
@@ -211,12 +222,12 @@ textarea,
 select {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--text);           /* sage */
+  color: var(--text);
   background: var(--bg-base);
-  border-top:    2px solid #0d1f0d;
-  border-left:   2px solid #0d1f0d;
-  border-right:  2px solid #2a5e2a;
-  border-bottom: 2px solid #2a5e2a;
+  border-top:    2px solid #0a160a;
+  border-left:   2px solid #0a160a;
+  border-right:  2px solid #3a7a3a;
+  border-bottom: 2px solid #3a7a3a;
   padding: 4px 8px;
   outline: none;
   caret-color: var(--neon);
@@ -225,9 +236,9 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  color: var(--neon);           /* neon text when active */
-  border-top-color: #2a5e2a;
-  border-left-color: #2a5e2a;
+  color: var(--neon);
+  border-top-color: #3a7a3a;
+  border-left-color: #3a7a3a;
   box-shadow: var(--glow-green);
 }
 
@@ -295,12 +306,12 @@ hr, .divider {
 /* ─── List / Selection rows ─────────────────────────────────────────────────── */
 
 .list-row {
-  border-bottom: 1px solid #0d1f0d;
+  border-bottom: 1px solid #0a160a;
 }
 
 .list-row:hover {
   background: var(--bg-hover);
-  outline: 1px dotted #2a5e2a;
+  outline: 1px dotted #3a7a3a;
   outline-offset: -1px;
 }
 
@@ -309,6 +320,23 @@ hr, .divider {
   border-left: 3px solid var(--neon);
   box-shadow: var(--glow-green);
 }
+
+/* ─── 16-bit accent utility classes ─────────────────────────────────────────── */
+
+.accent-cyan    { color: var(--cyan); }
+.accent-amber   { color: var(--amber); }
+.accent-purple  { color: var(--purple); }
+.accent-blue    { color: var(--blue); }
+.accent-orange  { color: var(--orange); }
+.accent-danger  { color: var(--danger); }
+.accent-neon    { color: var(--neon); }
+
+.tag-cyan   { color: var(--cyan);   border: 1px solid var(--cyan-dim);   padding: 1px 6px; font-size: 9px; }
+.tag-amber  { color: var(--amber);  border: 1px solid var(--amber-dim);  padding: 1px 6px; font-size: 9px; }
+.tag-purple { color: var(--purple); border: 1px solid var(--purple-dim); padding: 1px 6px; font-size: 9px; }
+.tag-blue   { color: var(--blue);   border: 1px solid var(--blue-dim);   padding: 1px 6px; font-size: 9px; }
+.tag-orange { color: var(--orange); border: 1px solid var(--orange-dim); padding: 1px 6px; font-size: 9px; }
+.tag-neon   { color: var(--neon);   border: 1px solid #1e4a1e;           padding: 1px 6px; font-size: 9px; }
 
 /* ─── Progress Bar ──────────────────────────────────────────────────────────── */
 
@@ -529,25 +557,28 @@ hr, .divider {
 /* ─── Tailwind theme overrides ──────────────────────────────────────────────── */
 
 @theme {
-  --color-bg:            #0a130a;
-  --color-bg-secondary:  #0f1f0f;
-  --color-bg-tertiary:   #152415;
-  --color-border:        #1a3d1a;
-  --color-border-light:  #0d1f0d;
-  --color-text:          #a8d5a2;
-  --color-text-secondary:#5a8a55;
-  --color-text-tertiary: #2d4d2a;
+  --color-bg:            #080e08;
+  --color-bg-secondary:  #0d1a0d;
+  --color-bg-tertiary:   #142214;
+  --color-border:        #1e4a1e;
+  --color-border-light:  #0a160a;
+  --color-text:          #c8e8c0;
+  --color-text-secondary:#80b878;
+  --color-text-tertiary: #4a7844;
   --color-accent:        #00ff41;
-  --color-accent-light:  #152415;
+  --color-accent-light:  #142214;
   --color-accent-hover:  #00ff41;
   --color-success:       #00ff41;
-  --color-success-light: #0f1f0f;
-  --color-warning:       #c8a84b;
-  --color-warning-light: #1f1a0d;
-  --color-danger:        #b03030;
-  --color-danger-light:  #1f0d0d;
+  --color-success-light: #0d1a0d;
+  --color-warning:       #e8c84a;
+  --color-warning-light: #1e1a08;
+  --color-danger:        #e04040;
+  --color-danger-light:  #200808;
   --color-frog:          #00ff41;
   --color-mit:           #00e5cc;
+  --color-purple:        #cc44ff;
+  --color-blue:          #4488ff;
+  --color-orange:        #ff8844;
   --font-sans: 'Share Tech Mono', 'Courier New', monospace;
   --font-mono: 'Share Tech Mono', 'Courier New', monospace;
 }

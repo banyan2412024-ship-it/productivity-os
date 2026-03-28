@@ -3,11 +3,11 @@ import { useAgentAnimationStore } from '../../stores/agentAnimationStore'
 
 // ASCII art faces for different mood levels
 const FACES = [
-  { min: 0, face: '(×_×)', label: 'CRITICAL', color: '#ff0033' },
-  { min: 20, face: '(·_·)', label: 'LOW', color: '#ff0033' },
-  { min: 40, face: '(·‿·)', label: 'NOMINAL', color: '#00b300' },
-  { min: 60, face: '(^‿^)', label: 'GOOD', color: '#00ff41' },
-  { min: 80, face: '(★‿★)', label: 'OPTIMAL', color: '#00ff41' },
+  { min: 0,  face: '(×_×)', label: 'CRITICAL', color: '#ff2244' },
+  { min: 20, face: '(·_·)', label: 'LOW',      color: '#ff8844' },
+  { min: 40, face: '(·‿·)', label: 'NOMINAL',  color: '#e8c84a' },
+  { min: 60, face: '(^‿^)', label: 'GOOD',     color: '#00e5cc' },
+  { min: 80, face: '(★‿★)', label: 'OPTIMAL',  color: '#00ff41' },
 ]
 
 const MESSAGES = {
