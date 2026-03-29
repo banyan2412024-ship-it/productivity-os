@@ -37,7 +37,7 @@ export const useProfileStore = create((set, get) => ({
 
   adminUpdateProfile: async (userId, updates) => {
     const { error } = await supabase.from('profiles').update(updates).eq('id', userId)
-    if (error) console.warn('[adminUpdateProfile]', error.message)
+    if (error) console.error('[adminUpdateProfile] ERROR:', error)
     return !error
   },
 

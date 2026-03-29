@@ -14,6 +14,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(null)
   const [resetConfirm, setResetConfirm] = useState(null)
+  const [actionError, setActionError] = useState(null)
 
   useEffect(() => {
     getAllProfiles().then((data) => { setUsers(data); setLoading(false) })
@@ -25,15 +26,17 @@ export default function AdminPage() {
   const refresh = () => getAllProfiles().then(setUsers)
 
   const approve = async (id) => {
-    setBusy(id)
-    await adminUpdate(id, { status: 'approved' })
+    setBusy(id); setActionError(null)
+    const ok = await adminUpdate(id, { status: 'approved' })
+    if (!ok) setActionError('APPROVE FAILED — check console')
     await refresh()
     setBusy(null)
   }
 
   const reject = async (id) => {
-    setBusy(id)
-    await adminUpdate(id, { status: 'rejected' })
+    setBusy(id); setActionError(null)
+    const ok = await adminUpdate(id, { status: 'rejected' })
+    if (!ok) setActionError('REJECT FAILED — check console')
     await refresh()
     setBusy(null)
   }
@@ -70,6 +73,7 @@ export default function AdminPage() {
       </h1>
 
       {loading && <p style={{ color: 'var(--text-ghost)', fontSize: '11px' }}>&gt; loading...</p>}
+      {actionError && <p style={{ color: 'var(--danger)', fontSize: '10px', marginBottom: '12px' }}>&gt; {actionError}</p>}
 
       {/* ─── Pending approvals ─────────────────────────────────── */}
       {pending.length > 0 && (
