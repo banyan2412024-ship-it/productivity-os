@@ -54,7 +54,9 @@ export default function DashboardPage() {
 
   // Stores
   const profile = useProfileStore((s) => s.profile)
-  const enabledModules = profile?.enabled_modules ?? ['tasks', 'notes', 'ideas', 'habits', 'pomodoro']
+  const pg13 = profile?.pg13_mode ?? false
+  const baseModules = profile?.enabled_modules ?? ['tasks', 'notes', 'ideas', 'habits', 'pomodoro']
+  const enabledModules = pg13 ? baseModules.filter((m) => m !== 'smoking' && m !== 'money') : baseModules
   const hasWeed = enabledModules.includes('smoking')
   const hasMoney = enabledModules.includes('money')
 

@@ -132,6 +132,17 @@ export default function AdminPage() {
                 </button>
               )
             })}
+            <button
+              onClick={async () => { await adminUpdate(u.id, { pg13_mode: !u.pg13_mode }); refresh() }}
+              style={{
+                fontSize: '8px', fontFamily: 'var(--font-mono)', padding: '2px 7px',
+                border: `1px solid ${u.pg13_mode ? 'var(--amber)' : 'var(--border-mid)'}`,
+                color: u.pg13_mode ? 'var(--amber)' : 'var(--text-ghost)',
+                background: 'transparent', cursor: 'pointer',
+              }}
+            >
+              PG-13
+            </button>
           </div>
 
           <div style={{ display: 'flex', gap: '6px' }}>

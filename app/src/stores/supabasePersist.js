@@ -205,12 +205,33 @@ supabase.auth.onAuthStateChange((event, session) => {
   }
 })
 
-// ─── Debounce helper ─────────────────────────────────────────────────────────
+// ─── Debounce helper + flush registry ────────────────────────────────────────
 
 const _timers = {}
+const _flushFns = {}   // key → immediate-fire fn
+
 function debounce(key, fn, ms = 800) {
   clearTimeout(_timers[key])
-  _timers[key] = setTimeout(fn, ms)
+  _flushFns[key] = fn
+  _timers[key] = setTimeout(() => {
+    delete _flushFns[key]
+    fn()
+  }, ms)
+}
+
+// Flush all pending debounced writes immediately (called on tab hide / unload)
+export function flushPendingWrites() {
+  for (const [key, fn] of Object.entries(_flushFns)) {
+    clearTimeout(_timers[key])
+    delete _flushFns[key]
+    fn()
+  }
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushPendingWrites()
+  })
 }
 
 // ─── Main middleware ─────────────────────────────────────────────────────────

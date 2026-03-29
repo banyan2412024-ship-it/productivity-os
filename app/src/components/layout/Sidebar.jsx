@@ -20,7 +20,9 @@ const MOBILE_MODULES = ['tasks', 'ideas', 'habits', 'money', 'smoking']
 
 export default function Sidebar() {
   const profile = useProfileStore((s) => s.profile)
-  const enabled = profile?.enabled_modules ?? ['tasks', 'notes', 'ideas', 'habits', 'pomodoro']
+  const pg13 = profile?.pg13_mode ?? false
+  const baseModules = profile?.enabled_modules ?? ['tasks', 'notes', 'ideas', 'habits', 'pomodoro']
+  const enabled = pg13 ? baseModules.filter((m) => m !== 'smoking' && m !== 'money') : baseModules
   const isAdmin = profile?.is_admin ?? false
 
   const navItems = ALL_NAV.filter((n) => n.module === null || enabled.includes(n.module))
