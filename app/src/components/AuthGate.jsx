@@ -149,6 +149,15 @@ function LoginRegisterForm({ signUp }) {
     setBusy(false)
   }
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) return showErr('ENTER YOUR EMAIL FIRST')
+    setBusy(true); setInfo(''); setError('')
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim())
+    if (err) showErr(err.message)
+    else setInfo('PASSWORD RESET EMAIL SENT — check your inbox.')
+    setBusy(false)
+  }
+
   const handleRegister = async (e) => {
     e.preventDefault()
     if (!username.trim()) return showErr('USERNAME REQUIRED')
@@ -209,6 +218,10 @@ function LoginRegisterForm({ signUp }) {
             </div>
             <button type="submit" disabled={busy} style={btnStyle(busy)}>
               {busy ? '[ CONNECTING... ]' : '[ AUTHENTICATE ]'}
+            </button>
+            <button type="button" onClick={handleForgotPassword} disabled={busy}
+              style={{ background: 'transparent', border: 'none', color: 'rgba(0,255,65,0.4)', fontSize: '9px', fontFamily: 'monospace', cursor: 'pointer', padding: '0', letterSpacing: '1px', textAlign: 'left' }}>
+              &gt; forgot password?
             </button>
           </form>
         )}
