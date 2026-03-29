@@ -36,9 +36,13 @@ export const useProfileStore = create((set, get) => ({
   },
 
   adminUpdateProfile: async (userId, updates) => {
-    const { error } = await supabase.from('profiles').update(updates).eq('id', userId)
-    if (error) console.error('[adminUpdateProfile] ERROR:', error)
-    return !error
+    const { data, error } = await supabase.rpc('admin_update_profile', {
+      target_id: userId,
+      updates,
+    })
+    if (error) console.error('[adminUpdateProfile] RPC error:', error)
+    if (data?.error) console.error('[adminUpdateProfile] DB error:', data.error)
+    return !error && !data?.error
   },
 
   adminResetUserData: async (userId) => {
