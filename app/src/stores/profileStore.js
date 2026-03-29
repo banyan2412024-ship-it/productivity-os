@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabase'
-import { supabaseAdmin } from '../lib/supabaseAdmin'
 import { applyTheme } from '../lib/applyTheme'
 
 export const useProfileStore = create((set, get) => ({
@@ -37,21 +36,14 @@ export const useProfileStore = create((set, get) => ({
   },
 
   adminUpdateProfile: async (userId, updates) => {
-    const { error } = await supabaseAdmin.from('profiles').update(updates).eq('id', userId)
+    const { error } = await supabase.from('profiles').update(updates).eq('id', userId)
+    if (error) console.warn('[adminUpdateProfile]', error.message)
     return !error
   },
 
   adminResetUserData: async (userId) => {
-    const tables = [
-      'tasks', 'projects', 'notes', 'ideas', 'habits',
-      'transactions', 'smoking_logs', 'calendar_events',
-      'pomodoro_sessions', 'time_blocks', 'user_settings',
-    ]
-    const errors = []
-    for (const table of tables) {
-      const { error } = await supabaseAdmin.from(table).delete().eq('user_id', userId)
-      if (error) errors.push(error.message)
-    }
-    return errors.length === 0
+    const { error } = await supabase.rpc('admin_reset_user_data', { target_user_id: userId })
+    if (error) console.warn('[adminResetUserData]', error.message)
+    return !error
   },
 }))
