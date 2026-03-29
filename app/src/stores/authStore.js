@@ -50,6 +50,14 @@ export const useAuthStore = create((set, get) => ({
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'TOKEN_REFRESHED') return
 
+      // Already in a stable auth state for the same user — don't re-enter LOADING
+      // (happens when switching tabs triggers a SIGNED_IN event)
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+        const { authState, user: currentUser } = get()
+        const STABLE = [AUTH_STATE.READY, AUTH_STATE.PENDING_APPROVAL, AUTH_STATE.REJECTED]
+        if (STABLE.includes(authState) && currentUser?.id === session?.user?.id) return
+      }
+
       if (event === 'SIGNED_OUT') {
         sessionStorage.removeItem('auth_granted')
         applyTheme(DEFAULT_THEME)
