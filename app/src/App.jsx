@@ -32,7 +32,7 @@ export default function App() {
         {/* Public portfolio */}
         <Route path="/" element={<PortfolioPage />} />
 
-        {/* Private app — password gated */}
+        {/* Private app — Supabase auth required */}
         <Route
           path="/app"
           element={
